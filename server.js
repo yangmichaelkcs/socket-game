@@ -7,12 +7,12 @@ io.on('connection', (client) => {
 const port = 8888;
 io.listen(port);
 var socketConnectionCount = 0;
-io.on('connection', function(socket){
+io.on('connection', (socket) => {
   console.log('a user connected:' + socket.id);
   io.emit('server message', 'socket ' + socket.id + ' connected');
   socketConnectionCount++;
   console.log(socketConnectionCount);
-  io.emit('update count', socketConnectionCount);
+  io.emit('UPDATE_COUNT', socketConnectionCount);
 
   socket.on('disconnect', function(){
     console.log('user disconnected: ' + socket.id);
