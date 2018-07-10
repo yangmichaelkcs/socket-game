@@ -1,16 +1,21 @@
 import React, { Component } from "react";
 import { Provider } from "react-redux";
-import { createStore } from "redux";
+import { createStore, compose } from "redux";
 import rootReducer from "./reducers";
-import MainScreen from "./components/MainScreen";
+import StartGame from "./components/start";
+import SocketListener from "socket";
 
-const store = createStore(rootReducer);
+const enhancers = compose(
+  window.devToolsExtension ? window.devToolsExtension() : f => f
+);
+const store = createStore(rootReducer, enhancers);
+new SocketListener(store);
 
 class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <MainScreen />
+        <StartGame />
       </Provider>
     );
   }
