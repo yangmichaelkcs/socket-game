@@ -6,6 +6,14 @@ io.listen(port);
 var socketConnectionCount = 0;
 var gameIds = [];
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function getRandomWord() {
+  return capitalizeFirstLetter(randomWord());
+}
+
 io.on("connection", client => {
   console.log("a user connected:" + client.id);
 
@@ -20,9 +28,11 @@ io.on("connection", client => {
   });
 
   client.on("NEW_GAME", function(msg) {
-    const newGameId = randomWord() + randomWord() + randomWord();
+    const newGameId = getRandomWord() + getRandomWord() + getRandomWord();
     gameIds.push(newGameId);
     client.join(newGameId);
+    console.log(`${client.id} started a new game with gameId: ${newGameId}`);
+    console.log(`current game ids: ${gameIds}`);
   });
 });
 

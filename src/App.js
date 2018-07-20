@@ -9,7 +9,8 @@ const enhancers = compose(
   window.devToolsExtension ? window.devToolsExtension() : f => f
 );
 const store = createStore(rootReducer, enhancers);
-new SocketListener(store);
+const socketClient = new SocketListener(store);
+socketClient.startNewGame();
 
 class App extends Component {
   render() {

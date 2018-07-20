@@ -9,4 +9,9 @@ export default class SocketListener {
       store.dispatch(updatePlayerCount(count));
     });
   }
+
+  startNewGame = () => {
+    console.log("Client starting a new game");
+    this.socket.emit("NEW_GAME");
+  };
 }
