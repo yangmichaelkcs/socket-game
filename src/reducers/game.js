@@ -1,7 +1,9 @@
-const game = (state = { playerCount: 0 }, action) => {
+const game = (state = { gameId: undefined, playerCount: 0 }, action) => {
   switch (action.type) {
     case "UPDATE_PLAYER_COUNT":
-      return { playerCount: action.count };
+      return { ...state, playerCount: action.count };
+    case "SET_GAME_ID":
+      return { ...state, gameId: action.gameId };
     default:
       return state;
   }

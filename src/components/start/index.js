@@ -18,6 +18,7 @@ class StartGame extends Component {
         return (
           <div className="StartGame">
             <StartButton />
+            <div>OR</div>
             <JoinButton />
           </div>
         );

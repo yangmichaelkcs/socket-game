@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getPlayerCount } from "selectors";
+import { getPlayerCount, getGameId } from "selectors";
 
 class Lobby extends Component {
   constructor(props) {
@@ -10,6 +10,7 @@ class Lobby extends Component {
   render() {
     return (
       <div className="Lobby">
+        <h2>{this.props.gameId}</h2>
         <h2> {this.props.playerCount} players have connected </h2>
       </div>
     );
@@ -17,6 +18,7 @@ class Lobby extends Component {
 }
 
 const mapStateToProps = state => ({
+  gameId: getGameId(state),
   playerCount: getPlayerCount(state)
 });
 

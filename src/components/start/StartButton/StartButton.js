@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { navigateTo } from "../../../actions";
+import { startNewGame } from "socket";
 
 class StartButton extends Component {
   render() {
@@ -10,7 +11,10 @@ class StartButton extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  onClick: () => dispatch(navigateTo("lobby"))
+  onClick: () => {
+    startNewGame();
+    dispatch(navigateTo("lobby"));
+  }
 });
 
 export default connect(

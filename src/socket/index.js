@@ -1,17 +1,25 @@
 import socketIOClient from "socket.io-client";
-import { updatePlayerCount } from "actions";
+import { updatePlayerCount, setGameId } from "actions";
 
-export default class SocketListener {
+const socket = socketIOClient("http://localhost:8888");
+export class SocketListener {
   constructor(store) {
-    this.socket = socketIOClient("http://localhost:8888");
+    socket.on("JOINED_GAME", gameId => {
+      store.dispatch(setGameId(gameId));
+    });
 
-    this.socket.on("UPDATE_COUNT", count => {
+    socket.on("UPDATE_COUNT", count => {
       store.dispatch(updatePlayerCount(count));
     });
   }
-
-  startNewGame = () => {
-    console.log("Client starting a new game");
-    this.socket.emit("NEW_GAME");
-  };
 }
+
+export const startNewGame = () => {
+  console.log("Client starting a new game");
+  socket.emit("NEW_GAME");
+};
+
+export const joinGame = gameId => {
+  console.log(`Client joining game with id ${gameId}`);
+  socket.emit("JOIN_GAME", gameId);
+};
