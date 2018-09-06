@@ -1,5 +1,6 @@
 import socketIOClient from "socket.io-client";
 import { updatePlayerCount, setGameId } from "actions";
+import { navigateTo } from "../actions";
 
 const socket = socketIOClient("http://localhost:8888");
 export class SocketListener {
@@ -11,15 +12,25 @@ export class SocketListener {
     socket.on("UPDATE_COUNT", count => {
       store.dispatch(updatePlayerCount(count));
     });
+
+    socket.on("GAME_STARTING", count => {
+      console.log("Game starting for everyone hopefully");
+      store.dispatch(navigateTo("game"));
+    });
   }
 }
 
-export const startNewGame = () => {
-  console.log("Client starting a new game");
+export const createNewGame = () => {
+  console.log("Client creating a new game");
   socket.emit("NEW_GAME");
 };
 
 export const joinGame = gameId => {
   console.log(`Client joining game with id ${gameId}`);
   socket.emit("JOIN_GAME", gameId);
+};
+
+export const startGame = () => {
+  console.log(`Client started game`);
+  socket.emit("START_GAME");
 };

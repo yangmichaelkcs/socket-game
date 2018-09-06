@@ -13,6 +13,11 @@ function getRandomWord() {
   return capitalizeFirstLetter(randomWord());
 }
 
+function getGameId(socket) {
+  let rooms = Object.keys(socket && socket.rooms);
+  return rooms && rooms[rooms.length - 1];
+}
+
 io.on("connection", socket => {
   // io.emit("UPDATE_COUNT", socketConnectionCount);
 
@@ -21,11 +26,12 @@ io.on("connection", socket => {
   });
 
   socket.on("disconnecting", () => {
-    let rooms = Object.keys(socket.rooms);
-    const gameId = rooms[rooms.length - 1];
-    let playerCount = gamesById[gameId].playerCount - 1;
-    io.to(gameId).emit("UPDATE_COUNT", playerCount);
-    gamesById[gameId].playerCount = playerCount;
+    const gameId = getGameId(socket);
+    let playerCount = gamesById[gameId] && gamesById[gameId].playerCount - 1;
+    if (playerCount) {
+      io.to(gameId).emit("UPDATE_COUNT", playerCount);
+      gamesById[gameId].playerCount = playerCount;
+    }
   });
 
   socket.on("NEW_GAME", function() {
@@ -35,7 +41,11 @@ io.on("connection", socket => {
     io.to(newGameId).emit("JOINED_GAME", newGameId);
     io.to(newGameId).emit("UPDATE_COUNT", playerCount);
     gamesById[newGameId] = { playerCount };
-    console.log(`${socket.id} started a new game with gameId: ${newGameId}`);
+    console.log(
+      `${
+        socket.id
+      } started a new game with gameId: ${newGameId} and ${playerCount} players`
+    );
     console.log(`current game ids: ${Object.keys(gamesById)}`);
   });
 
@@ -52,6 +62,13 @@ io.on("connection", socket => {
     } else {
       console.log(`Game Id ${gameId} does not exist.`);
       // TODO: Add some error handlign here
+    }
+  });
+
+  socket.on("START_GAME", function() {
+    const gameId = getGameId(socket);
+    if (gameId) {
+      io.to(gameId).emit("GAME_STARTING");
     }
   });
 });
