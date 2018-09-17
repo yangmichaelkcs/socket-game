@@ -1,8 +1,8 @@
-const io = require("socket.io")();
-const randomWord = require("random-word");
+import * as randomWord from "random-word";
+import * as socketIo from "socket.io";
 
 const port = 8888;
-io.listen(port);
+const io = socketIo.listen(port);
 
 // Game = {
 //   players: [],
@@ -78,7 +78,7 @@ io.on("connection", socket => {
 
   // Creates a new game with the player who made the game
   socket.on("NEW_GAME", function() {
-    const gameId = createNewGame();
+    const gameId: string = createNewGame();
     addPlayerToGame(gameId, socket.id, socket);
     io.to(gameId).emit("JOINED_GAME", gameId);
     io.to(gameId).emit("UPDATE_COUNT", getPlayerCount(gameId));
