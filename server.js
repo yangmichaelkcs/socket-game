@@ -3,7 +3,30 @@ const randomWord = require("random-word");
 
 const port = 8888;
 io.listen(port);
-var gamesById = {};
+
+// Game = {
+//   players: [],
+//   status: LOBBY|IN_PROGRESS|END
+// }
+
+// Player = {
+//   socketId: string
+//   nickName: string,
+//   team: GOOD|BAD,
+//   role: string
+// }
+const gamesById = {};
+const teamsByPlayer = {
+  2: { good: 1, bad: 1 },
+  3: { good: 2, bad: 1 },
+  4: { good: 3, bad: 1 },
+  5: { good: 4, bad: 1 },
+  6: { good: 5, bad: 1 },
+  7: { good: 6, bad: 1 },
+  8: { good: 7, bad: 1 },
+  9: { good: 8, bad: 1 },
+  10: { good: 9, bad: 1 }
+};
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -18,56 +41,69 @@ function getGameId(socket) {
   return rooms && rooms[rooms.length - 1];
 }
 
-io.on("connection", socket => {
-  // io.emit("UPDATE_COUNT", socketConnectionCount);
+function getPlayerCount(gameId) {
+  return Object.keys(gamesById[gameId].players).length;
+}
 
+function createNewGame() {
+  const gameId = getRandomWord() + getRandomWord() + getRandomWord();
+  const game = { players: {}, status: "LOBBY" };
+  gamesById[gameId] = game;
+  return gameId;
+}
+
+function addPlayerToGame(gameId, socketId, socket) {
+  const player = { socketId: socketId };
+  socket.join(gameId);
+  gamesById[gameId].players[socketId] = player;
+}
+
+io.on("connection", socket => {
   socket.on("disconnect", function() {
     console.log("user disconnected: " + socket.id);
   });
 
+  // FIXME: This should only UPDATE_COUNT based on game state
+  // If game has not started, it should decrement
+  // If game has started we need to implement socket reconnection
   socket.on("disconnecting", () => {
     const gameId = getGameId(socket);
-    let playerCount = gamesById[gameId] && gamesById[gameId].playerCount - 1;
-    if (playerCount) {
-      io.to(gameId).emit("UPDATE_COUNT", playerCount);
-      gamesById[gameId].playerCount = playerCount;
+    if (gameId && gamesById[gameId]) {
+      delete gamesById[gameId].players[socket.id];
+      io.to(gameId).emit("UPDATE_COUNT", getPlayerCount(gameId));
     }
   });
 
+  // Creates a new game with the player who made the game
   socket.on("NEW_GAME", function() {
-    const newGameId = getRandomWord() + getRandomWord() + getRandomWord();
-    const playerCount = 1;
-    socket.join(newGameId);
-    io.to(newGameId).emit("JOINED_GAME", newGameId);
-    io.to(newGameId).emit("UPDATE_COUNT", playerCount);
-    gamesById[newGameId] = { playerCount };
-    console.log(
-      `${
-        socket.id
-      } started a new game with gameId: ${newGameId} and ${playerCount} players`
-    );
-    console.log(`current game ids: ${Object.keys(gamesById)}`);
+    const gameId = createNewGame();
+    addPlayerToGame(gameId, socket.id, socket);
+    io.to(gameId).emit("JOINED_GAME", gameId);
+    io.to(gameId).emit("UPDATE_COUNT", getPlayerCount(gameId));
+
+    console.log(`${socket.id} started a new game with gameId: ${gameId}`);
   });
 
+  // Joins an existing game based on game id
   socket.on("JOIN_GAME", function(gameId) {
     const gameIds = Object.keys(gamesById);
     if (gameIds.includes(gameId)) {
-      socket.join(gameId);
-      let playerCount = gamesById[gameId].playerCount + 1;
+      addPlayerToGame(gameId, socket.id, socket);
+
       io.to(gameId).emit("JOINED_GAME", gameId);
-      io.to(gameId).emit("UPDATE_COUNT", playerCount);
-      gamesById[gameId].playerCount = playerCount;
+      io.to(gameId).emit("UPDATE_COUNT", getPlayerCount(gameId));
+
       console.log(`${socket.id} joined a game with gameId: ${gameId}`);
-      console.log(`current game ids: ${Object.keys(gamesById)}`);
     } else {
       console.log(`Game Id ${gameId} does not exist.`);
-      // TODO: Add some error handlign here
+      // TODO: Add some error handling here
     }
   });
 
   socket.on("START_GAME", function() {
     const gameId = getGameId(socket);
     if (gameId) {
+      gamesById[newGameId];
       io.to(gameId).emit("GAME_STARTING");
     }
   });
