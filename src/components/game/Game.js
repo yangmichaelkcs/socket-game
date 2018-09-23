@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import RoleButton from "./RoleButton";
 
 class Game extends Component {
   constructor(props) {
@@ -8,9 +9,11 @@ class Game extends Component {
 
   render() {
     return (
-      <div className="Game">
-        <h2>This the game</h2>
-      </div>
+        <div className="Game">
+          <RoleButton />
+          <h2>Round Number</h2>
+          <h2>Turn to pick a team</h2>
+        </div>
     );
   }
 }
