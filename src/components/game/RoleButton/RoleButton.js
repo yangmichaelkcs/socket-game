@@ -4,7 +4,7 @@ import React, { Component } from "react";
 class RoleButton extends Component {
   constructor(props) {
       super(props);
-      this.state = { showRole: true };
+      this.state = { showRole: false };
       this.handleClick = this.handleClick.bind(this);
 
   }
@@ -23,7 +23,8 @@ class RoleButton extends Component {
                 <h3>Role:</h3>
                 <h3>Special:</h3>
             </div>
-      );}
+      );
+    }
   }
 
   render() {
