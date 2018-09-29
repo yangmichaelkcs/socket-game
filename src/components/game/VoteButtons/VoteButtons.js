@@ -25,13 +25,14 @@ class VoteButtons extends Component{
           <button
             onClick={this.handleApprove}
             disabled={this.state.approve}
-            style={{margin:10}}
+            style={{margin:5}}
           >
               Approve
           </button>
           <button
             onClick={this.handleReject}
             disabled={this.state.reject}
+            style={{margin:5}}
           >
               Reject
           </button>
