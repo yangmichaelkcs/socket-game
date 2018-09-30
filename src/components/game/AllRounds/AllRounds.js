@@ -4,7 +4,7 @@ import SingleRound from "../SingleRound";
 class AllRounds extends Component {
   render() {
     return (
-        <div>
+        <div style={{height:"50%"}}>
           {this.props.rounds.map(round => (
             <SingleRound
               key={round.id}

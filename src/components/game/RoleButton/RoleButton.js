@@ -18,18 +18,20 @@ class RoleButton extends Component {
   roleInfo() {
       if(this.state.showRole) { 
           return (
-            <div>
-                <h3>Team:</h3>
-                <h3>Role:</h3>
-                <h3>Special:</h3>
-            </div>
+            <p>
+                Team:
+                <br/>
+                Role:
+                <br/>
+                Special:
+            </p>
       );
     }
   }
 
   render() {
     return  (
-        <div>
+        <div style={{height:"50%", marginLeft:"10%"}}>
             <button onClick={this.handleClick}>{this.state.showRole ? 'Hide' : 'Show Role'}</button>
             {this.roleInfo()}
         </div>

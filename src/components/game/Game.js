@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import RoleButton from "./RoleButton";
 import VoteButtons from "./VoteButtons";
 import AllRounds from "./AllRounds";
+import RoundInfo from "./RoundInfo/RoundInfo";
 
 class Game extends Component {
   constructor(props) {
@@ -14,21 +15,28 @@ class Game extends Component {
         { id: 3, value: null},
         { id: 4, value: null},
         { id: 5, value: null}
-      ]
+      ],
+      currentRound: 1
     };
   }
 
   render() {
     return (
-        <div className="Game">
-          <RoleButton />
-          <h2>Round Number</h2>
-          <h2>Turn to pick a team</h2>
-          <AllRounds
-            rounds={this.state.rounds}
-          />
-          <h3>Proposed Team</h3>
-          <VoteButtons/>
+        <div style={{height:"100%"}}>
+          <div className="Role">
+            <RoleButton />
+          </div>
+          <div className="Game">
+            <RoundInfo
+              currentRound = {this.state.currentRound}
+            />
+            <h2>X's turn to pick a team</h2>
+            <AllRounds
+              rounds={this.state.rounds}
+            />
+            <h3>Proposed Team:</h3>
+            <VoteButtons/>
+          </div>
         </div>
     );
   }
