@@ -4,28 +4,45 @@ import * as socketIo from "socket.io";
 const port = 8888;
 const io = socketIo.listen(port);
 
-// Game = {
-//   players: [],
-//   status: LOBBY|IN_PROGRESS|END
-// }
+enum GAME_STATUS {
+  LOBBY = "LOBBY",
+  IN_PROGRESS = "IN_PROGRESS",
+  END = "END"
+}
 
-// Player = {
-//   socketId: string
-//   nickName: string,
-//   team: GOOD|BAD,
-//   role: string
-// }
-const gamesById = {};
-const teamsByPlayer = {
+enum TEAM {
+  GOOD = "GOOD",
+  BAD = "BAD"
+}
+
+interface Game {
+  players: Player[];
+  status: GAME_STATUS;
+  currentRound: number;
+  score: number[];
+  failedVotes: number;
+  currentPlayerTurn: string;
+}
+
+interface Player {
+  socketId: string;
+  nickName: string;
+  team: TEAM;
+  role: string;
+}
+
+const gamesById: { string?: Game } = {};
+
+const teamCountByTotalPlayers = {
   2: { good: 1, bad: 1 },
   3: { good: 2, bad: 1 },
   4: { good: 3, bad: 1 },
   5: { good: 4, bad: 1 },
-  6: { good: 5, bad: 1 },
-  7: { good: 6, bad: 1 },
-  8: { good: 7, bad: 1 },
-  9: { good: 8, bad: 1 },
-  10: { good: 9, bad: 1 }
+  6: { good: 5, bad: 2 },
+  7: { good: 6, bad: 2 },
+  8: { good: 7, bad: 2 },
+  9: { good: 8, bad: 3 },
+  10: { good: 9, bad: 3 }
 };
 
 function capitalizeFirstLetter(string) {
@@ -36,10 +53,18 @@ function getRandomWord() {
   return capitalizeFirstLetter(randomWord());
 }
 
-function getGameId(socket) {
+function getGameIdBySocket(socket) {
   let rooms = Object.keys(socket && socket.rooms);
   return rooms && rooms[rooms.length - 1];
 }
+
+const getGameBySocket = socket => {
+  return getGameById(getGameIdBySocket(socket));
+};
+
+const getGameById = gameId => {
+  return gamesById[gameId];
+};
 
 function getPlayerCount(gameId) {
   return Object.keys(gamesById[gameId].players).length;
@@ -47,7 +72,7 @@ function getPlayerCount(gameId) {
 
 function createNewGame() {
   const gameId = getRandomWord() + getRandomWord() + getRandomWord();
-  const game = { players: {}, status: "LOBBY" };
+  const game = { players: [], status: "LOBBY" };
   gamesById[gameId] = game;
   return gameId;
 }
@@ -55,10 +80,47 @@ function createNewGame() {
 function addPlayerToGame(gameId, socketId, socket) {
   const player = { socketId: socketId };
   socket.join(gameId);
-  gamesById[gameId].players[socketId] = player;
+  gamesById[gameId].players.push(player);
 }
 
-function assignRoles(gameId) {}
+const startGame = (gameId: string) => {
+  const game: Game = gamesById[gameId];
+  game.status = GAME_STATUS.IN_PROGRESS;
+  game.players = shuffle(game.players);
+  game.currentPlayerTurn = game.players[0].socketId;
+  game.failedVotes = 0;
+  game.currentRound = 1;
+  game.score = [];
+};
+
+const shuffle = (players: Player[]) => {
+  let currentIndex = players.length,
+    temporaryValue,
+    randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = players[currentIndex];
+    players[currentIndex] = players[randomIndex];
+    players[randomIndex] = temporaryValue;
+  }
+
+  return players;
+};
+
+const assignRoles = (gameId: string) => {
+  const players: Player[] = gamesById[gameId].players;
+  const playerKeys = Object.keys(players);
+  playerKeys.forEach(playerId => {
+    const player: Player = players[playerId];
+    player.team = TEAM.GOOD;
+  });
+};
 
 io.on("connection", socket => {
   socket.on("disconnect", function() {
@@ -69,7 +131,7 @@ io.on("connection", socket => {
   // If game has not started, it should decrement
   // If game has started we need to implement socket reconnection
   socket.on("disconnecting", () => {
-    const gameId = getGameId(socket);
+    const gameId = getGameIdBySocket(socket);
     if (gameId && gamesById[gameId]) {
       delete gamesById[gameId].players[socket.id];
       io.to(gameId).emit("UPDATE_COUNT", getPlayerCount(gameId));
@@ -83,7 +145,7 @@ io.on("connection", socket => {
     io.to(gameId).emit("JOINED_GAME", gameId);
     io.to(gameId).emit("UPDATE_COUNT", getPlayerCount(gameId));
 
-    console.log(`${socket.id} started a new game with gameId: ${gameId}`);
+    console.log(`${socket.id} created a new game with gameId: ${gameId}`);
   });
 
   // Joins an existing game based on game id
@@ -103,9 +165,11 @@ io.on("connection", socket => {
   });
 
   socket.on("START_GAME", function() {
-    const gameId = getGameId(socket);
+    const gameId = getGameIdBySocket(socket);
     if (gameId && gamesById[gameId]) {
-      io.to(gameId).emit("GAME_STARTING");
+      assignRoles(gameId);
+      startGame(gameId);
+      io.to(gameId).emit("GAME_STARTING", getGameById(gameId));
     }
   });
 });

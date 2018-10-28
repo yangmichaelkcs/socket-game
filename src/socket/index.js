@@ -13,7 +13,7 @@ export class SocketListener {
       store.dispatch(updatePlayerCount(count));
     });
 
-    socket.on("GAME_STARTING", count => {
+    socket.on("GAME_STARTING", game => {
       console.log("Game starting for everyone hopefully");
       store.dispatch(navigateTo("game"));
     });

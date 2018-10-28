@@ -7,7 +7,7 @@
 ### Server
 
 - Server is a simple NodeJS web server that uses socket.io, currently transitioning it to TypeScript
-- Run with `ts-node server.js`
+- Run with `ts-node server.ts`
 - Or `nodemon server.ts --exec 'ts-node'` for live updates
 - Side side note: seems like `nodemon` does seem to eat some exception messages making it sometimes hard to debug server failures
 
