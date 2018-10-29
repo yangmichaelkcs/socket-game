@@ -1,52 +1,20 @@
 import * as randomWord from "random-word";
 import * as socketIo from "socket.io";
+import {
+  Game,
+  Player,
+  TEAM,
+  GAME_STATUS,
+  PLAYER_DISTRIBUTION
+} from "./src/types/types";
 
 const port = 8888;
 const io = socketIo.listen(port);
 
-enum GAME_STATUS {
-  LOBBY = "LOBBY",
-  IN_PROGRESS = "IN_PROGRESS",
-  END = "END"
-}
-
-enum TEAM {
-  GOOD = "GOOD",
-  BAD = "BAD"
-}
-
-interface Game {
-  players: Player[];
-  status: GAME_STATUS;
-  currentRound: number;
-  score: number[];
-  failedVotes: number;
-  currentPlayerTurn: string;
-}
-
-interface Player {
-  socketId: string;
-  nickName: string;
-  team: TEAM;
-  role: string;
-}
-
 const gamesById: { string?: Game } = {};
 
-const teamCountByTotalPlayers = {
-  2: { good: 1, bad: 1 },
-  3: { good: 2, bad: 1 },
-  4: { good: 3, bad: 1 },
-  5: { good: 4, bad: 1 },
-  6: { good: 5, bad: 2 },
-  7: { good: 6, bad: 2 },
-  8: { good: 7, bad: 2 },
-  9: { good: 8, bad: 3 },
-  10: { good: 9, bad: 3 }
-};
-
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+function capitalizeFirstLetter(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 function getRandomWord() {
@@ -54,7 +22,7 @@ function getRandomWord() {
 }
 
 function getGameIdBySocket(socket) {
-  let rooms = Object.keys(socket && socket.rooms);
+  const rooms = Object.keys(socket && socket.rooms);
   return rooms && rooms[rooms.length - 1];
 }
 
@@ -78,7 +46,7 @@ function createNewGame() {
 }
 
 function addPlayerToGame(gameId, socketId, socket) {
-  const player = { socketId: socketId };
+  const player = { socketId };
   socket.join(gameId);
   gamesById[gameId].players.push(player);
 }

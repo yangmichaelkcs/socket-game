@@ -4,16 +4,16 @@ export const setUserName = userName => ({
 });
 
 export const navigateTo = destination => ({
-  type: "NAVIGATE_TO",
-  destination
+  destination,
+  type: "NAVIGATE_TO"
 });
 
 export const updatePlayerCount = count => ({
-  type: "UPDATE_PLAYER_COUNT",
-  count
+  count,
+  type: "UPDATE_PLAYER_COUNT"
 });
 
 export const setGameId = gameId => ({
-  type: "SET_GAME_ID",
-  gameId
+  gameId,
+  type: "SET_GAME_ID"
 });

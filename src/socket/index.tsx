@@ -1,8 +1,8 @@
-import socketIOClient from "socket.io-client";
-import { updatePlayerCount, setGameId } from "actions";
+import * as io from "socket.io-client";
+import { updatePlayerCount, setGameId } from "../actions";
 import { navigateTo } from "../actions";
 
-const socket = socketIOClient("http://localhost:8888");
+const socket = io("http://localhost:8888");
 export class SocketListener {
   constructor(store) {
     socket.on("JOINED_GAME", gameId => {

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import * as React from "react";
 import { connect } from "react-redux";
 import StartButton from "./StartButton";
 import JoinButton from "./JoinButton";
@@ -6,12 +6,12 @@ import Lobby from "components/lobby";
 import Game from "components/game";
 import { getCurrentPage } from "selectors";
 
-class StartGame extends Component {
-  componentWillUpdate(nextProps, nextState) {
+class StartGame extends React.Component<any, any> {
+  public componentWillUpdate(nextProps, nextState) {
     console.log(nextProps);
   }
 
-  render() {
+  public render() {
     switch (this.props.currentPage) {
       case "lobby":
         return <Lobby />;
