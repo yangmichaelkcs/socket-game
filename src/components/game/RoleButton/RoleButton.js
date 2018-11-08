@@ -4,7 +4,7 @@ import React, { Component } from "react";
 class RoleButton extends Component {
   constructor(props) {
       super(props);
-      this.state = { showRole: false };
+      this.state = { showRole: true };
       this.handleClick = this.handleClick.bind(this);
 
   }
@@ -18,7 +18,7 @@ class RoleButton extends Component {
   roleInfo() {
       if(this.state.showRole) { 
           return (
-            <p>
+            <p style={{margin:"0"}}>
                 Team:
                 <br/>
                 Role:
@@ -31,9 +31,10 @@ class RoleButton extends Component {
 
   render() {
     return  (
-        <div style={{height:"50%", marginLeft:"10%"}}>
-            <button onClick={this.handleClick}>{this.state.showRole ? 'Hide' : 'Show Role'}</button>
+        <div className="Role">
+        <button className = "roleButton" onClick={this.handleClick}>{this.state.showRole ? 'Hide' : 'Show '}</button>
             {this.roleInfo()}
+           
         </div>
     );
   }

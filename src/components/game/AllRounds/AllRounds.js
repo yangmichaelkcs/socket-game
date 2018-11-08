@@ -9,6 +9,7 @@ class AllRounds extends Component {
             <SingleRound
               key={round.id}
               value={round.value}
+              roundNumber={round.id}
             />
           ))}
         </div>

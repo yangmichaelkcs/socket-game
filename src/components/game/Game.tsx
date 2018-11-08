@@ -22,17 +22,16 @@ class Game extends React.Component<any, any> {
 
   public render() {
     return (
-      <div style={{ height: "100%" }}>
-        <div className="Role">
-          <RoleButton />
-        </div>
-        <div className="Game">
-          <RoundInfo currentRound={this.state.currentRound} />
-          <h2>X's turn to pick a team</h2>
-          <AllRounds rounds={this.state.rounds} />
-          <h3>Proposed Team:</h3>
-          <VoteButtons />
-        </div>
+      <div className="Game">
+        <RoundInfo currentRound={this.state.currentRound} />
+        <RoleButton />
+        <h2>X's turn to pick a team</h2>
+        <p>
+            Pick ___ players, ___ failures need for spies 
+        </p>  
+        <AllRounds rounds={this.state.rounds} />
+        <h3>Proposed Team:</h3>
+        <VoteButtons />
       </div>
     );
   }
