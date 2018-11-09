@@ -4,6 +4,7 @@ import RoleButton from "./RoleButton";
 import VoteButtons from "./VoteButtons";
 import AllRounds from "./AllRounds";
 import RoundInfo from "./RoundInfo/RoundInfo";
+import PlayerList from "./PlayerList/PlayerList";
 
 class Game extends React.Component<any, any> {
   constructor(props) {
@@ -30,6 +31,7 @@ class Game extends React.Component<any, any> {
             Pick ___ players, ___ failures need for spies 
         </p>  
         <AllRounds rounds={this.state.rounds} />
+        <PlayerList />
         <h3>Proposed Team:</h3>
         <VoteButtons />
       </div>

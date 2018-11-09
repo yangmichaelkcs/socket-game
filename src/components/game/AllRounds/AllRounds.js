@@ -4,14 +4,18 @@ import SingleRound from "../SingleRound";
 class AllRounds extends Component {
   render() {
     return (
-        <div style={{height:"50%"}}>
+        <div className="Round" style={{height:"50%"}}>
           {this.props.rounds.map(round => (
             <SingleRound
               key={round.id}
               value={round.value}
               roundNumber={round.id}
+              membersRequired={3} //Temp number FIXME
             />
           ))}
+          <h3 style={{margin:"0"}}>
+              Vote Track 0/5
+          </h3>
         </div>
     );
   }

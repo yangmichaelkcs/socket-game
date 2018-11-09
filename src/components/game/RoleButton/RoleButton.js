@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 
-
 class RoleButton extends Component {
   constructor(props) {
       super(props);
@@ -32,9 +31,8 @@ class RoleButton extends Component {
   render() {
     return  (
         <div className="Role">
-        <button className = "roleButton" onClick={this.handleClick}>{this.state.showRole ? 'Hide' : 'Show '}</button>
+             <button className = "RoleButton" onClick={this.handleClick}>{this.state.showRole ? 'Hide' : 'Show '}</button>
             {this.roleInfo()}
-           
         </div>
     );
   }

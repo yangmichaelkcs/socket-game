@@ -4,9 +4,9 @@ class RoundInfo extends Component{
   render() {
     return (
         <div>
-          <h2>
+          <h1>
             Round {this.props.currentRound}
-          </h2>
+          </h1>
         </div>  
     );
   }

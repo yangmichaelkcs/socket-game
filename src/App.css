@@ -30,11 +30,30 @@
   margin-bottom: 1rem;
 }
 
-.roleButton{
+.RoleButton{
   background: transparent;
   border: none;
   float: right;
   padding: 2rem;
+  outline: none;
+}
+
+.Player{
+  background-color: rgb(15, 132, 228);
+  display: inline-block;
+  width: 5%;
+  padding-top: 1.5%;
+  padding-bottom: 1.5%;
+  border-radius: 50%;
+  border: solid 5px rgb(15, 132, 228);
+  transition: all .1s ease-out;
+  color: #FFF;
+  margin: 1rem;
+}
+
+.PlayerList,
+.Round{
+  border-bottom: 1px solid #000;
 }
 
 .App-logo {
