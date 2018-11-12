@@ -17,8 +17,31 @@ class Game extends React.Component<any, any> {
         { id: 4, value: null },
         { id: 5, value: null }
       ],
+      players: [
+        { socketId: 1, nickName: "Mikey", team: "blue", role: "nothing", selected: 0 },
+        { socketId: 2, nickName: "Ming", team: "blue", role: "nothing", selected: 0 },
+        { socketId: 3, nickName: "Roo", team: "red", role: "nothing", selected: 0 },
+        { socketId: 4, nickName: "Sab", team: "red", role: "nothing", selected: 0 },
+        { socketId: 5, nickName: "Kev", team: "blue", role: "nothing", selected: 0 },
+        { socketId: 6, nickName: "DVP", team: "blue", role: "nothing", selected: 0},
+      ],
       currentRound: 1
     };
+  }
+  
+  public onPlayerClick = player => {
+    const players = [...this.state.players];
+    const index = players.indexOf(player);
+    players[index] = {...player };
+    if(players[index].selected === 0)
+    {
+      players[index].selected = 1;
+    }
+    else
+    {
+      players[index].selected = 0;
+    }
+    this.setState({players});
   }
 
   public render() {
@@ -31,7 +54,7 @@ class Game extends React.Component<any, any> {
             Pick ___ players, ___ failures need for spies 
         </p>  
         <AllRounds rounds={this.state.rounds} />
-        <PlayerList />
+        <PlayerList players={this.state.players} onPlayerClick = {this.onPlayerClick}/>
         <h3>Proposed Team:</h3>
         <VoteButtons />
       </div>

@@ -38,7 +38,20 @@
   outline: none;
 }
 
-.Player{
+.PlayerName{
+  display: inline-block;
+  width: 5%;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-radius: 0;
+  border: solid 5px #FFF;
+  color: #000;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  margin-bottom: 0;
+}
+
+.PlayerUnclicked{
   background-color: rgb(15, 132, 228);
   display: inline-block;
   width: 5%;
@@ -48,7 +61,26 @@
   border: solid 5px rgb(15, 132, 228);
   transition: all .1s ease-out;
   color: #FFF;
-  margin: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-top: 0;
+  cursor: pointer;
+}
+
+.PlayerClicked{
+  background-color: rgb(8, 143, 64);
+  display: inline-block;
+  width: 5%;
+  padding-top: 1.5%;
+  padding-bottom: 1.5%;
+  border-radius: 50%;
+  border: solid 5px rgb(8, 143, 64);
+  transition: all .1s ease-out;
+  color: #FFF;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-top: 0;
+  cursor: pointer;
 }
 
 .PlayerList,
