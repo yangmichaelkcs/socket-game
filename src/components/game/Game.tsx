@@ -55,7 +55,6 @@ class Game extends React.Component<any, any> {
         </p>  
         <AllRounds rounds={this.state.rounds} />
         <PlayerList players={this.state.players} onPlayerClick = {this.onPlayerClick}/>
-        <h3>Proposed Team:</h3>
         <VoteButtons />
       </div>
     );

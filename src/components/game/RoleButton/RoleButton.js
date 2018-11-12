@@ -17,7 +17,7 @@ class RoleButton extends Component {
   roleInfo() {
       if(this.state.showRole) { 
           return (
-            <p style={{margin:"0"}}>
+            <p style={{margin:"0", float: "left", textAlign:"left"}}>
                 Team:
                 <br/>
                 Role:
