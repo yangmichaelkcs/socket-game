@@ -14,6 +14,7 @@ class RoleButton extends Component {
       }));
   }
 
+  // FIXME, props for info
   roleInfo() {
       if(this.state.showRole) { 
           return (

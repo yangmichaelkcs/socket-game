@@ -2,6 +2,8 @@ import React, {Component} from "react";
 import SingleRound from "../SingleRound";
 
 class AllRounds extends Component {
+
+  // Pass more round info like round status, members required, failed votes, FIXME
   render() {
     return (
         <div className="Round" style={{height:"50%"}}>
@@ -10,7 +12,7 @@ class AllRounds extends Component {
               key={round.id}
               value={round.value}
               roundNumber={round.id}
-              membersRequired={3} //Temp number FIXME
+              membersRequired={3} 
             />
           ))}
           <h3 style={{margin:"0"}}>

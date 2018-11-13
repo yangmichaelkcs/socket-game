@@ -17,6 +17,7 @@ class Game extends React.Component<any, any> {
         { id: 4, value: null },
         { id: 5, value: null }
       ],
+      // TEMP Variables to test, FIXME
       players: [
         { socketId: 1, nickName: "Mikey", team: "blue", role: "nothing", selected: 0 },
         { socketId: 2, nickName: "Ming", team: "blue", role: "nothing", selected: 0 },
@@ -29,6 +30,7 @@ class Game extends React.Component<any, any> {
     };
   }
   
+  // Need to add limit on how many players can be selected, FIXME
   public onPlayerClick = player => {
     const players = [...this.state.players];
     const index = players.indexOf(player);
@@ -40,10 +42,11 @@ class Game extends React.Component<any, any> {
     else
     {
       players[index].selected = 0;
-    }
+    }    
     this.setState({players});
   }
 
+  // Change Turn to pick a team and Pick Players strings to state.variable, FIXME
   public render() {
     return (
       <div className="Game">
