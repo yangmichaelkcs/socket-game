@@ -22,8 +22,10 @@ class SingleRound extends Component{
 
   render() {
     return (
-        <svg width="20%" height="100%">
-            <rect width="85%" height="70%" x="7.5%" y="15%" strokeWidth="2" stroke="#000000" fill="#FFFFFF" />
+        <svg width="20%" height="80%">
+            <rect width="85%" height="70%" x="7.5%" y="15%" strokeWidth="2" stroke="#000000" fill="#FFFFFF"/>
+            <text x="30%" y="25%" fontSize="20" fill="Black">Round {this.props.roundNumber}</text>
+            <text x="40%" y="60%" fontSize="80" fill="Black">{this.props.membersRequired}</text>
             {this.roundStatus()}
         </svg>
     );

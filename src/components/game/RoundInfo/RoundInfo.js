@@ -4,13 +4,9 @@ class RoundInfo extends Component{
   render() {
     return (
         <div>
-          <h2>
-            Round Number {this.props.currentRound}:
-          </h2>
-          <p>
-            Pick ___ players, ___ failures need for spies 
-          </p>  
-          <br/>
+          <h1>
+            Round {this.props.currentRound}
+          </h1>
         </div>  
     );
   }
