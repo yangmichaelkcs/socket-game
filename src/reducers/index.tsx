@@ -1,10 +1,8 @@
 import { combineReducers } from "redux";
-import user from "./user.js";
-import navigation from "./navigation.js";
-import game from "./game.js";
+import user from "./user";
+import game from "./game";
 
 export default combineReducers({
   user,
-  navigation,
   game
 });

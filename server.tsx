@@ -39,14 +39,21 @@ function getPlayerCount(gameId) {
 }
 
 function createNewGame() {
-  const gameId = getRandomWord() + getRandomWord() + getRandomWord();
-  const game = { players: [], status: "LOBBY" };
-  gamesById[gameId] = game;
-  return gameId;
+  const id = getRandomWord() + getRandomWord() + getRandomWord();
+  const game = {
+    players: [],
+    status: GAME_STATUS.LOBBY,
+    id,
+    failedVotes: 0,
+    currentRound: 1,
+    score: []
+  };
+  gamesById[id] = game;
+  return id;
 }
 
 function addPlayerToGame(gameId, socketId, socket) {
-  const player = { socketId };
+  const player: Player = { socketId, role: "DETECTIVE USELESS" };
   socket.join(gameId);
   gamesById[gameId].players.push(player);
 }
@@ -61,10 +68,10 @@ const startGame = (gameId: string) => {
   game.score = [];
 };
 
-const shuffle = (players: Player[]) => {
-  let currentIndex = players.length,
-    temporaryValue,
-    randomIndex;
+const shuffle = (players: Player[]): Player[] => {
+  let currentIndex = players.length;
+  let temporaryValue;
+  let randomIndex;
 
   // While there remain elements to shuffle...
   while (0 !== currentIndex) {
@@ -102,28 +109,27 @@ io.on("connection", socket => {
     const gameId = getGameIdBySocket(socket);
     if (gameId && gamesById[gameId]) {
       delete gamesById[gameId].players[socket.id];
-      io.to(gameId).emit("UPDATE_COUNT", getPlayerCount(gameId));
     }
   });
 
   // Creates a new game with the player who made the game
-  socket.on("NEW_GAME", function() {
+  socket.on("NEW_GAME", () => {
     const gameId: string = createNewGame();
     addPlayerToGame(gameId, socket.id, socket);
-    io.to(gameId).emit("JOINED_GAME", gameId);
-    io.to(gameId).emit("UPDATE_COUNT", getPlayerCount(gameId));
+    io.to(gameId).emit("JOINED_GAME", getGameById(gameId));
+    socket.emit("SET_SOCKET_ID", socket.id);
 
     console.log(`${socket.id} created a new game with gameId: ${gameId}`);
   });
 
   // Joins an existing game based on game id
-  socket.on("JOIN_GAME", function(gameId) {
+  socket.on("JOIN_GAME", gameId => {
     const gameIds = Object.keys(gamesById);
     if (gameIds.includes(gameId)) {
       addPlayerToGame(gameId, socket.id, socket);
 
       io.to(gameId).emit("JOINED_GAME", gameId);
-      io.to(gameId).emit("UPDATE_COUNT", getPlayerCount(gameId));
+      socket.emit("SET_SOCKET_ID", socket.id);
 
       console.log(`${socket.id} joined a game with gameId: ${gameId}`);
     } else {

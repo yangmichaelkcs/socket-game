@@ -1,7 +1,7 @@
-const user = (state = {}, action) => {
+const user = (state = { id: undefined }, action) => {
   switch (action.type) {
-    case "SET_USER_NAME":
-      return {};
+    case "SET_SOCKET_ID":
+      return { socketId: action.socketId };
     default:
       return state;
   }

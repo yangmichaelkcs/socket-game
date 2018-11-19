@@ -1,21 +1,20 @@
 import * as io from "socket.io-client";
-import { updatePlayerCount, setGameId } from "../actions";
-import { navigateTo } from "../actions";
+import { setGameData } from "../actions";
+import { setSocketId } from "../actions";
 
 const socket = io("http://localhost:8888");
 export class SocketListener {
   constructor(store) {
-    socket.on("JOINED_GAME", gameId => {
-      store.dispatch(setGameId(gameId));
-    });
-
-    socket.on("UPDATE_COUNT", count => {
-      store.dispatch(updatePlayerCount(count));
+    socket.on("JOINED_GAME", game => {
+      store.dispatch(setGameData(game));
     });
 
     socket.on("GAME_STARTING", game => {
-      console.log("Game starting for everyone hopefully");
-      store.dispatch(navigateTo("game"));
+      store.dispatch(setGameData(game));
+    });
+
+    socket.on("SET_SOCKET_ID", socketId => {
+      store.dispatch(setSocketId(socketId));
     });
   }
 }

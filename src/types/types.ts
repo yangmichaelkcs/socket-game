@@ -22,8 +22,9 @@ export const PLAYER_DISTRIBUTION = {
 };
 
 export interface Game {
+  id: string;
   players: Player[];
-  status: GAME_STATUS;
+  status?: GAME_STATUS;
   currentRound: number;
   score: number[];
   failedVotes: number;
@@ -32,7 +33,7 @@ export interface Game {
 
 export interface Player {
   socketId: string;
-  nickName: string;
-  team: TEAM;
-  role: string;
+  nickName?: string;
+  team?: TEAM;
+  role?: string;
 }

@@ -7,15 +7,11 @@ import Game from "components/game";
 import { getCurrentPage } from "selectors";
 
 class StartGame extends React.Component<any, any> {
-  public componentWillUpdate(nextProps, nextState) {
-    console.log(nextProps);
-  }
-
   public render() {
     switch (this.props.currentPage) {
-      case "lobby":
+      case "LOBBY":
         return <Lobby />;
-      case "game":
+      case "IN_PROGRESS":
         return <Game />;
       default:
         return (
