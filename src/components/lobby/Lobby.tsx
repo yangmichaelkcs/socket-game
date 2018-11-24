@@ -3,23 +3,33 @@ import { connect } from "react-redux";
 import { getGameId, getPlayerCount, getPlayers } from "selectors";
 import StartButton from "./StartButton";
 import { Player } from "types/types";
+import { updateNickName } from "socket";
 
-interface LobbyStateProps {
+interface LobbyPropsFromState {
   gameId: string;
   playerCount: number;
   playerListItems: any;
 }
 
-class Lobby extends React.Component<LobbyStateProps> {
+interface LobbyState {
+  value: string;
+}
+
+class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
   constructor(props) {
     super(props);
-    this.state = { value: "" };
+    this.state = { value: "asdf" };
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   public handleChange(event) {
     this.setState({ value: event.target.value });
+  }
+
+  public handleClick() {
+    updateNickName(this.state.value);
   }
 
   public render() {
@@ -29,6 +39,12 @@ class Lobby extends React.Component<LobbyStateProps> {
         <h2>Game ID: {gameId}</h2>
         <h2> {playerCount} players have connected </h2>
         <ul>{playerListItems}</ul>
+        <input
+          type="text"
+          value={this.state.value}
+          onChange={this.handleChange}
+        />
+        <button onClick={this.handleClick}>Update Nickname</button>
         <StartButton />
       </div>
     );

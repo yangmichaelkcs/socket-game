@@ -22,10 +22,10 @@ function getRandomWord() {
   return capitalizeFirstLetter(randomWord());
 }
 
-function getGameIdBySocket(socket) {
+const getGameIdBySocket = socket => {
   const rooms = Object.keys(socket && socket.rooms);
   return rooms && rooms[rooms.length - 1];
-}
+};
 
 const getGameBySocket = socket => {
   return getGameById(getGameIdBySocket(socket));
@@ -39,7 +39,7 @@ function getPlayerCount(gameId) {
   return Object.keys(gamesById[gameId].players).length;
 }
 
-function createNewGame() {
+const createNewGame = () => {
   const id = getRandomWord() + getRandomWord() + getRandomWord();
   const game = {
     players: [],
@@ -51,17 +51,27 @@ function createNewGame() {
   };
   gamesById[id] = game;
   return id;
-}
+};
 
-function addPlayerToGame(gameId, socketId, socket) {
+const addPlayerToGame = (gameId, socket) => {
   const player: Player = {
-    socketId,
+    socketId: socket.id,
     nickName: `Random ${getRandomWord()}`,
     role: "DETECTIVE USELESS"
   };
   socket.join(gameId);
-  gamesById[gameId].players.push(player);
-}
+  getGameById(gameId).players.push(player);
+};
+
+const getPlayerBySocket = socket => {
+  const game = getGameBySocket(socket);
+  return game.players.find(player => player.socketId === socket.id);
+};
+
+const updatePlayerName = (socket, nickName) => {
+  const player: Player = getPlayerBySocket(socket);
+  player.nickName = nickName;
+};
 
 const startGame = (gameId: string) => {
   const game: Game = gamesById[gameId];
@@ -121,7 +131,7 @@ io.on("connection", socket => {
   // Creates a new game with the player who made the game
   socket.on("NEW_GAME", () => {
     const gameId: string = createNewGame();
-    addPlayerToGame(gameId, socket.id, socket);
+    addPlayerToGame(gameId, socket);
     io.to(gameId).emit("JOINED_GAME", getGameById(gameId));
     socket.emit("SET_SOCKET_ID", socket.id);
 
@@ -132,7 +142,7 @@ io.on("connection", socket => {
   socket.on("JOIN_GAME", gameId => {
     const gameIds = Object.keys(gamesById);
     if (gameIds.includes(gameId)) {
-      addPlayerToGame(gameId, socket.id, socket);
+      addPlayerToGame(gameId, socket);
 
       io.to(gameId).emit("JOINED_GAME", getGameById(gameId));
       socket.emit("SET_SOCKET_ID", socket.id);
@@ -144,13 +154,19 @@ io.on("connection", socket => {
     }
   });
 
-  socket.on("START_GAME", function() {
+  socket.on("START_GAME", () => {
     const gameId = getGameIdBySocket(socket);
     if (gameId && gamesById[gameId]) {
       assignRoles(gameId);
       startGame(gameId);
       io.to(gameId).emit("GAME_STARTING", getGameById(gameId));
     }
+  });
+
+  socket.on("UPDATE_NICKNAME", (nickName: string) => {
+    updatePlayerName(socket, nickName);
+    const gameId = getGameIdBySocket(socket);
+    io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
 });
 

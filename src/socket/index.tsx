@@ -13,6 +13,10 @@ export class SocketListener {
       store.dispatch(setGameData(game));
     });
 
+    socket.on("UPDATE_GAME_STATE", game => {
+      store.dispatch(setGameData(game));
+    });
+
     socket.on("SET_SOCKET_ID", socketId => {
       store.dispatch(setSocketId(socketId));
     });
@@ -32,4 +36,8 @@ export const joinGame = gameId => {
 export const startGame = () => {
   console.log(`Client started game`);
   socket.emit("START_GAME");
+};
+
+export const updateNickName = (nickName: string) => {
+  socket.emit("UPDATE_NICKNAME", nickName);
 };
