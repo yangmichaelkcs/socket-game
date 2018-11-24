@@ -5,6 +5,7 @@ import {
   Player,
   TEAM,
   GAME_STATUS,
+  ROUND_STATUS,
   PLAYER_DISTRIBUTION
 } from "./src/types/types";
 
@@ -53,7 +54,11 @@ function createNewGame() {
 }
 
 function addPlayerToGame(gameId, socketId, socket) {
-  const player: Player = { socketId, role: "DETECTIVE USELESS" };
+  const player: Player = {
+    socketId,
+    nickName: `Random ${getRandomWord()}`,
+    role: "DETECTIVE USELESS"
+  };
   socket.join(gameId);
   gamesById[gameId].players.push(player);
 }
@@ -61,6 +66,7 @@ function addPlayerToGame(gameId, socketId, socket) {
 const startGame = (gameId: string) => {
   const game: Game = gamesById[gameId];
   game.status = GAME_STATUS.IN_PROGRESS;
+  game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
   game.players = shuffle(game.players);
   game.currentPlayerTurn = game.players[0].socketId;
   game.failedVotes = 0;
@@ -128,7 +134,7 @@ io.on("connection", socket => {
     if (gameIds.includes(gameId)) {
       addPlayerToGame(gameId, socket.id, socket);
 
-      io.to(gameId).emit("JOINED_GAME", gameId);
+      io.to(gameId).emit("JOINED_GAME", getGameById(gameId));
       socket.emit("SET_SOCKET_ID", socket.id);
 
       console.log(`${socket.id} joined a game with gameId: ${gameId}`);

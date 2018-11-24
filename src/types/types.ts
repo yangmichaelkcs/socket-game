@@ -4,6 +4,14 @@ export enum GAME_STATUS {
   END = "END"
 }
 
+export enum ROUND_STATUS {
+  PROPOSING_TEAM = "PROPOSING_TEAM", // Player turn proposes a team composition
+  VOTING_TEAM = "VOTING_TEAM", // All players vote on proposed team
+  VOTING_END = "VOTING_END", // All players view results of the team vote
+  MISSION_IN_PROGRESS = "MISSION_IN_PROGRESS", // Team passes or fails mission
+  MISSION_END = "MISSION_END" // Everyone views results of mission
+}
+
 export enum TEAM {
   GOOD = "GOOD",
   BAD = "BAD"
@@ -25,6 +33,7 @@ export interface Game {
   id: string;
   players: Player[];
   status?: GAME_STATUS;
+  roundStatus?: ROUND_STATUS;
   currentRound: number;
   score: number[];
   failedVotes: number;

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { navigateTo } from "../../../actions";
 import { joinGame } from "socket";
 
 class JoinButton extends Component {
@@ -18,7 +17,6 @@ class JoinButton extends Component {
 
   handleClick() {
     joinGame(this.state.value);
-    this.props.navigateToLobby();
   }
 
   render() {
@@ -35,11 +33,7 @@ class JoinButton extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  navigateToLobby: () => {
-    dispatch(navigateTo("lobby"));
-  }
-});
+const mapDispatchToProps = dispatch => ({});
 
 export default connect(
   undefined,

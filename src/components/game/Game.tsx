@@ -5,8 +5,14 @@ import VoteButtons from "./VoteButtons";
 import AllRounds from "./AllRounds";
 import RoundInfo from "./RoundInfo/RoundInfo";
 import PlayerList from "./PlayerList/PlayerList";
+import { getPlayerDataById, getCurrentPlayerTurn } from "selectors";
+import { Player } from "types/types";
 
-class Game extends React.Component<any, any> {
+interface GameStateProps {
+  curentPlayerTurn: Player;
+}
+
+class Game extends React.Component<GameStateProps, any> {
   constructor(props) {
     super(props);
     this.state = {
@@ -19,51 +25,88 @@ class Game extends React.Component<any, any> {
       ],
       // TEMP Variables to test, FIXME
       players: [
-        { socketId: 1, nickName: "Mikey", team: "blue", role: "nothing", selected: 0 },
-        { socketId: 2, nickName: "Ming", team: "blue", role: "nothing", selected: 0 },
-        { socketId: 3, nickName: "Roo", team: "red", role: "nothing", selected: 0 },
-        { socketId: 4, nickName: "Sab", team: "red", role: "nothing", selected: 0 },
-        { socketId: 5, nickName: "Kev", team: "blue", role: "nothing", selected: 0 },
-        { socketId: 6, nickName: "DVP", team: "blue", role: "nothing", selected: 0},
+        {
+          socketId: 1,
+          nickName: "Mikey",
+          team: "blue",
+          role: "nothing",
+          selected: 0
+        },
+        {
+          socketId: 2,
+          nickName: "Ming",
+          team: "blue",
+          role: "nothing",
+          selected: 0
+        },
+        {
+          socketId: 3,
+          nickName: "Roo",
+          team: "red",
+          role: "nothing",
+          selected: 0
+        },
+        {
+          socketId: 4,
+          nickName: "Sab",
+          team: "red",
+          role: "nothing",
+          selected: 0
+        },
+        {
+          socketId: 5,
+          nickName: "Kev",
+          team: "blue",
+          role: "nothing",
+          selected: 0
+        },
+        {
+          socketId: 6,
+          nickName: "DVP",
+          team: "blue",
+          role: "nothing",
+          selected: 0
+        }
       ],
       currentRound: 1
     };
   }
-  
+
   // Need to add limit on how many players can be selected, FIXME
   public onPlayerClick = player => {
     const players = [...this.state.players];
     const index = players.indexOf(player);
-    players[index] = {...player };
-    if(players[index].selected === 0)
-    {
+    players[index] = { ...player };
+    if (players[index].selected === 0) {
       players[index].selected = 1;
-    }
-    else
-    {
+    } else {
       players[index].selected = 0;
-    }    
-    this.setState({players});
-  }
+    }
+    this.setState({ players });
+  };
 
   // Change Turn to pick a team and Pick Players strings to state.variable, FIXME
   public render() {
+    const { curentPlayerTurn } = this.props;
     return (
       <div className="Game">
         <RoundInfo currentRound={this.state.currentRound} />
         <RoleButton />
-        <h2>X's turn to pick a team</h2>
-        <p>
-            Pick ___ players, ___ failures need for spies 
-        </p>  
+        <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
+        <p>Pick ___ players, ___ failures need for spies</p>
         <AllRounds rounds={this.state.rounds} />
-        <PlayerList players={this.state.players} onPlayerClick = {this.onPlayerClick}/>
+        <PlayerList
+          players={this.state.players}
+          onPlayerClick={this.onPlayerClick}
+        />
         <VoteButtons />
       </div>
     );
   }
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  curentPlayerTurn: getPlayerDataById(state, getCurrentPlayerTurn(state))
+});
 
 export default connect(mapStateToProps)(Game);
