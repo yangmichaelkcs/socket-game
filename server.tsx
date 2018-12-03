@@ -57,7 +57,8 @@ const addPlayerToGame = (gameId, socket) => {
   const player: Player = {
     socketId: socket.id,
     nickName: `Random ${getRandomWord()}`,
-    role: "DETECTIVE USELESS"
+    role: "DETECTIVE USELESS",
+    selected: 0
   };
   socket.join(gameId);
   getGameById(gameId).players.push(player);

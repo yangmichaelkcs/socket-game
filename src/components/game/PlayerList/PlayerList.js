@@ -13,7 +13,7 @@ class PlayerList extends Component{
           {this.props.players.map(player => (
             <li className = "PlayerName" key = {player.socketId}>
               <span>
-                {player.nickName}
+                {player.nickName.substring(0,7)}
               </span>
             </li>
           ))}
