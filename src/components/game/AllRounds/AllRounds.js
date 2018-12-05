@@ -12,7 +12,7 @@ class AllRounds extends Component {
               key={round.id}
               value={round.value}
               roundNumber={round.id}
-              membersRequired={3} 
+              membersRequired={round.playersNeeded} 
             />
           ))}
           <h3 style={{margin:"0"}}>

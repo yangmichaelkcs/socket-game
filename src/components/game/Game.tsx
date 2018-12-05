@@ -5,12 +5,14 @@ import VoteButtons from "./VoteButtons";
 import AllRounds from "./AllRounds";
 import RoundInfo from "./RoundInfo/RoundInfo";
 import PlayerList from "./PlayerList/PlayerList";
-import { getPlayerDataById, getCurrentPlayerTurn, getPlayers } from "selectors";
+import { getGameId, getPlayerDataById, getCurrentPlayerTurn, getPlayers, getCurrentRound } from "selectors";
 import { Player } from "types/types";
+import { pickPlayer } from "socket"
 
 interface GameStateProps {
   curentPlayerTurn: Player;
   players: Player[];
+  currentRound: number;
 }
 
 class Game extends React.Component<GameStateProps, any> {
@@ -25,40 +27,38 @@ class Game extends React.Component<GameStateProps, any> {
         { id: 4, value: null, playersNeeded: 2 },
         { id: 5, value: null, playersNeeded: 2 }
       ],
-      players: this.props.players,
-      // FIXME, use props for current round
-      currentRound: 1,
+      players: this.props.players
     };
   }
 
-  public onPlayerClick = player => {
-    const players = [...this.state.players];
-    const index = players.indexOf(player);
+  public onPlayerClick = socketId => {
+    const {players} = this.props;
+    const playerPicked = players.find(player => player.socketId === socketId )
     let numPlayers = 0;
     players.forEach(p => p.selected ? numPlayers++ : 0)
-    players[index] = { ...player };
-    const pNeeded = this.state.rounds[this.state.currentRound].playersNeeded;
-    if (players[index].selected === 0 && numPlayers < pNeeded ) 
+    const pNeeded = this.state.rounds[this.props.currentRound].playersNeeded;
+    if(numPlayers < pNeeded && playerPicked!.selected === 0) 
     {
-      players[index].selected = 1;
-    } 
-    else {
-      players[index].selected = 0;
+      pickPlayer(socketId,1); 
+    }  
+    else
+    {
+      pickPlayer(socketId,0);
     }
-    this.setState({ players });
   };
 
   public render() {
-    const { curentPlayerTurn } = this.props;
+    const { curentPlayerTurn, players, currentRound } = this.props;
+    const playersNeeded = (this.state.rounds.find(round => round.id === currentRound)).playersNeeded;
     return (
       <div className="Game">
-        <RoundInfo currentRound={this.state.currentRound} />
+        <RoundInfo currentRound={currentRound} />
         <RoleButton />
         <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
-        <p>Pick ___ players, ___ failures need for spies</p>
+        <p>Pick {playersNeeded}  players, ___ failures need for spies</p>
         <AllRounds rounds={this.state.rounds} />
         <PlayerList
-          players={this.state.players}
+          players={players}
           onPlayerClick={this.onPlayerClick}
         />
         <VoteButtons />
@@ -67,9 +67,17 @@ class Game extends React.Component<GameStateProps, any> {
   }
 }
 
-const mapStateToProps = state => ({
-  curentPlayerTurn: getPlayerDataById(state, getCurrentPlayerTurn(state)),
-  players: getPlayers(state)
-});
+const mapStateToProps = state => {
+  const curentPlayerTurn: Player = getPlayerDataById(state, getCurrentPlayerTurn(state));
+  const players: Player[] = getPlayers(state);
+  const currentRound: number = getCurrentRound(state);
+
+  return {
+    gameId: getGameId(state),
+    curentPlayerTurn,
+    players,
+    currentRound
+  };
+};
 
 export default connect(mapStateToProps)(Game);

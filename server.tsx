@@ -74,6 +74,16 @@ const updatePlayerName = (socket, nickName) => {
   player.nickName = nickName;
 };
 
+const updatePlayerSelected = (socket, socketId, selected) => {
+  const player: Player = getPlayerBySocket(socket);
+  const currentPlayerTurnId = getGameBySocket(socket).currentPlayerTurn;
+  if(player.socketId === currentPlayerTurnId)
+  {
+    const playerSelected = getGameBySocket(socket).players.find(player => player.socketId === socketId);
+    playerSelected.selected = selected;
+  }
+};
+
 const startGame = (gameId: string) => {
   const game: Game = gamesById[gameId];
   game.status = GAME_STATUS.IN_PROGRESS;
@@ -166,6 +176,12 @@ io.on("connection", socket => {
 
   socket.on("UPDATE_NICKNAME", (nickName: string) => {
     updatePlayerName(socket, nickName);
+    const gameId = getGameIdBySocket(socket);
+    io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+  });
+
+  socket.on("PICK_PLAYER", (socketId: string, selected: number) => {
+    updatePlayerSelected(socket, socketId, selected);
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
