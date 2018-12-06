@@ -21,7 +21,7 @@ class VoteButtons extends Component{
 
   render() {
       return (
-        <div>
+        <div style={{ marginBottom: "2rem", marginTop: "1rem"}}>
           <button
             onClick={this.handleApprove}
             disabled={this.state.approve}

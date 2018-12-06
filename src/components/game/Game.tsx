@@ -5,7 +5,7 @@ import VoteButtons from "./VoteButtons";
 import AllRounds from "./AllRounds";
 import RoundInfo from "./RoundInfo/RoundInfo";
 import PlayerList from "./PlayerList/PlayerList";
-import { getGameId, getPlayerDataById, getCurrentPlayerTurn, getPlayers, getCurrentRound } from "selectors";
+import { getGameId, getPlayerDataById, getCurrentPlayerTurn, getPlayers, getCurrentRound, getPlayerData } from "selectors";
 import { Player } from "types/types";
 import { pickPlayer } from "socket"
 
@@ -13,6 +13,7 @@ interface GameStateProps {
   curentPlayerTurn: Player;
   players: Player[];
   currentRound: number;
+  playerData: Player;
 }
 
 class Game extends React.Component<GameStateProps, any> {
@@ -27,7 +28,6 @@ class Game extends React.Component<GameStateProps, any> {
         { id: 4, value: null, playersNeeded: 2 },
         { id: 5, value: null, playersNeeded: 2 }
       ],
-      players: this.props.players
     };
   }
 
@@ -48,8 +48,9 @@ class Game extends React.Component<GameStateProps, any> {
   };
 
   public render() {
-    const { curentPlayerTurn, players, currentRound } = this.props;
-    const playersNeeded = (this.state.rounds.find(round => round.id === currentRound)).playersNeeded;
+    const { curentPlayerTurn, players, currentRound, playerData } = this.props;
+    const playersNeeded = this.state.rounds.find(round => round.id === currentRound).playersNeeded;
+    const isCurrentPlayer = playerData.socketId === curentPlayerTurn.socketId;
     return (
       <div className="Game">
         <RoundInfo currentRound={currentRound} />
@@ -60,6 +61,7 @@ class Game extends React.Component<GameStateProps, any> {
         <PlayerList
           players={players}
           onPlayerClick={this.onPlayerClick}
+          turnToPick={isCurrentPlayer}
         />
         <VoteButtons />
       </div>
@@ -71,12 +73,14 @@ const mapStateToProps = state => {
   const curentPlayerTurn: Player = getPlayerDataById(state, getCurrentPlayerTurn(state));
   const players: Player[] = getPlayers(state);
   const currentRound: number = getCurrentRound(state);
+  const playerData: Player = getPlayerData(state)
 
   return {
     gameId: getGameId(state),
     curentPlayerTurn,
     players,
-    currentRound
+    currentRound,
+    playerData
   };
 };
 

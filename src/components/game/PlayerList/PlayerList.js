@@ -3,6 +3,15 @@ import Player from "../Player";
 
 class PlayerList extends Component{
 
+  showProposeButton() {
+    if(this.props.turnToPick)
+    {
+      return (<button style={{marginBottom:"1rem", width:"100px", height:"50px"}} >
+                Propose Team
+              </button>);
+    }
+  }
+
   render(){
     return (
       <div className = "PlayerList">
@@ -18,11 +27,12 @@ class PlayerList extends Component{
             </li>
           ))}
         </ul>
-        <ul style ={{listStyle: "none", whiteSpace: "nowrap", paddingLeft: "0", alignItems: "center", marginTop: "0", marginBottom: "2rem"}}>
+        <ul style ={{listStyle: "none", whiteSpace: "nowrap", paddingLeft: "0", alignItems: "center", marginTop: "0", marginBottom: "1rem"}}>
           {this.props.players.map(player => (
             <Player key = {player.socketId} player = {player} onPlayerClick = {this.props.onPlayerClick} />
           ))}
         </ul>
+        {this.showProposeButton()}
       </div>
     );
   }
