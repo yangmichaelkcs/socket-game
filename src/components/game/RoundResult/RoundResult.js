@@ -82,11 +82,37 @@ class RoundResult extends Component {
           Round Results:
         </h2>
           <div>
-            <SingleResult id={1} value={this.props.votes[0]} onComponentDidMount={this.displaySecond} />
-            {this.renderResult(2) && this.state.displaySecond && <SingleResult id={2} value={this.props.votes[1]} onComponentDidMount={this.displayThird} />}
-            {this.renderResult(3) && this.state.displayThird && <SingleResult id={3} value={this.props.votes[2]} onComponentDidMount={this.displayFourth} />}
-            {this.renderResult(4) && this.state.displayFourth && <SingleResult id={4} value={this.props.votes[3]} onComponentDidMount={this.displayFifth} />}
-            {this.renderResult(5) && this.state.displayFifth && <SingleResult id={5} value={this.props.votes[4]} />}
+            <SingleResult id={1} 
+              value={this.props.votes[0]} 
+              onComponentDidMount={this.displaySecond} 
+            />
+            {this.renderResult(2) && this.state.displaySecond && 
+              <SingleResult 
+                id={2} 
+                value={this.props.votes[1]} 
+                onComponentDidMount={this.displayThird} 
+              />
+            }
+            {this.renderResult(3) && this.state.displayThird && 
+              <SingleResult 
+                id={3} 
+                value={this.props.votes[2]} 
+                onComponentDidMount={this.displayFourth} 
+              />
+            }
+            {this.renderResult(4) && this.state.displayFourth && 
+              <SingleResult 
+                id={4} 
+                value={this.props.votes[3]} 
+                onComponentDidMount={this.displayFifth} 
+              />
+            }
+            {this.renderResult(5) && this.state.displayFifth && 
+              <SingleResult 
+                id={5} 
+                value={this.props.votes[4]} 
+              />
+            }
           </div>
       </div>
     );
