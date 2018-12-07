@@ -5,8 +5,9 @@ import VoteButtons from "./VoteButtons";
 import AllRounds from "./AllRounds";
 import RoundInfo from "./RoundInfo/RoundInfo";
 import PlayerList from "./PlayerList/PlayerList";
+import RoundResult from "./RoundResult/RoundResult";
 import { getGameId, getPlayerDataById, getCurrentPlayerTurn, getPlayers, getCurrentRound, getPlayerData } from "selectors";
-import { Player } from "types/types";
+import { Player, ROUND_STATUS } from "types/types";
 import { pickPlayer } from "socket"
 
 interface GameStateProps {
@@ -20,15 +21,46 @@ class Game extends React.Component<GameStateProps, any> {
   constructor(props) {
     super(props);
     this.state = {
-      // FIXME, use props for rounds
+      // FIXME, use props for these states below
       rounds: [
-        { id: 1, value: null, playersNeeded: 2 },
+        { id: 1, value: null, playersNeeded: 5 },
         { id: 2, value: null, playersNeeded: 2 },
         { id: 3, value: null, playersNeeded: 2 },
         { id: 4, value: null, playersNeeded: 2 },
         { id: 5, value: null, playersNeeded: 2 }
       ],
+      roundStatus: ROUND_STATUS.MISSION_END,
+      failedVotes: 1
     };
+  }
+  
+  // Shuffle makes different for every player, need to shuffle in server and pass as prop?, FIXME
+  public voteShuffle() {
+    const { roundStatus, failedVotes } = this.state;
+    const playersNeeded = this.state.rounds.find(round => round.id === this.props.currentRound).playersNeeded;
+    const votes: string[] = [];
+    for(let k = 0; k < playersNeeded; k++)
+    {
+      votes[k] = "?"
+    }
+    if(roundStatus === ROUND_STATUS.MISSION_END)
+    {
+      for(let j = 0; j < failedVotes; j++)
+      {
+        votes[j] = "F";
+      }
+      for(let i = failedVotes; i < playersNeeded; i++)
+      {
+        votes[i] = "P";
+      }
+      for (let m = votes.length -1; m > 0; m--) {
+        const n = Math.floor(Math.random() * (m + 1));
+        const temp = votes[m];
+        votes[m] = votes[n];
+        votes[n] = temp;
+      }
+    }
+    return votes;
   }
 
   public onPlayerClick = socketId => {
@@ -51,6 +83,7 @@ class Game extends React.Component<GameStateProps, any> {
     const { curentPlayerTurn, players, currentRound, playerData } = this.props;
     const playersNeeded = this.state.rounds.find(round => round.id === currentRound).playersNeeded;
     const isCurrentPlayer = playerData.socketId === curentPlayerTurn.socketId;
+    const votes = this.voteShuffle();
     return (
       <div className="Game">
         <RoundInfo currentRound={currentRound} />
@@ -62,6 +95,12 @@ class Game extends React.Component<GameStateProps, any> {
           players={players}
           onPlayerClick={this.onPlayerClick}
           turnToPick={isCurrentPlayer}
+        />
+        <RoundResult 
+          playersNeeded = {playersNeeded}
+          roundStatus = {this.state.roundStatus} 
+          failedVotes = {this.state.failedVotes}
+          votes = {votes}
         />
         <VoteButtons />
       </div>

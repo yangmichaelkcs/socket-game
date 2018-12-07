@@ -88,6 +88,15 @@
   border-bottom: 1px solid #000;
 }
 
+.singleResult{
+  width: 2rem;
+  height: 3rem;
+  text-align: center;
+  justify-content: center;
+  display:inline-block;
+  font-size:1.5em;
+}
+
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 80px;
