@@ -6,7 +6,7 @@ import AllRounds from "./AllRounds";
 import RoundInfo from "./RoundInfo/RoundInfo";
 import PlayerList from "./PlayerList/PlayerList";
 import RoundResult from "./RoundResult/RoundResult";
-import { getGameId, getPlayerDataById, getCurrentPlayerTurn, getPlayers, getCurrentRound, getPlayerData } from "selectors";
+import { getPlayerDataById, getCurrentPlayerTurn, getPlayers, getCurrentRound, getPlayerData } from "selectors";
 import { Player, ROUND_STATUS } from "types/types";
 import { pickPlayer } from "socket"
 
@@ -23,13 +23,13 @@ class Game extends React.Component<GameStateProps, any> {
     this.state = {
       // FIXME, use props for these states below
       rounds: [
-        { id: 1, value: null, playersNeeded: 5 },
+        { id: 1, value: null, playersNeeded: 1 },
         { id: 2, value: null, playersNeeded: 2 },
         { id: 3, value: null, playersNeeded: 2 },
         { id: 4, value: null, playersNeeded: 2 },
         { id: 5, value: null, playersNeeded: 2 }
       ],
-      roundStatus: ROUND_STATUS.MISSION_END,
+      roundStatus: ROUND_STATUS.PROPOSING_TEAM,
       failedVotes: 1
     };
   }
@@ -37,7 +37,7 @@ class Game extends React.Component<GameStateProps, any> {
   // Shuffle makes different for every player, need to shuffle in server and pass as prop?, FIXME
   public voteShuffle() {
     const { roundStatus, failedVotes } = this.state;
-    const playersNeeded = this.state.rounds.find(round => round.id === this.props.currentRound).playersNeeded;
+    const playersNeeded = this.state.rounds[this.props.currentRound-1].playersNeeded;
     const votes: string[] = [];
     for(let k = 0; k < playersNeeded; k++)
     {
@@ -63,26 +63,30 @@ class Game extends React.Component<GameStateProps, any> {
     return votes;
   }
 
+  // FIXME, change state to props
   public onPlayerClick = socketId => {
-    const {players} = this.props;
-    const playerPicked = players.find(player => player.socketId === socketId )
-    let numPlayers = 0;
-    players.forEach(p => p.selected ? numPlayers++ : 0)
-    const pNeeded = this.state.rounds[this.props.currentRound].playersNeeded;
-    if(numPlayers < pNeeded && playerPicked!.selected === 0) 
+    if(this.props.playerData.socketId === this.props.curentPlayerTurn.socketId && this.state.roundStatus === ROUND_STATUS.PROPOSING_TEAM)
     {
-      pickPlayer(socketId,1); 
-    }  
-    else
-    {
-      pickPlayer(socketId,0);
+      const {players} = this.props;
+      const playerPicked = players.find(player => player.socketId === socketId )
+      let numPlayers = 0;
+      players.forEach(p => p.selected ? numPlayers++ : 0)
+      const pNeeded = this.state.rounds[this.props.currentRound-1].playersNeeded;
+      if(numPlayers < pNeeded && playerPicked!.selected === 0) 
+      {
+        pickPlayer(socketId,1); 
+      }    
+      else
+      {
+        pickPlayer(socketId,0);
+      }
     }
   };
 
+  // Change this.state into props, FIXME
   public render() {
     const { curentPlayerTurn, players, currentRound, playerData } = this.props;
-    const playersNeeded = this.state.rounds.find(round => round.id === currentRound).playersNeeded;
-    const isCurrentPlayer = playerData.socketId === curentPlayerTurn.socketId;
+    const playersNeeded = this.state.rounds[currentRound-1].playersNeeded;
     const votes = this.voteShuffle();
     return (
       <div className="Game">
@@ -94,7 +98,7 @@ class Game extends React.Component<GameStateProps, any> {
         <PlayerList
           players={players}
           onPlayerClick={this.onPlayerClick}
-          turnToPick={isCurrentPlayer}
+          turnToPick={playerData.socketId === curentPlayerTurn.socketId && this.state.roundStatus === ROUND_STATUS.PROPOSING_TEAM}
         />
         <RoundResult 
           playersNeeded = {playersNeeded}
@@ -115,7 +119,6 @@ const mapStateToProps = state => {
   const playerData: Player = getPlayerData(state)
 
   return {
-    gameId: getGameId(state),
     curentPlayerTurn,
     players,
     currentRound,

@@ -75,13 +75,8 @@ const updatePlayerName = (socket, nickName) => {
 };
 
 const updatePlayerSelected = (socket, socketId, selected) => {
-  const player: Player = getPlayerBySocket(socket);
-  const currentPlayerTurnId = getGameBySocket(socket).currentPlayerTurn;
-  if(player.socketId === currentPlayerTurnId)
-  {
-    const playerSelected = getGameBySocket(socket).players.find(player => player.socketId === socketId);
-    playerSelected.selected = selected;
-  }
+  const playerSelected = getGameBySocket(socket).players.find(player => player.socketId === socketId);
+  playerSelected.selected = selected;
 };
 
 const startGame = (gameId: string) => {
