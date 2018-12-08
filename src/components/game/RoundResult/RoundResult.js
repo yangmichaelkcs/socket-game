@@ -74,8 +74,6 @@ class RoundResult extends Component {
   }
 
   render(){
-    const { playersNeeded, roundStatus, failedVotes } = this.props;
-
     return (
       <div>
         <h2>

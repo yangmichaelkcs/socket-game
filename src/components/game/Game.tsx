@@ -23,13 +23,13 @@ class Game extends React.Component<GameStateProps, any> {
     this.state = {
       // FIXME, use props for these states below
       rounds: [
-        { id: 1, value: null, playersNeeded: 1 },
+        { id: 1, value: null, playersNeeded: 3 },
         { id: 2, value: null, playersNeeded: 2 },
         { id: 3, value: null, playersNeeded: 2 },
         { id: 4, value: null, playersNeeded: 2 },
         { id: 5, value: null, playersNeeded: 2 }
       ],
-      roundStatus: ROUND_STATUS.PROPOSING_TEAM,
+      roundStatus: ROUND_STATUS.MISSION_END,
       failedVotes: 1
     };
   }
@@ -103,7 +103,6 @@ class Game extends React.Component<GameStateProps, any> {
         <RoundResult 
           playersNeeded = {playersNeeded}
           roundStatus = {this.state.roundStatus} 
-          failedVotes = {this.state.failedVotes}
           votes = {votes}
         />
         <VoteButtons />
