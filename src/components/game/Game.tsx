@@ -29,7 +29,7 @@ class Game extends React.Component<GameStateProps, any> {
         { id: 4, value: null, playersNeeded: 2 },
         { id: 5, value: null, playersNeeded: 2 }
       ],
-      roundStatus: ROUND_STATUS.MISSION_END,
+      roundStatus: ROUND_STATUS.PROPOSING_TEAM,
       failedVotes: 1
     };
   }

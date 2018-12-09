@@ -17,6 +17,14 @@ class PlayerList extends Component{
       <div className = "PlayerList">
         <h3 style ={{marginTop: "1rem"}}>
           Proposed Team:
+          <div className = "ColorCode" style = {{backgroundColor: "rgb(15, 132, 228)"}} />
+          <span>
+            Selected
+          </span>
+          <div className = "ColorCode" style = {{backgroundColor: "#FFF"}} />
+          <span>
+            Not Selected
+          </span>
         </h3>
         <ul style ={{listStyle: "none", whiteSpace: "nowrap", padding: "0", alignItems: "center", margin: "0"}}>
           {this.props.players.map(player => (
