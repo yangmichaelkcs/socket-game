@@ -57,7 +57,8 @@ const addPlayerToGame = (gameId, socket) => {
   const player: Player = {
     socketId: socket.id,
     nickName: `Random ${getRandomWord()}`,
-    role: "DETECTIVE USELESS"
+    role: "DETECTIVE USELESS",
+    selected: 0
   };
   socket.join(gameId);
   getGameById(gameId).players.push(player);
@@ -71,6 +72,11 @@ const getPlayerBySocket = socket => {
 const updatePlayerName = (socket, nickName) => {
   const player: Player = getPlayerBySocket(socket);
   player.nickName = nickName;
+};
+
+const updatePlayerSelected = (socket, socketId, selected) => {
+  const playerSelected = getGameBySocket(socket).players.find(player => player.socketId === socketId);
+  playerSelected.selected = selected;
 };
 
 const startGame = (gameId: string) => {
@@ -165,6 +171,12 @@ io.on("connection", socket => {
 
   socket.on("UPDATE_NICKNAME", (nickName: string) => {
     updatePlayerName(socket, nickName);
+    const gameId = getGameIdBySocket(socket);
+    io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+  });
+
+  socket.on("PICK_PLAYER", (socketId: string, selected: number) => {
+    updatePlayerSelected(socket, socketId, selected);
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });

@@ -4,24 +4,24 @@ class VoteButtons extends Component{
   constructor(props) {
     super(props);
     this.state = { 
-        approve: false,
-        reject: false
+      approve: false,
+      reject: false
     };
       this.handleApprove = this.handleApprove.bind(this);
       this.handleReject = this.handleReject.bind(this);
   }
 
-  handleApprove () {
+  handleApprove() {
     this.setState({approve: true, reject: false});
   }    
 
-  handleReject () {
+  handleReject() {
     this.setState({reject: true, approve: false});
   }    
 
   render() {
       return (
-        <div>
+        <div style={{ marginBottom: "2rem", marginTop: "1rem"}}>
           <button
             onClick={this.handleApprove}
             disabled={this.state.approve}
@@ -40,6 +40,5 @@ class VoteButtons extends Component{
     );
   }
 }
-
 
 export default VoteButtons;

@@ -41,3 +41,7 @@ export const startGame = () => {
 export const updateNickName = (nickName: string) => {
   socket.emit("UPDATE_NICKNAME", nickName);
 };
+
+export const pickPlayer = (socketId: string, selected: number) => {
+  socket.emit("PICK_PLAYER", socketId, selected);
+}

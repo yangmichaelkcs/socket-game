@@ -45,4 +45,5 @@ export interface Player {
   nickName?: string;
   team?: TEAM;
   role?: string;
+  selected?: number;
 }

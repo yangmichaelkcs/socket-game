@@ -7,6 +7,16 @@
   justify-content: center;
 }
 
+.ColorCode{
+  display: inline-block;
+  height: 1rem;
+  width: 1rem;
+  border: 1px solid rgb(106, 122, 129);
+  margin-left: 1rem;
+  vertical-align: text-top;
+  margin-right: 3px;
+}
+
 .Game{
   padding-left: calc(30% - 190px);
   padding-right: calc(30% - 190px);
@@ -52,15 +62,15 @@
 }
 
 .PlayerUnclicked{
-  background-color: rgb(15, 132, 228);
+  background-color: #FFF;
   display: inline-block;
   width: 5%;
   padding-top: 1.5%;
   padding-bottom: 1.5%;
   border-radius: 50%;
-  border: solid 5px rgb(15, 132, 228);
+  border: solid 3px rgb(106, 122, 129);
   transition: all .1s ease-out;
-  color: #FFF;
+  color: #000;
   margin-left: 1rem;
   margin-right: 1rem;
   margin-top: 0;
@@ -68,13 +78,13 @@
 }
 
 .PlayerClicked{
-  background-color: rgb(8, 143, 64);
+  background-color: rgb(15, 132, 228);
   display: inline-block;
   width: 5%;
   padding-top: 1.5%;
   padding-bottom: 1.5%;
   border-radius: 50%;
-  border: solid 5px rgb(8, 143, 64);
+  border: solid 3px rgb(106, 122, 129);
   transition: all .1s ease-out;
   color: #FFF;
   margin-left: 1rem;
@@ -86,6 +96,15 @@
 .PlayerList,
 .Round{
   border-bottom: 1px solid #000;
+}
+
+.singleResult{
+  width: 2rem;
+  height: 3rem;
+  text-align: center;
+  justify-content: center;
+  display:inline-block;
+  font-size:1.5em;
 }
 
 .App-logo {

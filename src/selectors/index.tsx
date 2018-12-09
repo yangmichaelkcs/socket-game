@@ -15,3 +15,4 @@ export const getPlayerDataById = (state, socketId): Player => {
   return players.find(player => player.socketId === socketId);
 };
 export const getCurrentPlayerTurn = state => state.game.currentPlayerTurn;
+export const getCurrentRound = state => state.game.currentRound;

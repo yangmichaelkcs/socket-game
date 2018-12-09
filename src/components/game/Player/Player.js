@@ -9,7 +9,7 @@ class Player extends Component{
 
   render(){
       return (
-        <li className = {this.getPlayerClasses()} onClick = {() => this.props.onPlayerClick(this.props.player)}>
+        <li className = {this.getPlayerClasses()} onClick = {() => this.props.onPlayerClick(this.props.player.socketId)}>
           <span>
             {this.props.player.nickName.substring(0,1)}
           </span>
