@@ -16,8 +16,24 @@ class StartGame extends React.Component<any, any> {
       default:
         return (
           <div className="StartGame">
+            <div style={{marginBottom: "2rem", textAlign:"center"}}>
+              <h1 style={{borderBottom: "1px solid #000"}}>
+                Avalon
+              </h1>
+              <p>
+                Welcome to Avalon. Evil Mordred and his minions  
+                <br />
+                have infiltrated the kingdom of Avalon. It is up 
+                <br />
+                to the knights to defeat Mordred. Deduce who is  
+                <br />
+                friend and who is foe and win  3 rounds to claim victory.               
+              </p>
+            </div>
             <StartButton />
+            <br />
             <div>OR</div>
+            <br />
             <JoinButton />
           </div>
         );

@@ -18,7 +18,7 @@ interface LobbyState {
 class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
   constructor(props) {
     super(props);
-    this.state = { value: "asdf" };
+    this.state = { value: "" };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -29,7 +29,10 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
   }
 
   public handleClick() {
-    updateNickName(this.state.value);
+    if(this.state.value.length >=1)
+    {
+      updateNickName(this.state.value);
+    }
   }
 
   public render() {
@@ -39,12 +42,17 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
         <h2>Game ID: {gameId}</h2>
         <h2> {playerCount} players have connected </h2>
         <ul>{playerListItems}</ul>
-        <input
-          type="text"
-          value={this.state.value}
-          onChange={this.handleChange}
-        />
-        <button onClick={this.handleClick}>Update Nickname</button>
+        <div>
+          <input
+            type="text"
+            value={this.state.value}
+            onChange={this.handleChange}
+            placeholder="Nickname(1-10 letters)"
+            maxLength={10}
+          />
+          <button onClick={this.handleClick}>Update Nickname</button>
+        </div>
+        <br />
         <StartButton />
       </div>
     );
