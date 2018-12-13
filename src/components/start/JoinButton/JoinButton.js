@@ -26,6 +26,7 @@ class JoinButton extends Component {
           type="text"
           value={this.state.value}
           onChange={this.handleChange}
+          placeholder="Game ID"
         />
         <button onClick={this.handleClick}>Join Game</button>
       </div>
