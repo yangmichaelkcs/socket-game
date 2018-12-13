@@ -9,6 +9,7 @@ class MenuButton extends Component {
   }
 }
 
+// FIXME, make this disconnect this user from game
 const mapDispatchToProps = dispatch => ({
 });
 
