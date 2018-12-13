@@ -1,22 +1,18 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { navigateTo } from "../../../actions";
-import { startGame } from "socket";
 
-class StartButton extends Component {
+class MenuButton extends Component {
   render() {
     const { onClick } = this.props;
-    return <button style={{margin:"1rem"}} onClick={onClick}>Start</button>;
+    return <button style={{margin:"1rem"}} onClick={onClick}>Main Menu</button>;
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  onClick: () => {
-    startGame();
-  }
 });
 
 export default connect(
   undefined,
   mapDispatchToProps
-)(StartButton);
+)(MenuButton);

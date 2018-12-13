@@ -1,14 +1,16 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { getGameId, getPlayerCount, getPlayers } from "selectors";
+import { getGameId, getPlayerCount, getPlayers, getPlayerData } from "selectors";
 import StartButton from "./StartButton";
 import { Player } from "types/types";
 import { updateNickName } from "socket";
+import MenuButton from './MenuButton';
 
 interface LobbyPropsFromState {
   gameId: string;
   playerCount: number;
   playerListItems: any;
+  playerData: Player;
 }
 
 interface LobbyState {
@@ -35,6 +37,17 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
     }
   }
 
+  public getNick() {
+    if(this.props.playerData === undefined)
+    {
+      return "Nickname";
+    }
+    else
+    {
+      return this.props.playerData.nickName;
+    }
+  }
+
   public render() {
     const { gameId, playerCount, playerListItems } = this.props;
     return (
@@ -42,18 +55,21 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
         <h2>Game ID: {gameId}</h2>
         <h2> {playerCount} players have connected </h2>
         <ul>{playerListItems}</ul>
+        <br />
         <div>
           <input
             type="text"
             value={this.state.value}
             onChange={this.handleChange}
-            placeholder="Nickname(1-10 letters)"
-            maxLength={10}
+            placeholder={this.getNick()}
           />
           <button onClick={this.handleClick}>Update Nickname</button>
         </div>
         <br />
-        <StartButton />
+        <div>
+          <StartButton />
+          <MenuButton />
+        </div>
       </div>
     );
   }
@@ -64,11 +80,13 @@ const mapStateToProps = state => {
   const playerListItems = playerList.map(player => (
     <li key={player.socketId}>{player.nickName}</li>
   ));
+  const playerData: Player = getPlayerData(state);
 
   return {
     gameId: getGameId(state),
     playerCount: getPlayerCount(state),
-    playerListItems
+    playerListItems,
+    playerData,
   };
 };
 

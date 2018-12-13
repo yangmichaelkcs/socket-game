@@ -115,13 +115,13 @@ const mapStateToProps = state => {
   const curentPlayerTurn: Player = getPlayerDataById(state, getCurrentPlayerTurn(state));
   const players: Player[] = getPlayers(state);
   const currentRound: number = getCurrentRound(state);
-  const playerData: Player = getPlayerData(state)
+  const playerData: Player = getPlayerData(state);
 
   return {
     curentPlayerTurn,
     players,
     currentRound,
-    playerData
+    playerData,
   };
 };
 
