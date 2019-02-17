@@ -29,6 +29,15 @@ export const PLAYER_DISTRIBUTION = {
   10: { good: 9, bad: 3 }
 };
 
+export interface RootState {
+  game: Game;
+  user: User;
+}
+
+export interface User {
+  socketId: string;
+}
+
 export interface Game {
   id: string;
   players: Player[];
@@ -38,6 +47,13 @@ export interface Game {
   score: number[];
   failedVotes: number;
   currentPlayerTurn: string;
+  rounds: Round[];
+}
+
+export interface Round {
+  id: number;
+  value: TEAM;
+  playersNeeded: number;
 }
 
 export interface Player {

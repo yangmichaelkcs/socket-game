@@ -47,7 +47,16 @@ const createNewGame = () => {
     id,
     failedVotes: 0,
     currentRound: 1,
-    score: []
+    score: [],
+    currentPlayerTurn: "",
+    rounds: [
+      { id: 1, value: null, playersNeeded: 3 },
+      { id: 2, value: null, playersNeeded: 2 },
+      { id: 3, value: null, playersNeeded: 2 },
+      { id: 4, value: null, playersNeeded: 2 },
+      { id: 5, value: null, playersNeeded: 2 }
+    ],
+    roundStatus: ROUND_STATUS.PROPOSING_TEAM
   };
   gamesById[id] = game;
   return id;
@@ -75,7 +84,16 @@ const updatePlayerName = (socket, nickName) => {
 };
 
 const updatePlayerSelected = (socket, socketId, selected) => {
-  const playerSelected = getGameBySocket(socket).players.find(player => player.socketId === socketId);
+  const playerSelected = getGameBySocket(socket).players.find(
+    player => player.socketId === socketId
+  );
+  playerSelected.selected = selected;
+};
+
+const updatePlayersSelected = (socket, socketId, selected) => {
+  const playerSelected = getGameBySocket(socket).players.find(
+    player => player.socketId === socketId
+  );
   playerSelected.selected = selected;
 };
 
