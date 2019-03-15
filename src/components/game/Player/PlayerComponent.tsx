@@ -53,9 +53,9 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
   public render() {
     const { player } = this.props;
     return (
-      <li className={this.getPlayerClasses()} onClick={this.onPlayerClick}>
-        <span>{player.nickName ? player.nickName.substring(0, 1) : ""}</span>
-      </li>
+      <div className={this.getPlayerClasses()} onClick={this.onPlayerClick}>
+        <span>{player.nickName ? player.nickName.charAt(0) : ""}</span>
+      </div>
     );
   }
 }

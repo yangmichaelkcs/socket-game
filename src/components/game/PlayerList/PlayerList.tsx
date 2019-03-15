@@ -5,25 +5,59 @@ import {
   getCurrentPlayerTurn,
   getPlayers,
   getCurrentRound,
-  getPlayerData
+  getPlayerData,
+  getRoundStatus
 } from "selectors";
 import { Player, ROUND_STATUS } from "types/types";
 import { connect } from "react-redux";
+import { proposeTeam } from "socket";
 
 interface PlayerListProps {
   players: Player[];
   turnToPick: Player;
+  roundStatus: ROUND_STATUS;
 }
 
 class PlayerList extends React.Component<any, any> {
-  public showProposeButton() {
-    if (this.props.turnToPick) {
+  public onProposeClick = () => {
+    proposeTeam();
+  };
+
+  public onAccept = () => {
+    // do something
+  };
+
+  public onReject = () => {
+    // do something
+  };
+
+  public showProposeOrVoteButton() {
+    const { turnToPick, roundStatus } = this.props;
+    if (turnToPick && roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
       return (
         <button
+          onClick={this.onProposeClick}
           style={{ marginBottom: "1rem", width: "100px", height: "50px" }}
         >
           Propose Team
         </button>
+      );
+    } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
+      return (
+        <div className={"VotingButtons"}>
+          <button
+            onClick={this.onAccept}
+            style={{ marginBottom: "1rem", width: "100px", height: "50px" }}
+          >
+            Approve
+          </button>
+          <button
+            onClick={this.onReject}
+            style={{ marginBottom: "1rem", width: "100px", height: "50px" }}
+          >
+            Reject
+          </button>
+        </div>
       );
     }
   }
@@ -34,43 +68,41 @@ class PlayerList extends React.Component<any, any> {
         <h3 style={{ marginTop: "1rem" }}>
           Proposed Team:
           <div
-            className="ColorCode"
-            style={{ backgroundColor: "rgb(15, 132, 228)" }}
-          />
-          <span>Selected</span>
-          <div className="ColorCode" style={{ backgroundColor: "#FFF" }} />
-          <span>Not Selected</span>
+            style={{
+              flexDirection: "row",
+              display: "flex",
+              justifyContent: "center"
+            }}
+          >
+            <div className="PlayerSelectLegend">
+              <div
+                className="ColorCode"
+                style={{ backgroundColor: "rgb(15, 132, 228)" }}
+              />
+              <span>Selected</span>
+            </div>
+            <div className="PlayerSelectLegend">
+              <div className="ColorCode" style={{ backgroundColor: "#FFF" }} />
+              <span>Not Selected</span>
+            </div>
+          </div>
         </h3>
-        <ul
-          style={{
-            listStyle: "none",
-            whiteSpace: "nowrap",
-            padding: "0",
-            alignItems: "center",
-            margin: "0"
-          }}
-        >
+        <ul className="PlayerListItems">
           {this.props.players.map(player => (
-            <li className="PlayerName" key={player.socketId}>
+            <li
+              className="PlayerName"
+              key={player.socketId}
+              style={{
+                display: "flex",
+                flexDirection: "column"
+              }}
+            >
               <span>{player.nickName.substring(0, 7)}</span>
+              <PlayerComponent key={player.socketId} player={player} />
             </li>
           ))}
         </ul>
-        <ul
-          style={{
-            listStyle: "none",
-            whiteSpace: "nowrap",
-            paddingLeft: "0",
-            alignItems: "center",
-            marginTop: "0",
-            marginBottom: "1rem"
-          }}
-        >
-          {this.props.players.map(player => (
-            <PlayerComponent key={player.socketId} player={player} />
-          ))}
-        </ul>
-        {this.showProposeButton()}
+        {this.showProposeOrVoteButton()}
       </div>
     );
   }
@@ -85,10 +117,12 @@ const mapStateToProps = state => {
   const currentRound: number = getCurrentRound(state);
   const playerData: Player = getPlayerData(state);
   const turnToPick = playerData.socketId === curentPlayerTurn.socketId;
+  const roundStatus = getRoundStatus(state);
 
   return {
     players,
-    turnToPick
+    turnToPick,
+    roundStatus
   };
 };
 

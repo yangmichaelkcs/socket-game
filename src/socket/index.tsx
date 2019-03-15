@@ -44,4 +44,8 @@ export const updateNickName = (nickName: string) => {
 
 export const pickPlayer = (socketId: string, selected: number) => {
   socket.emit("PICK_PLAYER", socketId, selected);
-}
+};
+
+export const proposeTeam = () => {
+  socket.emit("PROPOSE_TEAM");
+};

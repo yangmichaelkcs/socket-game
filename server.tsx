@@ -90,11 +90,9 @@ const updatePlayerSelected = (socket, socketId, selected) => {
   playerSelected.selected = selected;
 };
 
-const updatePlayersSelected = (socket, socketId, selected) => {
-  const playerSelected = getGameBySocket(socket).players.find(
-    player => player.socketId === socketId
-  );
-  playerSelected.selected = selected;
+const updateRoundStatus = socket => {
+  const game: Game = getGameBySocket(socket);
+  game.roundStatus = ROUND_STATUS.VOTING_TEAM;
 };
 
 const startGame = (gameId: string) => {
@@ -195,6 +193,12 @@ io.on("connection", socket => {
 
   socket.on("PICK_PLAYER", (socketId: string, selected: number) => {
     updatePlayerSelected(socket, socketId, selected);
+    const gameId = getGameIdBySocket(socket);
+    io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+  });
+
+  socket.on("PROPOSE_TEAM", () => {
+    updateRoundStatus(socket);
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });

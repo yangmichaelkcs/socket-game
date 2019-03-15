@@ -7,8 +7,7 @@
   justify-content: center;
 }
 
-.ColorCode{
-  display: inline-block;
+.ColorCode {
   height: 1rem;
   width: 1rem;
   border: 1px solid rgb(106, 122, 129);
@@ -17,10 +16,9 @@
   margin-right: 3px;
 }
 
-.Game{
+.Game {
   padding-left: calc(30% - 190px);
   padding-right: calc(30% - 190px);
-  display: block;
   flex-direction: column;
   align-items: center;
   height: 100%;
@@ -28,7 +26,7 @@
   text-align: center;
 }
 
-.Role{
+.Role {
   flex-direction: column;
   align-items: left;
   justify-content: center;
@@ -40,7 +38,7 @@
   margin-bottom: 1rem;
 }
 
-.RoleButton{
+.RoleButton {
   background: transparent;
   border: none;
   float: right;
@@ -48,28 +46,35 @@
   outline: none;
 }
 
-.PlayerName{
-  display: inline-block;
-  width: 5%;
+.PlayerSelectLegend {
+  display: flex;
+  flex-direction: row;
+}
+
+.PlayerListItems {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.PlayerName {
   padding-top: 0;
   padding-bottom: 0;
-  border-radius: 0;
-  border: solid 5px #FFF;
+  border-radius: 1;
+  border: solid 5px #fff;
   color: #000;
   margin-right: 1rem;
   margin-left: 1rem;
   margin-bottom: 0;
 }
 
-.PlayerUnclicked{
-  background-color: #FFF;
-  display: inline-block;
-  width: 5%;
+.PlayerUnclicked {
+  background-color: #fff;
   padding-top: 1.5%;
   padding-bottom: 1.5%;
   border-radius: 50%;
   border: solid 3px rgb(106, 122, 129);
-  transition: all .1s ease-out;
+  transition: all 0.1s ease-out;
   color: #000;
   margin-left: 1rem;
   margin-right: 1rem;
@@ -77,34 +82,37 @@
   cursor: pointer;
 }
 
-.PlayerClicked{
+.PlayerClicked {
   background-color: rgb(15, 132, 228);
-  display: inline-block;
-  width: 5%;
   padding-top: 1.5%;
   padding-bottom: 1.5%;
   border-radius: 50%;
   border: solid 3px rgb(106, 122, 129);
-  transition: all .1s ease-out;
-  color: #FFF;
+  transition: all 0.1s ease-out;
+  color: #fff;
   margin-left: 1rem;
   margin-right: 1rem;
   margin-top: 0;
   cursor: pointer;
 }
 
-.PlayerList,
-.Round{
+.PlayerList {
+  border-bottom: 1px solid #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.Round {
   border-bottom: 1px solid #000;
 }
 
-.singleResult{
+.singleResult {
   width: 2rem;
   height: 3rem;
   text-align: center;
   justify-content: center;
-  display:inline-block;
-  font-size:1.5em;
+  font-size: 1.5em;
 }
 
 .App-logo {
@@ -125,6 +133,11 @@
 
 .App-intro {
   font-size: large;
+}
+
+.VotingButtons {
+  display: flex;
+  flex-direction: row;
 }
 
 @keyframes App-logo-spin {
