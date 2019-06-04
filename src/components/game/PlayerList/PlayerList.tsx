@@ -37,7 +37,7 @@ class PlayerList extends React.Component<any, any> {
       return (
         <button
           onClick={this.onProposeClick}
-          style={{ marginBottom: "1rem", width: "100px", height: "50px" }}
+          style={{ margin: "1rem", width: "100px", height: "50px" }}
         >
           Propose Team
         </button>
@@ -47,13 +47,13 @@ class PlayerList extends React.Component<any, any> {
         <div className={"VotingButtons"}>
           <button
             onClick={this.onAccept}
-            style={{ marginBottom: "1rem", width: "100px", height: "50px" }}
+            style={{ margin: "1rem", width: "100px", height: "50px" }}
           >
             Approve
           </button>
           <button
             onClick={this.onReject}
-            style={{ marginBottom: "1rem", width: "100px", height: "50px" }}
+            style={{ margin: "1rem", width: "100px", height: "50px" }}
           >
             Reject
           </button>

@@ -75,11 +75,11 @@ class RoundResult extends Component {
 
   render(){
     return (
-      <div>
+      <div className="RoundResult">
         <h2>
           Round Results:
         </h2>
-          <div>
+          <div className="RoundResultItems">
             <SingleResult id={1} 
               value={this.props.votes[0]} 
               onComponentDidMount={this.displaySecond} 

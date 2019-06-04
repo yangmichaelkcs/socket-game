@@ -55,7 +55,6 @@ class Game extends React.Component<GameStateProps, any> {
     return votes;
   }
 
-  // FIXME, change state to props
   public onPlayerClick = socketId => {
     const { roundStatus, rounds } = this.props;
     if (
@@ -99,7 +98,9 @@ class Game extends React.Component<GameStateProps, any> {
           roundStatus={roundStatus}
           votes={votes}
         />
-        <VoteButtons />
+        <VoteButtons 
+          roundStatus={roundStatus}
+        />
       </div>
     );
   }
