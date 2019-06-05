@@ -30,7 +30,8 @@ interface PlayerComponentProps
 
 class PlayerComponent extends React.Component<PlayerComponentProps, any> {
   public onPlayerClick = () => {
-    const { players, player, currentRound, rounds } = this.props;
+    const { players, player, currentRound, rounds, currentPlayerTurn, playerData} = this.props;
+    if(playerData.socketId === currentPlayerTurn.socketId) {
     const socketId = player.socketId;
     const playerPicked = players.find(asdf => asdf.socketId === socketId);
     let numPlayers = 0;
@@ -41,6 +42,7 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
     } else {
       pickPlayer(socketId, 0);
     }
+  }
   };
 
   public getPlayerClasses() {
