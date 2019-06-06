@@ -109,14 +109,14 @@ class PlayerList extends React.Component<any, any> {
 }
 
 const mapStateToProps = state => {
-  const currentPlayerTurn: Player = getPlayerDataById(
+  const curentPlayerTurn: Player = getPlayerDataById(
     state,
     getCurrentPlayerTurn(state)
   );
   const players: Player[] = getPlayers(state);
   const currentRound: number = getCurrentRound(state);
   const playerData: Player = getPlayerData(state);
-  const turnToPick = playerData.socketId === currentPlayerTurn.socketId;
+  const turnToPick = playerData.socketId === curentPlayerTurn.socketId;
   const roundStatus = getRoundStatus(state);
 
   return {
