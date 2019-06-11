@@ -6,21 +6,44 @@ import {
   getPlayers,
   getCurrentRound,
   getPlayerData,
-  getRoundStatus
+  getRoundStatus,
+  getRounds
 } from "selectors";
-import { Player, ROUND_STATUS } from "types/types";
+import { Player, ROUND_STATUS, Round } from "types/types";
 import { connect } from "react-redux";
 import { proposeTeam } from "socket";
+
+interface PlayerListState {
+  playerNeededTooltip : boolean;
+}
 
 interface PlayerListProps {
   players: Player[];
   turnToPick: Player;
   roundStatus: ROUND_STATUS;
+  rounds: Round[];
+  currentRound: number;
 }
 
 class PlayerList extends React.Component<any, any> {
+  constructor(props) {
+    super(props);
+    this.state = { playerNeededTooltip: false };
+  }
+
   public onProposeClick = () => {
-    proposeTeam();
+    const { rounds, currentRound, players } = this.props;
+    const playerNeeded = rounds[currentRound - 1].playersNeeded;
+    let numPlayers = 0;
+    players.forEach(p => (p.selected ? numPlayers++ : 0));
+    if(numPlayers !== playerNeeded) {
+      this.setState({ playerNeededTooltip: true });
+    } else {
+      if(this.state.playerNeededTooltip) {
+        this.setState({ playerNeededTooltip: false });
+      }
+      proposeTeam();
+    }
   };
 
   public onAccept = () => {
@@ -37,7 +60,7 @@ class PlayerList extends React.Component<any, any> {
       return (
         <button
           onClick={this.onProposeClick}
-          style={{ marginBottom: "1rem", width: "100px", height: "50px" }}
+          style={{ margin: "1rem", width: "100px", height: "50px" }}
         >
           Propose Team
         </button>
@@ -47,16 +70,28 @@ class PlayerList extends React.Component<any, any> {
         <div className={"VotingButtons"}>
           <button
             onClick={this.onAccept}
-            style={{ marginBottom: "1rem", width: "100px", height: "50px" }}
+            style={{ margin: "1rem", width: "100px", height: "50px" }}
           >
             Approve
           </button>
           <button
             onClick={this.onReject}
-            style={{ marginBottom: "1rem", width: "100px", height: "50px" }}
+            style={{ margin: "1rem", width: "100px", height: "50px" }}
           >
             Reject
           </button>
+        </div>
+      );
+    }
+  }
+
+  public showPlayerNeededToolTip() {
+    if(this.state.playerNeededTooltip) {
+      const { rounds, currentRound } = this.props;
+      const playerNeeded = rounds[currentRound - 1].playersNeeded;
+      return (
+        <div>
+          Please select {playerNeeded} players
         </div>
       );
     }
@@ -102,6 +137,7 @@ class PlayerList extends React.Component<any, any> {
             </li>
           ))}
         </ul>
+        {this.showPlayerNeededToolTip()}
         {this.showProposeOrVoteButton()}
       </div>
     );
@@ -109,20 +145,22 @@ class PlayerList extends React.Component<any, any> {
 }
 
 const mapStateToProps = state => {
-  const curentPlayerTurn: Player = getPlayerDataById(
+  const currentPlayerTurn: Player = getPlayerDataById(
     state,
     getCurrentPlayerTurn(state)
   );
   const players: Player[] = getPlayers(state);
   const currentRound: number = getCurrentRound(state);
   const playerData: Player = getPlayerData(state);
-  const turnToPick = playerData.socketId === curentPlayerTurn.socketId;
+  const turnToPick = playerData.socketId === currentPlayerTurn.socketId;
   const roundStatus = getRoundStatus(state);
 
   return {
     players,
     turnToPick,
-    roundStatus
+    roundStatus,
+    rounds: getRounds(state),
+    currentRound
   };
 };
 

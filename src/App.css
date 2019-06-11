@@ -51,10 +51,12 @@
   flex-direction: row;
 }
 
+.RoundResultItems,
 .PlayerListItems {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  padding-left: 0;
 }
 
 .PlayerName {
@@ -70,32 +72,33 @@
 
 .PlayerUnclicked {
   background-color: #fff;
-  padding-top: 1.5%;
-  padding-bottom: 1.5%;
+  padding-top: 15%;
+  padding-bottom: 15%;
   border-radius: 50%;
   border: solid 3px rgb(106, 122, 129);
   transition: all 0.1s ease-out;
   color: #000;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  margin-top: 0;
+  margin-left: .5rem;
+  margin-right: .5rem;
+  margin-top: 5%;
   cursor: pointer;
 }
 
 .PlayerClicked {
   background-color: rgb(15, 132, 228);
-  padding-top: 1.5%;
-  padding-bottom: 1.5%;
+  padding-top: 15%;
+  padding-bottom: 15%;
   border-radius: 50%;
   border: solid 3px rgb(106, 122, 129);
   transition: all 0.1s ease-out;
   color: #fff;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  margin-top: 0;
+  margin-left: .5rem;
+  margin-right: .5rem;
+  margin-top: 5%;
   cursor: pointer;
 }
 
+.RoundResult,
 .PlayerList {
   border-bottom: 1px solid #000;
   display: flex;

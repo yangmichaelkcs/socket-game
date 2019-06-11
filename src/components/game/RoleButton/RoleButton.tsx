@@ -30,6 +30,8 @@ class RoleButton extends React.Component<RoleButtonProps, RoleButtonState> {
     if (this.state.showRole) {
       return (
         <p style={{ margin: "0", float: "left", textAlign: "left" }}>
+          Nickname: {playerData.nickName}
+          <br />
           Team: {playerData.team}
           <br />
           Role: {playerData.role}

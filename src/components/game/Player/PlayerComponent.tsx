@@ -7,7 +7,8 @@ import {
   getPlayers,
   getCurrentRound,
   getPlayerData,
-  getRounds
+  getRounds,
+  getRoundStatus
 } from "selectors";
 import { connect } from "react-redux";
 
@@ -22,6 +23,7 @@ interface PlayerComponentStateProps {
   readonly currentRound: number;
   readonly playerData: Player;
   readonly rounds: Round[];
+  readonly roundStatus: ROUND_STATUS;
 }
 
 interface PlayerComponentProps
@@ -30,16 +32,18 @@ interface PlayerComponentProps
 
 class PlayerComponent extends React.Component<PlayerComponentProps, any> {
   public onPlayerClick = () => {
-    const { players, player, currentRound, rounds } = this.props;
-    const socketId = player.socketId;
-    const playerPicked = players.find(asdf => asdf.socketId === socketId);
-    let numPlayers = 0;
-    players.forEach(p => (p.selected ? numPlayers++ : 0));
-    const pNeeded = rounds[currentRound - 1].playersNeeded;
-    if (numPlayers < pNeeded && playerPicked!.selected === 0) {
-      pickPlayer(socketId, 1);
-    } else {
-      pickPlayer(socketId, 0);
+    const { players, player, currentRound, rounds, currentPlayerTurn, playerData, roundStatus } = this.props;
+    if(playerData.socketId === currentPlayerTurn.socketId && roundStatus === ROUND_STATUS.PROPOSING_TEAM ) {
+      const socketId = player.socketId;
+      const playerPicked = players.find(asdf => asdf.socketId === socketId);
+      let numPlayers = 0;
+      players.forEach(p => (p.selected ? numPlayers++ : 0));
+      const playerNeeded = rounds[currentRound - 1].playersNeeded;
+      if (numPlayers < playerNeeded && playerPicked!.selected === 0) {
+        pickPlayer(socketId, 1);
+      } else {
+        pickPlayer(socketId, 0);
+      }
     }
   };
 
@@ -68,13 +72,15 @@ const mapStateToProps = (state: any): PlayerComponentStateProps => {
   const players: Player[] = getPlayers(state);
   const currentRound: number = getCurrentRound(state);
   const playerData: Player = getPlayerData(state);
+  const roundStatus = getRoundStatus(state);
 
   return {
     playerData,
     currentPlayerTurn,
     players,
     currentRound,
-    rounds: getRounds(state)
+    rounds: getRounds(state),
+    roundStatus
   };
 };
 
