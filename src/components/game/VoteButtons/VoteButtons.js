@@ -6,20 +6,20 @@ class VoteButtons extends Component{
     super(props);
     /*
     this.state = { 
-      approve: false,
-      reject: false
+      success: false,
+      fail: false
     };
     */
-      //this.onAccept = this.onAccept.bind(this);
-      //this.onReject = this.onReject.bind(this);
+      //this.onSuccess = this.onSuccess.bind(this);
+      //this.onFail = this.onFail.bind(this);
   }
 
-  onApprove() {
-    //this.setState({approve: true, reject: false});
+  onSuccess() {
+    //this.setState({success: true, fail: false});
   }    
 
-  onReject() {
-    //this.setState({reject: true, approve: false});
+  onFail() {
+    //this.setState({fail: true, success: false});
   }    
 
   showButtons()
@@ -29,18 +29,18 @@ class VoteButtons extends Component{
       return (
         <div style={{ marginBottom: "2rem", marginTop: "1rem"}}>
           <button
-            onClick={this.onApprove}
-            //disabled={this.state.approve}
+            onClick={this.onSuccess}
+            //disabled={this.state.success}
             style={{margin: "1rem", width:"100px", height:"50px"}}
           >
-              Approve
+              Success
           </button>
           <button
-            onClick={this.onReject}
-            //disabled={this.state.reject}
+            onClick={this.onFail}
+            //disabled={this.state.fail}
             style={{margin: "1rem", width:"100px", height:"50px"}}
           >
-              Reject
+              Fail
           </button>
         </div> 
       );

@@ -14,7 +14,8 @@ import {
   getPlayerData,
   getFailedVotes,
   getRounds,
-  getRoundStatus
+  getRoundStatus,
+  getVotes
 } from "selectors";
 import { Player, ROUND_STATUS, Round } from "types/types";
 import { pickPlayer } from "socket";
@@ -27,6 +28,7 @@ interface GameStateProps {
   roundStatus: ROUND_STATUS;
   failedVotes: number;
   rounds: Round[];
+  votes: number[];
 }
 
 class Game extends React.Component<GameStateProps, any> {
@@ -53,6 +55,34 @@ class Game extends React.Component<GameStateProps, any> {
       }
     }
     return votes;
+  }
+
+  public showAnnouncment () {
+    const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players } = this.props;
+    if(roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
+      const playersNeeded = rounds[currentRound - 1].playersNeeded;
+      return (
+        <div>
+          <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
+          <p>Pick {playersNeeded} players, ___ failures need for spies</p>
+        </div>
+      );
+    } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
+      players.filter(p => p.selected)
+      return (
+        <div>
+          <h2>Vote on the following team:</h2>
+          <p>{players.filter(player => player.selected).map(p => (<span>{p.nickName.substring(0, 7)} </span>))} </p>
+        </div>
+      );
+    } else if (roundStatus === ROUND_STATUS.VOTING_END) {
+      return (
+        <div>
+          <h2>Voting has completed</h2>
+          <p>Approve: {votes[0]}  Reject {votes[1]}</p>
+        </div>
+      );
+    }
   }
 
   public onPlayerClick = socketId => {
@@ -89,8 +119,7 @@ class Game extends React.Component<GameStateProps, any> {
       <div className="Game">
         <RoundInfo currentRound={currentRound} />
         <RoleButton />
-        <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
-        <p>Pick {playersNeeded} players, ___ failures need for spies</p>
+        {this.showAnnouncment()}
         <AllRounds rounds={rounds} />
         <PlayerList />
         <RoundResult
@@ -122,7 +151,8 @@ const mapStateToProps = state => {
     playerData,
     failedVotes: getFailedVotes(state),
     rounds: getRounds(state),
-    roundStatus: getRoundStatus(state)
+    roundStatus: getRoundStatus(state),
+    votes: getVotes(state)
   };
 };
 

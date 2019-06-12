@@ -11,7 +11,7 @@ import {
 } from "selectors";
 import { Player, ROUND_STATUS, Round } from "types/types";
 import { connect } from "react-redux";
-import { proposeTeam } from "socket";
+import { proposeTeam, voteNeg, votePos } from "socket";
 
 interface PlayerListState {
   playerNeededTooltip : boolean;
@@ -28,7 +28,14 @@ interface PlayerListProps {
 class PlayerList extends React.Component<any, any> {
   constructor(props) {
     super(props);
-    this.state = { playerNeededTooltip: false };
+    this.state = { 
+      playerNeededTooltip: false,
+      accept: false,
+      reject: false
+    };
+
+    this.onAccept = this.onAccept.bind(this);
+    this.onReject = this.onReject.bind(this);
   }
 
   public onProposeClick = () => {
@@ -47,11 +54,21 @@ class PlayerList extends React.Component<any, any> {
   };
 
   public onAccept = () => {
-    // do something
+    if(this.state.reject)
+    {
+      voteNeg(-1);
+    }
+    this.setState({accept: true, reject: false});
+    votePos(1);
   };
 
   public onReject = () => {
-    // do something
+    if(this.state.accept)
+    {
+      votePos(-1);
+    }
+    this.setState({reject: true, accept: false});
+    voteNeg(1);
   };
 
   public showProposeOrVoteButton() {
@@ -70,12 +87,14 @@ class PlayerList extends React.Component<any, any> {
         <div className={"VotingButtons"}>
           <button
             onClick={this.onAccept}
+            disabled={this.state.accept}
             style={{ margin: "1rem", width: "100px", height: "50px" }}
           >
             Approve
           </button>
           <button
             onClick={this.onReject}
+            disabled={this.state.reject}
             style={{ margin: "1rem", width: "100px", height: "50px" }}
           >
             Reject

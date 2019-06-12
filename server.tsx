@@ -56,6 +56,7 @@ const createNewGame = () => {
       { id: 4, value: null, playersNeeded: 2 },
       { id: 5, value: null, playersNeeded: 2 }
     ],
+    votes: [0, 0],
     roundStatus: ROUND_STATUS.PROPOSING_TEAM
   };
   gamesById[id] = game;
@@ -90,9 +91,31 @@ const updatePlayerSelected = (socket, socketId, selected) => {
   playerSelected.selected = selected;
 };
 
+const nextRoundStatus = roundStatus => {
+  let nextStatus;
+  switch(roundStatus) {
+    case ROUND_STATUS.PROPOSING_TEAM:
+      nextStatus = ROUND_STATUS.VOTING_TEAM;
+      break;
+    case ROUND_STATUS.VOTING_TEAM:
+      nextStatus = ROUND_STATUS.VOTING_END;
+      break;
+    case ROUND_STATUS.VOTING_END:
+      nextStatus = ROUND_STATUS.MISSION_IN_PROGRESS;
+      break;
+    case ROUND_STATUS.MISSION_IN_PROGRESS:
+      nextStatus = ROUND_STATUS.MISSION_END;
+      break;
+    case ROUND_STATUS.MISSION_END:
+      nextStatus = ROUND_STATUS.PROPOSING_TEAM;
+      break;
+  }
+  return nextStatus;
+}
+
 const updateRoundStatus = socket => {
   const game: Game = getGameBySocket(socket);
-  game.roundStatus = ROUND_STATUS.VOTING_TEAM;
+  game.roundStatus = nextRoundStatus(game.roundStatus);
 };
 
 const startGame = (gameId: string) => {
@@ -134,6 +157,32 @@ const assignRoles = (gameId: string) => {
     player.team = TEAM.GOOD;
   });
 };
+
+const updateNegVote = (socket, vote) => {
+  const game: Game = getGameBySocket(socket);
+  game.votes[1]+= vote;
+}
+
+const updatePosVote = (socket, vote) => {
+  const game: Game = getGameBySocket(socket);
+  game.votes[0]+= vote;
+}
+
+const resetVote = socket => {
+  const game: Game = getGameBySocket(socket);
+  game.votes[0] = 0;
+  game.votes[1] = 0;
+}
+
+const checkVoteCount = socket => {
+  const game: Game = getGameBySocket(socket);
+  if(game.roundStatus == ROUND_STATUS.VOTING_TEAM) {
+    if(game.votes[0] + game.votes[1] == game.players.length)
+    {
+      updateRoundStatus(socket);
+    }
+  } 
+}
 
 io.on("connection", socket => {
   socket.on("disconnect", function() {
@@ -202,6 +251,21 @@ io.on("connection", socket => {
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
+
+  socket.on("UPDATE_NEG_VOTE", (vote : number) => {
+    updateNegVote(socket, vote);
+    checkVoteCount(socket);
+    const gameId = getGameIdBySocket(socket);
+    io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+  });
+
+  socket.on("UPDATE_POS_VOTE", (vote : number) => {
+    updatePosVote(socket, vote);
+    checkVoteCount(socket);
+    const gameId = getGameIdBySocket(socket);
+    io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+  });
+
 });
 
 console.log("listening on port", port);
