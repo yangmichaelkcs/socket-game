@@ -83,6 +83,7 @@ class PlayerList extends React.Component<any, any> {
         </button>
       );
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
+      this.setState( {accept: false, reject: false});
       return (
         <div className={"VotingButtons"}>
           <button

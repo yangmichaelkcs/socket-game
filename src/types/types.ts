@@ -17,6 +17,11 @@ export enum TEAM {
   BAD = "BAD"
 }
 
+export enum VOTE_INDEX {
+  POS = 0,
+  NEG = 1
+}
+
 export const PLAYER_DISTRIBUTION = {
   2: { good: 1, bad: 1 },
   3: { good: 2, bad: 1 },
@@ -32,6 +37,9 @@ export const PLAYER_DISTRIBUTION = {
 export const ROUND_REQ = {
   1: 
     { 
+      2: { playerNeed: 2, failNeed: 1 }, 
+      3: { playerNeed: 2, failNeed: 1 }, 
+      4: { playerNeed: 2, failNeed: 1 }, 
       5: { playerNeed: 2, failNeed: 1 }, 
       6: { playerNeed: 2, failNeed: 1 }, 
       7: { playerNeed: 2, failNeed: 1 },
@@ -41,6 +49,9 @@ export const ROUND_REQ = {
     },
   2: 
     { 
+      2: { playerNeed: 2, failNeed: 1 }, 
+      3: { playerNeed: 2, failNeed: 1 }, 
+      4: { playerNeed: 2, failNeed: 1 }, 
       5: { playerNeed: 3, failNeed: 1 }, 
       6: { playerNeed: 3, failNeed: 1 }, 
       7: { playerNeed: 3, failNeed: 1 },
@@ -50,6 +61,9 @@ export const ROUND_REQ = {
     },
   3: 
     { 
+      2: { playerNeed: 2, failNeed: 1 }, 
+      3: { playerNeed: 2, failNeed: 1 }, 
+      4: { playerNeed: 2, failNeed: 1 }, 
       5: { playerNeed: 2, failNeed: 1 }, 
       6: { playerNeed: 4, failNeed: 1 }, 
       7: { playerNeed: 3, failNeed: 1 },
@@ -59,6 +73,9 @@ export const ROUND_REQ = {
     },
   4: 
     { 
+      2: { playerNeed: 2, failNeed: 1 }, 
+      3: { playerNeed: 2, failNeed: 1 }, 
+      4: { playerNeed: 2, failNeed: 1 }, 
       5: { playerNeed: 3, failNeed: 1 }, 
       6: { playerNeed: 3, failNeed: 1 }, 
       7: { playerNeed: 4, failNeed: 2 },
@@ -68,6 +85,9 @@ export const ROUND_REQ = {
     },
   5: 
     { 
+      2: { playerNeed: 2, failNeed: 1 }, 
+      3: { playerNeed: 2, failNeed: 1 }, 
+      4: { playerNeed: 2, failNeed: 1 }, 
       5: { playerNeed: 3, failNeed: 1 }, 
       6: { playerNeed: 4, failNeed: 1 }, 
       7: { playerNeed: 4, failNeed: 1 },
@@ -103,6 +123,7 @@ export interface Round {
   id: number;
   value: TEAM;
   playersNeeded: number;
+  failsNeeded: number;
 }
 
 export interface Player {

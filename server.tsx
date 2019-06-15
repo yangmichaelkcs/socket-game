@@ -6,8 +6,11 @@ import {
   TEAM,
   GAME_STATUS,
   ROUND_STATUS,
-  PLAYER_DISTRIBUTION
+  PLAYER_DISTRIBUTION,
+  VOTE_INDEX,
+  ROUND_REQ
 } from "./src/types/types";
+import { isNull, isNullOrUndefined } from "util";
 
 const port = 8888;
 const io = socketIo.listen(port);
@@ -47,14 +50,14 @@ const createNewGame = () => {
     id,
     failedVotes: 0,
     currentRound: 1,
-    score: [],
+    score: [0, 0],
     currentPlayerTurn: "",
     rounds: [
-      { id: 1, value: null, playersNeeded: 3 },
-      { id: 2, value: null, playersNeeded: 2 },
-      { id: 3, value: null, playersNeeded: 2 },
-      { id: 4, value: null, playersNeeded: 2 },
-      { id: 5, value: null, playersNeeded: 2 }
+      { id: 1, value: null, playersNeeded: 0, failsNeeded: 0 },
+      { id: 2, value: null, playersNeeded: 0, failsNeeded: 0 },
+      { id: 3, value: null, playersNeeded: 0, failsNeeded: 0 },
+      { id: 4, value: null, playersNeeded: 0, failsNeeded: 0 },
+      { id: 5, value: null, playersNeeded: 0, failsNeeded: 0 }
     ],
     votes: [0, 0],
     roundStatus: ROUND_STATUS.PROPOSING_TEAM
@@ -68,7 +71,8 @@ const addPlayerToGame = (gameId, socket) => {
     socketId: socket.id,
     nickName: `Random ${getRandomWord()}`,
     role: "DETECTIVE USELESS",
-    selected: 0
+    selected: 0,
+    team: null
   };
   socket.join(gameId);
   getGameById(gameId).players.push(player);
@@ -118,6 +122,13 @@ const updateRoundStatus = socket => {
   game.roundStatus = nextRoundStatus(game.roundStatus);
 };
 
+const newTeamPropose = socket => {
+  const game: Game = getGameBySocket(socket);
+  resetVote(socket);
+  game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
+  return 0;
+};
+
 const startGame = (gameId: string) => {
   const game: Game = gamesById[gameId];
   game.status = GAME_STATUS.IN_PROGRESS;
@@ -127,6 +138,11 @@ const startGame = (gameId: string) => {
   game.failedVotes = 0;
   game.currentRound = 1;
   game.score = [];
+  game.rounds.forEach(round => { 
+    const id = round.id
+    round.playersNeeded = ROUND_REQ[id][game.players.length].playerNeed;
+    round.failsNeeded = ROUND_REQ[id][game.players.length].failNeed;
+  });
 };
 
 const shuffle = (players: Player[]): Player[] => {
@@ -144,6 +160,7 @@ const shuffle = (players: Player[]): Player[] => {
     temporaryValue = players[currentIndex];
     players[currentIndex] = players[randomIndex];
     players[randomIndex] = temporaryValue;
+
   }
 
   return players;
@@ -152,37 +169,78 @@ const shuffle = (players: Player[]): Player[] => {
 const assignRoles = (gameId: string) => {
   const players: Player[] = gamesById[gameId].players;
   const playerKeys = Object.keys(players);
-  playerKeys.forEach(playerId => {
-    const player: Player = players[playerId];
-    player.team = TEAM.GOOD;
-  });
+  var numBadPlayer = 0;
+  while(numBadPlayer < PLAYER_DISTRIBUTION[players.length].bad) {
+    let index = Math.floor(Math.random() * (players.length + 1))
+    if(isNullOrUndefined(players[index].team)) {
+      players[index].team = TEAM.BAD;
+      numBadPlayer++;
+    }
+  }
+  for(var i = 0; i < players.length; i++) { 
+    if(isNullOrUndefined(players[i].team)) {
+      players[i].team = TEAM.GOOD;
+    }
+  }
+  // playerKeys.forEach(playerId => {
+  //   const player: Player = players[playerId];
+  //   player.team = TEAM.GOOD;
+  // });
 };
 
 const updateNegVote = (socket, vote) => {
   const game: Game = getGameBySocket(socket);
-  game.votes[1]+= vote;
+  game.votes[VOTE_INDEX.NEG]+= vote;
 }
 
 const updatePosVote = (socket, vote) => {
   const game: Game = getGameBySocket(socket);
-  game.votes[0]+= vote;
+  game.votes[VOTE_INDEX.POS]+= vote;
 }
 
 const resetVote = socket => {
   const game: Game = getGameBySocket(socket);
-  game.votes[0] = 0;
-  game.votes[1] = 0;
+  game.votes[VOTE_INDEX.POS] = 0;
+  game.votes[VOTE_INDEX.NEG] = 0;
 }
 
-const checkVoteCount = socket => {
+const resetFailedVote = socket => {
+  const game: Game = getGameBySocket(socket);
+  game.failedVotes = 0;
+}
+
+const resetSelectPlayers = socket => {
+  const game: Game = getGameBySocket(socket);
+  game.players.forEach(player => player.selected = 0);
+}
+
+const updateScore = (socket, point) => {
+  const game: Game = getGameBySocket(socket);
+  point === TEAM.BAD ? game.score[VOTE_INDEX.NEG]++ : game.score[VOTE_INDEX.POS]++;
+}
+
+const checkVoteComplete = socket => {
   const game: Game = getGameBySocket(socket);
   if(game.roundStatus == ROUND_STATUS.VOTING_TEAM) {
-    if(game.votes[0] + game.votes[1] == game.players.length)
-    {
+    if(game.votes[VOTE_INDEX.NEG] + game.votes[VOTE_INDEX.POS] == game.players.length) {
+
       updateRoundStatus(socket);
+      if(game.votes[VOTE_INDEX.POS] <= game.votes[VOTE_INDEX.NEG]) {
+
+        game.failedVotes++;
+        if(game.failedVotes === 5) {
+          updateScore(socket, TEAM.BAD);
+          //Check if game ends
+        }
+        newTeamPropose(socket)
+      } else {
+
+      }
     }
   } 
 }
+
+
 
 io.on("connection", socket => {
   socket.on("disconnect", function() {
@@ -254,14 +312,14 @@ io.on("connection", socket => {
 
   socket.on("UPDATE_NEG_VOTE", (vote : number) => {
     updateNegVote(socket, vote);
-    checkVoteCount(socket);
+    checkVoteComplete(socket);
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
 
   socket.on("UPDATE_POS_VOTE", (vote : number) => {
     updatePosVote(socket, vote);
-    checkVoteCount(socket);
+    checkVoteComplete(socket);
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });

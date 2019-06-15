@@ -15,9 +15,11 @@ import {
   getFailedVotes,
   getRounds,
   getRoundStatus,
-  getVotes
+  getVotes,
+  getCurrentPage,
+  getScore
 } from "selectors";
-import { Player, ROUND_STATUS, Round } from "types/types";
+import { Player, ROUND_STATUS, Round, GAME_STATUS, VOTE_INDEX, TEAM } from "types/types";
 import { pickPlayer } from "socket";
 
 interface GameStateProps {
@@ -29,6 +31,8 @@ interface GameStateProps {
   failedVotes: number;
   rounds: Round[];
   votes: number[];
+  status: GAME_STATUS;
+  score: number[];
 }
 
 class Game extends React.Component<GameStateProps, any> {
@@ -58,8 +62,16 @@ class Game extends React.Component<GameStateProps, any> {
   }
 
   public showAnnouncment () {
-    const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players } = this.props;
-    if(roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
+    const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players, status, score } = this.props;
+    if (status === GAME_STATUS.END) {
+      const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
+      return (
+        <div>
+          <h2>The {winningTeam} has won</h2>
+          <p>The score was Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
+        </div>
+      );
+    } else if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
       const playersNeeded = rounds[currentRound - 1].playersNeeded;
       return (
         <div>
@@ -79,9 +91,23 @@ class Game extends React.Component<GameStateProps, any> {
       return (
         <div>
           <h2>Voting has completed</h2>
-          <p>Approve: {votes[0]}  Reject {votes[1]}</p>
+          <p>Approve: {votes[0]}  Reject: {votes[1]}</p>
         </div>
       );
+    } else if (roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
+      return (
+        <div>
+          <h2>The following players are on the mission </h2>
+          <p>{players.filter(player => player.selected).map(p => (<span>{p.nickName.substring(0, 7)} </span>))} </p>
+        </div>
+      ); 
+    } else if (roundStatus === ROUND_STATUS.MISSION_END) {
+      return (
+        <div>
+          <h2>Mission Results </h2>
+          <p>Success: {votes[0]}  Fail: {votes[1]}</p>
+        </div>
+      ); 
     }
   }
 
@@ -152,7 +178,9 @@ const mapStateToProps = state => {
     failedVotes: getFailedVotes(state),
     rounds: getRounds(state),
     roundStatus: getRoundStatus(state),
-    votes: getVotes(state)
+    votes: getVotes(state),
+    status: getCurrentPage(state),
+    score: getScore(state)
   };
 };
 
