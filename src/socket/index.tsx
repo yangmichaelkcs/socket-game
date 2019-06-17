@@ -50,10 +50,7 @@ export const proposeTeam = () => {
   socket.emit("PROPOSE_TEAM");
 };
 
-export const voteNeg = (vote: number) => {
-  socket.emit("UPDATE_NEG_VOTE", vote);
+export const updateVote = (vote: number) => {
+  socket.emit("UPDATE_VOTE", vote);
 }
 
-export const votePos = (vote: number) => {
-  socket.emit("UPDATE_POS_VOTE", vote);
-}

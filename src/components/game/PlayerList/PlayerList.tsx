@@ -11,7 +11,7 @@ import {
 } from "selectors";
 import { Player, ROUND_STATUS, Round } from "types/types";
 import { connect } from "react-redux";
-import { proposeTeam, voteNeg, votePos } from "socket";
+import { proposeTeam, updateVote } from "socket";
 
 interface PlayerListState {
   playerNeededTooltip : boolean;
@@ -54,22 +54,22 @@ class PlayerList extends React.Component<any, any> {
   };
 
   public onAccept = () => {
-    if(this.state.reject)
+    if(this.state.reject || this.state.accept)
     {
-      voteNeg(-1);
+      return;
     }
     this.setState({accept: true, reject: false});
-    votePos(1);
-  };
+    updateVote(1);
+  }
 
   public onReject = () => {
-    if(this.state.accept)
+    if(this.state.reject || this.state.accept)
     {
-      votePos(-1);
+      return;
     }
     this.setState({reject: true, accept: false});
-    voteNeg(1);
-  };
+    updateVote(-1);
+  }
 
   public showProposeOrVoteButton() {
     const { turnToPick, roundStatus } = this.props;
@@ -83,7 +83,6 @@ class PlayerList extends React.Component<any, any> {
         </button>
       );
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
-      this.setState( {accept: false, reject: false});
       return (
         <div className={"VotingButtons"}>
           <button

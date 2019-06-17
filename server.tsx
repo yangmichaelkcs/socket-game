@@ -167,35 +167,30 @@ const shuffle = (players: Player[]): Player[] => {
 };
 
 const assignRoles = (gameId: string) => {
-  const players: Player[] = gamesById[gameId].players;
-  const playerKeys = Object.keys(players);
-  var numBadPlayer = 0;
-  while(numBadPlayer < PLAYER_DISTRIBUTION[players.length].bad) {
-    let index = Math.floor(Math.random() * (players.length + 1))
-    if(isNullOrUndefined(players[index].team)) {
-      players[index].team = TEAM.BAD;
-      numBadPlayer++;
-    }
-  }
-  for(var i = 0; i < players.length; i++) { 
-    if(isNullOrUndefined(players[i].team)) {
-      players[i].team = TEAM.GOOD;
-    }
-  }
-  // playerKeys.forEach(playerId => {
-  //   const player: Player = players[playerId];
-  //   player.team = TEAM.GOOD;
-  // });
+   const players: Player[] = gamesById[gameId].players;
+   const playerKeys = Object.keys(players);
+  // var numBadPlayer = 0;
+  // while(numBadPlayer < PLAYER_DISTRIBUTION[players.length].bad) {
+  //   let index = Math.floor(Math.random() * (players.length + 1))
+  //   if(isNullOrUndefined(players[index].team)) {
+  //     players[index].team = TEAM.BAD;
+  //     numBadPlayer++;
+  //   }
+  // }
+  // for(var i = 0; i < players.length; i++) { 
+  //   if(isNullOrUndefined(players[i].team)) {
+  //     players[i].team = TEAM.GOOD;
+  //   }
+  // }
+     playerKeys.forEach(playerId => {
+     const player: Player = players[playerId];
+     player.team = TEAM.GOOD;
+   });
 };
 
-const updateNegVote = (socket, vote) => {
+const updateVote = (socket, vote) => {
   const game: Game = getGameBySocket(socket);
-  game.votes[VOTE_INDEX.NEG]+= vote;
-}
-
-const updatePosVote = (socket, vote) => {
-  const game: Game = getGameBySocket(socket);
-  game.votes[VOTE_INDEX.POS]+= vote;
+  vote === -1 ? game.votes[VOTE_INDEX.NEG]++ : game.votes[VOTE_INDEX.POS]++;
 }
 
 const resetVote = socket => {
@@ -222,20 +217,9 @@ const updateScore = (socket, point) => {
 const checkVoteComplete = socket => {
   const game: Game = getGameBySocket(socket);
   if(game.roundStatus == ROUND_STATUS.VOTING_TEAM) {
+    console.log(game.players.length);
     if(game.votes[VOTE_INDEX.NEG] + game.votes[VOTE_INDEX.POS] == game.players.length) {
-
-      updateRoundStatus(socket);
-      if(game.votes[VOTE_INDEX.POS] <= game.votes[VOTE_INDEX.NEG]) {
-
-        game.failedVotes++;
-        if(game.failedVotes === 5) {
-          updateScore(socket, TEAM.BAD);
-          //Check if game ends
-        }
-        newTeamPropose(socket)
-      } else {
-
-      }
+      return true;
     }
   } 
 }
@@ -310,19 +294,27 @@ io.on("connection", socket => {
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
 
-  socket.on("UPDATE_NEG_VOTE", (vote : number) => {
-    updateNegVote(socket, vote);
-    checkVoteComplete(socket);
+  socket.on("UPDATE_VOTE",  async (vote : number) =>  {
+    updateVote(socket, vote);
+
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+    if(checkVoteComplete(socket)) {
+      updateRoundStatus(socket);
+      let gameId = getGameIdBySocket(socket);
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      await wait(6000);
+      updateRoundStatus(socket);
+      gameId = getGameIdBySocket(socket);
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+    }
   });
 
-  socket.on("UPDATE_POS_VOTE", (vote : number) => {
-    updatePosVote(socket, vote);
-    checkVoteComplete(socket);
-    const gameId = getGameIdBySocket(socket);
-    io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
-  });
+  async function wait(ms) {
+    return new Promise(resolve => {
+      setTimeout(resolve, ms);
+    });
+  }
 
 });
 

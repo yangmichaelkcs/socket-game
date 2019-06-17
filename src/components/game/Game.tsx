@@ -155,6 +155,7 @@ class Game extends React.Component<GameStateProps, any> {
         />
         <VoteButtons 
           roundStatus={roundStatus}
+          players = {players}
         />
       </div>
     );
