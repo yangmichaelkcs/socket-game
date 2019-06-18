@@ -137,7 +137,8 @@ class Game extends React.Component<GameStateProps, any> {
       currentRound,
       playerData,
       rounds,
-      roundStatus
+      roundStatus,
+      failedVotes
     } = this.props;
     const playersNeeded = rounds[currentRound - 1].playersNeeded;
     const votes = this.voteShuffle();
@@ -146,7 +147,10 @@ class Game extends React.Component<GameStateProps, any> {
         <RoundInfo currentRound={currentRound} />
         <RoleButton />
         {this.showAnnouncment()}
-        <AllRounds rounds={rounds} />
+        <AllRounds 
+            rounds={rounds} 
+            failedVotes={failedVotes} 
+        />
         <PlayerList />
         <RoundResult
           playersNeeded={playersNeeded}

@@ -122,13 +122,6 @@ const updateRoundStatus = socket => {
   game.roundStatus = nextRoundStatus(game.roundStatus);
 };
 
-const newTeamPropose = socket => {
-  const game: Game = getGameBySocket(socket);
-  resetVote(socket);
-  game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
-  return 0;
-};
-
 const startGame = (gameId: string) => {
   const game: Game = gamesById[gameId];
   game.status = GAME_STATUS.IN_PROGRESS;
@@ -188,20 +181,22 @@ const assignRoles = (gameId: string) => {
    });
 };
 
+const nextPlayerTurn = socket => {
+  const game: Game = getGameBySocket(socket);
+  const currPlayerIndex = game.players.findIndex(p => p.socketId === game.currentPlayerTurn);
+  const nextPlayerIndex = (currPlayerIndex + 1) % game.players.length;
+  game.currentPlayerTurn = game.players[nextPlayerIndex].socketId;
+}
+
 const updateVote = (socket, vote) => {
   const game: Game = getGameBySocket(socket);
   vote === -1 ? game.votes[VOTE_INDEX.NEG]++ : game.votes[VOTE_INDEX.POS]++;
 }
 
-const resetVote = socket => {
+const resetVotes = socket => {
   const game: Game = getGameBySocket(socket);
   game.votes[VOTE_INDEX.POS] = 0;
   game.votes[VOTE_INDEX.NEG] = 0;
-}
-
-const resetFailedVote = socket => {
-  const game: Game = getGameBySocket(socket);
-  game.failedVotes = 0;
 }
 
 const resetSelectPlayers = socket => {
@@ -211,20 +206,65 @@ const resetSelectPlayers = socket => {
 
 const updateScore = (socket, point) => {
   const game: Game = getGameBySocket(socket);
-  point === TEAM.BAD ? game.score[VOTE_INDEX.NEG]++ : game.score[VOTE_INDEX.POS]++;
+  if(point === TEAM.BAD) { 
+    game.score[VOTE_INDEX.NEG]++;
+    game.rounds[game.currentRound - 1].value = TEAM.BAD;
+  } else {
+    game.score[VOTE_INDEX.POS]++;
+    game.rounds[game.currentRound - 1].value = TEAM.GOOD;
+  }
+  game.currentRound++;
 }
 
 const checkVoteComplete = socket => {
   const game: Game = getGameBySocket(socket);
   if(game.roundStatus == ROUND_STATUS.VOTING_TEAM) {
-    console.log(game.players.length);
     if(game.votes[VOTE_INDEX.NEG] + game.votes[VOTE_INDEX.POS] == game.players.length) {
       return true;
     }
   } 
 }
 
+const checkVoteSucceed = socket => {
+  const game: Game = getGameBySocket(socket);
+  return game.votes[VOTE_INDEX.POS] > game.votes[VOTE_INDEX.NEG] ? true : false;
+}
 
+const newTeamPropose = socket => {
+  const game: Game = getGameBySocket(socket);
+  resetVotes(socket);
+  resetSelectPlayers(socket);
+  nextPlayerTurn(socket);
+  game.failedVotes++;
+  game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
+  if(game.failedVotes === 5)
+  {
+    updateScore(socket, TEAM.BAD);
+    resetFailedVotes(socket);
+    return false; //Bad team gets point
+  }
+};
+
+const resetFailedVotes = socket => {
+  const game: Game = getGameBySocket(socket);
+  game.failedVotes = 0;
+}
+
+const checkWinner = socket => {
+  const game: Game = getGameBySocket(socket);
+  if(game.score[VOTE_INDEX.POS] === 3) {
+    return TEAM.GOOD;
+  }
+  if(game.score[VOTE_INDEX.NEG]) {
+    return TEAM.BAD
+  }
+  return false;
+}
+
+const endGame = socket => {
+  const game: Game = getGameBySocket(socket);
+  game.status = GAME_STATUS.END;
+}
 
 io.on("connection", socket => {
   socket.on("disconnect", function() {
@@ -296,17 +336,26 @@ io.on("connection", socket => {
 
   socket.on("UPDATE_VOTE",  async (vote : number) =>  {
     updateVote(socket, vote);
-
-    const gameId = getGameIdBySocket(socket);
-    io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
     if(checkVoteComplete(socket)) {
-      updateRoundStatus(socket);
+      updateRoundStatus(socket);  //Voting_end
       let gameId = getGameIdBySocket(socket);
       io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
       await wait(6000);
-      updateRoundStatus(socket);
-      gameId = getGameIdBySocket(socket);
-      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      //Team is going on Mission
+      if (checkVoteSucceed(socket)) {
+        updateRoundStatus(socket);  //Mission_inprogress
+        resetFailedVotes(socket);
+        gameId = getGameIdBySocket(socket);
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      } else { //New Vote
+        if(!newTeamPropose(socket)) {
+          if(checkWinner(socket) === TEAM.BAD) {
+            endGame(socket);
+          }
+        }
+        gameId = getGameIdBySocket(socket);
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      }
     }
   });
 

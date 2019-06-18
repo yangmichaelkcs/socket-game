@@ -116,6 +116,14 @@ class PlayerList extends React.Component<any, any> {
     }
   }
 
+  public componentDidUpdate() {
+    if(!this.state.accept && !this.state.reject) {
+      return;
+    } else if (this.props.roundStatus === ROUND_STATUS.VOTING_END) {
+      this.setState({accept: false, reject: false});
+    }
+  }
+  
   public render() {
     return (
       <div className="PlayerList">
