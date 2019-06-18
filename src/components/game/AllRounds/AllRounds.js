@@ -16,7 +16,7 @@ class AllRounds extends Component {
             />
           ))}
           <h3 style={{margin:"0"}}>
-              Vote Track 0/5
+              Vote Track {this.props.failedVotes}/5
           </h3>
         </div>
     );

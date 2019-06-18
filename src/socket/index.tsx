@@ -49,3 +49,8 @@ export const pickPlayer = (socketId: string, selected: number) => {
 export const proposeTeam = () => {
   socket.emit("PROPOSE_TEAM");
 };
+
+export const updateVote = (vote: number) => {
+  socket.emit("UPDATE_VOTE", vote);
+}
+

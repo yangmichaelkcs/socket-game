@@ -23,3 +23,5 @@ export const getCurrentRound = (state: RootState) => state.game.currentRound;
 export const getFailedVotes = (state: RootState) => state.game.failedVotes;
 export const getRoundStatus = (state: RootState) => state.game.roundStatus;
 export const getRounds = (state: RootState) => state.game.rounds;
+export const getVotes = (state: RootState) => state.game.votes;
+export const getScore = (state: RootState) => state.game.score;

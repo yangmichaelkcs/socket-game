@@ -141,6 +141,9 @@
 .VotingButtons {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 @keyframes App-logo-spin {

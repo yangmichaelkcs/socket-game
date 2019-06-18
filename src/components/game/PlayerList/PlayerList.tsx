@@ -11,7 +11,7 @@ import {
 } from "selectors";
 import { Player, ROUND_STATUS, Round } from "types/types";
 import { connect } from "react-redux";
-import { proposeTeam } from "socket";
+import { proposeTeam, updateVote } from "socket";
 
 interface PlayerListState {
   playerNeededTooltip : boolean;
@@ -28,7 +28,14 @@ interface PlayerListProps {
 class PlayerList extends React.Component<any, any> {
   constructor(props) {
     super(props);
-    this.state = { playerNeededTooltip: false };
+    this.state = { 
+      playerNeededTooltip: false,
+      accept: false,
+      reject: false
+    };
+
+    this.onAccept = this.onAccept.bind(this);
+    this.onReject = this.onReject.bind(this);
   }
 
   public onProposeClick = () => {
@@ -47,12 +54,22 @@ class PlayerList extends React.Component<any, any> {
   };
 
   public onAccept = () => {
-    // do something
-  };
+    if(this.state.reject || this.state.accept)
+    {
+      return;
+    }
+    this.setState({accept: true, reject: false});
+    updateVote(1);
+  }
 
   public onReject = () => {
-    // do something
-  };
+    if(this.state.reject || this.state.accept)
+    {
+      return;
+    }
+    this.setState({reject: true, accept: false});
+    updateVote(-1);
+  }
 
   public showProposeOrVoteButton() {
     const { turnToPick, roundStatus } = this.props;
@@ -70,12 +87,14 @@ class PlayerList extends React.Component<any, any> {
         <div className={"VotingButtons"}>
           <button
             onClick={this.onAccept}
+            disabled={this.state.accept}
             style={{ margin: "1rem", width: "100px", height: "50px" }}
           >
             Approve
           </button>
           <button
             onClick={this.onReject}
+            disabled={this.state.reject}
             style={{ margin: "1rem", width: "100px", height: "50px" }}
           >
             Reject
@@ -97,6 +116,14 @@ class PlayerList extends React.Component<any, any> {
     }
   }
 
+  public componentDidUpdate() {
+    if(!this.state.accept && !this.state.reject) {
+      return;
+    } else if (this.props.roundStatus === ROUND_STATUS.VOTING_END) {
+      this.setState({accept: false, reject: false});
+    }
+  }
+  
   public render() {
     return (
       <div className="PlayerList">

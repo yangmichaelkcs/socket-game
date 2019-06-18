@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import { TEAM } from 'types/types';
 
 class SingleRound extends Component{
   roundStatus() {
@@ -6,7 +7,7 @@ class SingleRound extends Component{
     {
       return null;
     }
-    else if(this.props.value)
+    else if(this.props.value === TEAM.GOOD)
     {
       return (
         <circle cx="50%" cy="50%" r="25%" stroke="blue" strokeWidth="5" fill="blue" />
