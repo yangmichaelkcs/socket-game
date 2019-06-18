@@ -76,7 +76,7 @@ class Game extends React.Component<GameStateProps, any> {
       return (
         <div>
           <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
-          <p>Pick {playersNeeded} players, ___ failures need for spies</p>
+          <p>Pick {playersNeeded} players, {rounds[currentRound -1].failsNeeded} failures need for spies</p>
         </div>
       );
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
