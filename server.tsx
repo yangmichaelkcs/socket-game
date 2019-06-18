@@ -228,10 +228,12 @@ const checkVoteComplete = socket => {
 //Cant reset failed votes here, need it in propose new team
 const checkVoteSucceed = socket => {
   const game: Game = getGameBySocket(socket);
+  const voteSucceed =  game.votes[VOTE_INDEX.POS] > game.votes[VOTE_INDEX.NEG] ? true : false;
   resetVotes(socket);
   resetSelectPlayers(socket);
   nextPlayerTurn(socket);
-  return game.votes[VOTE_INDEX.POS] > game.votes[VOTE_INDEX.NEG] ? true : false;
+  return voteSucceed;
+
 }
 
 const newTeamPropose = socket => {
@@ -335,7 +337,7 @@ io.on("connection", socket => {
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
 
-  socket.on("UPDATE_VOTE",  async (vote : number) =>  {
+  socket.on("UPDATE_TEAM_VOTE",  async (vote : number) =>  {
     updateVote(socket, vote);
     if(checkVoteComplete(socket)) {
       updateRoundStatus(socket);  //Voting_end
@@ -343,7 +345,7 @@ io.on("connection", socket => {
       io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
       await wait(6000);
       //Team is going on Mission
-      if (checkVoteSucceed(socket)) {
+      if(checkVoteSucceed(socket)) {
         resetFailedVotes(socket);
         updateRoundStatus(socket);  //Mission_inprogress
         gameId = getGameIdBySocket(socket);
