@@ -3,6 +3,7 @@ import { ROUND_STATUS, Player } from "types/types";
 import {
     getPlayers, 
     getRoundStatus,
+    getPlayerData 
 } from "selectors";
 import { connect } from "react-redux";
 import { updateMissionVote } from "socket";
@@ -10,6 +11,7 @@ import { updateMissionVote } from "socket";
 interface VoteButtonsProps {
     players: Player[];
     roundStatus: ROUND_STATUS;
+    onMission: boolean;
   }
 
 class VoteButtons extends React.Component<VoteButtonsProps, any> {
@@ -43,8 +45,8 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
   }
   
   public showVoteButtons () {
-    const { roundStatus } = this.props;
-    if(roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
+    const { roundStatus, onMission } = this.props;
+    if(roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS && onMission) {
       return (
         <div className={"VotingButtons"}>
           <button
@@ -86,10 +88,12 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
 
   const mapStateToProps = state => {
     const players: Player[] = getPlayers(state);
-  
+    const playerData: Player = getPlayerData(state);
+    const onMission = players.find(player => player.socketId === playerData.socketId).selected;
     return {
       players,
       roundStatus: getRoundStatus(state),
+      onMission
     };
   };
   

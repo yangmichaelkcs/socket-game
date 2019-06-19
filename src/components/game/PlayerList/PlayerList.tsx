@@ -19,7 +19,7 @@ interface PlayerListState {
 
 interface PlayerListProps {
   players: Player[];
-  turnToPick: Player;
+  turnToPick: boolean;
   roundStatus: ROUND_STATUS;
   rounds: Round[];
   currentRound: number;
