@@ -16,7 +16,6 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
   constructor(props) {
     super(props);
     this.state = { 
-      playerNeededTooltip: false,
       success: false,
       fail: false
     };
@@ -30,7 +29,7 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
     {
       return;
     }
-    this.setState({sucess: true, fail: false});
+    this.setState({success: true, fail: false});
     updateMissionVote(1);
   };
 

@@ -224,20 +224,33 @@ const checkVoteComplete = socket => {
     }
   } 
 }
+const checkMissionVoteComplete = socket => {
+  const game: Game = getGameBySocket(socket);
+  if(game.votes[VOTE_INDEX.NEG] + game.votes[VOTE_INDEX.POS] == game.rounds[game.currentRound - 1].playersNeeded) {
+    return true;
+  }
+}
 
 //Cant reset failed votes here, need it in propose new team
 const checkVoteSucceed = socket => {
   const game: Game = getGameBySocket(socket);
   const voteSucceed =  game.votes[VOTE_INDEX.POS] > game.votes[VOTE_INDEX.NEG] ? true : false;
   resetVotes(socket);
-  resetSelectPlayers(socket);
   nextPlayerTurn(socket);
   return voteSucceed;
 
 }
 
+//Want to keep votes to display, think aobut updating score later to do reveal of mission
+const checkMissionSucceed = socket => {
+  const game: Game = getGameBySocket(socket);
+  const numFailNeeded = game.rounds[game.currentRound - 1].failsNeeded;
+  return game.votes[VOTE_INDEX.NEG] < numFailNeeded; 
+}
+
 const newTeamPropose = socket => {
   const game: Game = getGameBySocket(socket);
+  resetSelectPlayers(socket);
   game.failedVotes++;
   game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
   if(game.failedVotes === 5)
@@ -359,6 +372,16 @@ io.on("connection", socket => {
         gameId = getGameIdBySocket(socket);
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
       }
+    }
+  });
+
+  socket.on("UPDATE_MISSION_VOTE",  async (vote : number) =>  {
+    updateVote(socket, vote);
+    if(checkMissionVoteComplete(socket)) {
+      // checkMissionSucceed(socket) ? updateScore(socket, TEAM.GOOD) : updateScore(socket, TEAM.BAD)
+      updateRoundStatus(socket);  //Mission_end without round update
+      const gameId = getGameIdBySocket(socket);
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
     }
   });
 

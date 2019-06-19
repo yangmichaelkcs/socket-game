@@ -1,23 +1,27 @@
-import React, { Component } from "react";
+import * as React from "react";
+import { connect } from "react-redux";
+import { getPlayerData } from "selectors";
+import { Player, ROUND_STATUS } from "types/types";
 import SingleResult from '../SingleResult';
-import { ROUND_STATUS } from "types/types";
 
-class RoundResult extends Component {
-  constructor(props) {
-    super(props)
-    this.state = { 
-      displayFifth: false,
-      displayFourth: false,
-      displaySecond: false,
-      displayThird: false,
-    };
-    this.displaySecond = this.displaySecond.bind(this)
-    this.displayThird = this.displayThird.bind(this)
-    this.displayFourth = this.displayFourth.bind(this)
-    this.displayFifth = this.displayFifth.bind(this)
-  }
 
-  displaySecond() {
+class RoundResult extends React.Component<any, any> {
+    constructor(props) {
+      super(props);
+      this.state = { 
+        displayFifth: false,
+        displayFourth: false,
+        displaySecond: false,
+        displayThird: false,
+      };
+      this.displaySecond = this.displaySecond.bind(this)
+      this.displayThird = this.displayThird.bind(this)
+      this.displayFourth = this.displayFourth.bind(this)
+      this.displayFifth = this.displayFifth.bind(this)
+    }
+
+
+  public displaySecond() {
     if(this.props.roundStatus === ROUND_STATUS.MISSION_END)
     {
       setTimeout(() => {
@@ -30,7 +34,7 @@ class RoundResult extends Component {
     }
   }
 
-  displayThird() {
+  public displayThird() {
     if(this.props.roundStatus === ROUND_STATUS.MISSION_END)
     {
       setTimeout(() => {
@@ -43,7 +47,7 @@ class RoundResult extends Component {
     }
   }
 
-  displayFourth() {
+  public displayFourth() {
     if(this.props.roundStatus === ROUND_STATUS.MISSION_END)
     {
       setTimeout(() => {
@@ -56,7 +60,7 @@ class RoundResult extends Component {
     }
   }
 
-  displayFifth() {
+  public displayFifth() {
     if(this.props.roundStatus === ROUND_STATUS.MISSION_END)
     {
       setTimeout(() => {
@@ -69,18 +73,19 @@ class RoundResult extends Component {
     }
   }
   
-  renderResult(num) { 
+  public renderResult(num) { 
     return num <= this.props.playersNeeded;     
   }
 
-  render(){
+  public render(){
     return (
       <div className="RoundResult">
         <h2>
           Round Results:
         </h2>
           <div className="RoundResultItems">
-            <SingleResult id={1} 
+            <SingleResult 
+              id={1} 
               value={this.props.votes[0]} 
               onComponentDidMount={this.displaySecond} 
             />
@@ -117,4 +122,8 @@ class RoundResult extends Component {
   }
 }
 
-export default RoundResult;
+const mapStateToProps = state => ({
+    playerData: getPlayerData(state)
+  });
+
+export default connect(mapStateToProps)(RoundResult);

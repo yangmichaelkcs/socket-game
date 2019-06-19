@@ -38,27 +38,28 @@ interface GameStateProps {
 class Game extends React.Component<GameStateProps, any> {
   // Shuffle makes different for every player, need to shuffle in server and pass as prop?, FIXME
   public voteShuffle() {
-    const { roundStatus, failedVotes, rounds } = this.props;
-    const playersNeeded = rounds[this.props.currentRound - 1].playersNeeded;
-    const votes: string[] = [];
+    const { roundStatus, rounds, votes, currentRound } = this.props;
+    const playersNeeded = rounds[currentRound - 1].playersNeeded;
+    console.log(playersNeeded);
+    const missionVotes: string[] = [];
     for (let k = 0; k < playersNeeded; k++) {
-      votes[k] = "?";
+      missionVotes[k] = "?";
     }
     if (roundStatus === ROUND_STATUS.MISSION_END) {
-      for (let j = 0; j < failedVotes; j++) {
-        votes[j] = "F";
+      for (let j = 0; j < votes[VOTE_INDEX.NEG]; j++) {
+        missionVotes[j] = "F";
       }
-      for (let i = failedVotes; i < playersNeeded; i++) {
-        votes[i] = "P";
+      for (let i = votes[VOTE_INDEX.NEG]; i < playersNeeded; i++) {
+        missionVotes[i] = "P";
       }
-      for (let m = votes.length - 1; m > 0; m--) {
+      for (let m = missionVotes.length - 1; m > 0; m--) {
         const n = Math.floor(Math.random() * (m + 1));
-        const temp = votes[m];
-        votes[m] = votes[n];
-        votes[n] = temp;
+        const temp = missionVotes[m];
+        missionVotes[m] = missionVotes[n];
+        missionVotes[n] = temp;
       }
     }
-    return votes;
+    return missionVotes;
   }
 
   public showAnnouncment () {
@@ -91,7 +92,7 @@ class Game extends React.Component<GameStateProps, any> {
       return (
         <div>
           <h2>Voting has completed</h2>
-          <p>Approve: {votes[0]}  Reject: {votes[1]}</p>
+          <p>Approve: {votes[VOTE_INDEX.POS]}  Reject: {votes[VOTE_INDEX.NEG]}</p>
         </div>
       );
     } else if (roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
@@ -105,7 +106,7 @@ class Game extends React.Component<GameStateProps, any> {
       return (
         <div>
           <h2>Mission Results </h2>
-          <p>Success: {votes[0]}  Fail: {votes[1]}</p>
+          <p>Success: {votes[VOTE_INDEX.POS]}  Fail: {votes[VOTE_INDEX.NEG]}</p>
         </div>
       ); 
     }
@@ -141,7 +142,7 @@ class Game extends React.Component<GameStateProps, any> {
       failedVotes
     } = this.props;
     const playersNeeded = rounds[currentRound - 1].playersNeeded;
-    const votes = this.voteShuffle();
+    const missionVotes = this.voteShuffle();
     return (
       <div className="Game">
         <RoundInfo currentRound={currentRound} />
@@ -155,7 +156,7 @@ class Game extends React.Component<GameStateProps, any> {
         <RoundResult
           playersNeeded={playersNeeded}
           roundStatus={roundStatus}
-          votes={votes}
+          votes={missionVotes}
         />
         <VoteButtons 
           roundStatus={roundStatus}
