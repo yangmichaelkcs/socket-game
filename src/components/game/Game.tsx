@@ -22,6 +22,11 @@ import {
 import { Player, ROUND_STATUS, Round, GAME_STATUS, VOTE_INDEX, TEAM } from "types/types";
 import { pickPlayer } from "socket";
 
+interface GameState {
+  oldVotes: number[];
+  voteOrder: number;
+}
+
 interface GameStateProps {
   curentPlayerTurn: Player;
   players: Player[];
@@ -36,31 +41,38 @@ interface GameStateProps {
 }
 
 class Game extends React.Component<GameStateProps, any> {
-  // Shuffle makes different for every player, need to shuffle in server and pass as prop?, FIXME
-  public voteShuffle() {
-    const { roundStatus, rounds, votes, currentRound } = this.props;
-    const playersNeeded = rounds[currentRound - 1].playersNeeded;
-    console.log(playersNeeded);
-    const missionVotes: string[] = [];
-    for (let k = 0; k < playersNeeded; k++) {
-      missionVotes[k] = "?";
-    }
-    if (roundStatus === ROUND_STATUS.MISSION_END) {
-      for (let j = 0; j < votes[VOTE_INDEX.NEG]; j++) {
-        missionVotes[j] = "F";
-      }
-      for (let i = votes[VOTE_INDEX.NEG]; i < playersNeeded; i++) {
-        missionVotes[i] = "P";
-      }
-      for (let m = missionVotes.length - 1; m > 0; m--) {
-        const n = Math.floor(Math.random() * (m + 1));
-        const temp = missionVotes[m];
-        missionVotes[m] = missionVotes[n];
-        missionVotes[n] = temp;
-      }
-    }
-    return missionVotes;
+  constructor(props) {
+    super(props);
+    this.state = { 
+      oldVotes: [0, 0],
+      voteOrder: []
+    };
   }
+  // Shuffle makes different for every player, need to shuffle in server and pass as prop?, FIXME
+  // public voteShuffle() {
+  //   const { roundStatus, rounds, votes, currentRound } = this.props;
+  //   const playersNeeded = rounds[currentRound - 1].playersNeeded;
+  //   console.log(playersNeeded);
+  //   const missionVotes: string[] = [];
+  //   for (let k = 0; k < playersNeeded; k++) {
+  //     missionVotes[k] = "?";
+  //   }
+  //   if (roundStatus === ROUND_STATUS.MISSION_END) {
+  //     for (let j = 0; j < votes[VOTE_INDEX.NEG]; j++) {
+  //       missionVotes[j] = "F";
+  //     }
+  //     for (let i = votes[VOTE_INDEX.NEG]; i < playersNeeded; i++) {
+  //       missionVotes[i] = "P";
+  //     }
+  //     for (let m = missionVotes.length - 1; m > 0; m--) {
+  //       const n = Math.floor(Math.random() * (m + 1));
+  //       const temp = missionVotes[m];
+  //       missionVotes[m] = missionVotes[n];
+  //       missionVotes[n] = temp;
+  //     }
+  //   }
+  //   return missionVotes;
+  // }
 
   public showAnnouncment () {
     const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players, status, score } = this.props;
@@ -141,8 +153,8 @@ class Game extends React.Component<GameStateProps, any> {
       roundStatus,
       failedVotes
     } = this.props;
-    const playersNeeded = rounds[currentRound - 1].playersNeeded;
-    const missionVotes = this.voteShuffle();
+    // const playersNeeded = rounds[currentRound - 1].playersNeeded;
+    // const missionVotes = this.voteShuffle();
     return (
       <div className="Game">
         <RoundInfo currentRound={currentRound} />
@@ -153,11 +165,7 @@ class Game extends React.Component<GameStateProps, any> {
             failedVotes={failedVotes} 
         />
         <PlayerList />
-        <RoundResult
-          playersNeeded={playersNeeded}
-          roundStatus={roundStatus}
-          votes={missionVotes}
-        />
+
         <VoteButtons 
           roundStatus={roundStatus}
           players = {players}
@@ -166,6 +174,12 @@ class Game extends React.Component<GameStateProps, any> {
     );
   }
 }
+
+{/* <RoundResult
+playersNeeded={playersNeeded}
+roundStatus={roundStatus}
+votes={missionVotes}
+/> */}
 
 const mapStateToProps = state => {
   const curentPlayerTurn: Player = getPlayerDataById(

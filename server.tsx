@@ -378,10 +378,23 @@ io.on("connection", socket => {
   socket.on("UPDATE_MISSION_VOTE",  async (vote : number) =>  {
     updateVote(socket, vote);
     if(checkMissionVoteComplete(socket)) {
+      const shuffledVotesArr = shuffleVotes(socket);
+      resetVotes(socket);
+      const game: Game = getGameBySocket(socket);
+      for(let i = 0; i < shuffledVotesArr.length; i++) {
+        await wait(1500);
+        if(shuffledVotesArr[i] === 1) {
+          game.votes[VOTE_INDEX.POS]++;
+        }
+        else {
+          game.votes[VOTE_INDEX.NEG]++;
+        }
+        const gameId = getGameIdBySocket(socket);
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      }
       // checkMissionSucceed(socket) ? updateScore(socket, TEAM.GOOD) : updateScore(socket, TEAM.BAD)
-      updateRoundStatus(socket);  //Mission_end without round update
-      const gameId = getGameIdBySocket(socket);
-      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      // updateRoundStatus(socket);  //Mission_end without round update
+
     }
   });
 
@@ -389,8 +402,40 @@ io.on("connection", socket => {
     return new Promise(resolve => {
       setTimeout(resolve, ms);
     });
-  }
+  };
 
+  const shuffleVotes = socket => {
+    const game: Game = getGameBySocket(socket);
+    const numVotes = game.votes[VOTE_INDEX.POS] + game.votes[VOTE_INDEX.NEG];
+    let shuffledVoteArr = [];
+    for(let i = 0; i < numVotes; i++) {
+      if(game.votes[VOTE_INDEX.POS] > 0) {
+        game.votes[VOTE_INDEX.POS]--;
+        shuffledVoteArr[i] = 1;
+      } else {
+        game.votes[VOTE_INDEX.NEG]--;
+        shuffledVoteArr[i] = -1;
+      }
+    }
+    let currentIndex = numVotes;
+    let temporaryValue;
+    let randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+  
+      // And swap it with the current element.
+      temporaryValue = shuffledVoteArr[currentIndex];
+      shuffledVoteArr[currentIndex] = shuffledVoteArr[randomIndex];
+      shuffledVoteArr[randomIndex] = temporaryValue;
+  
+    }
+  
+    return shuffledVoteArr;
+  };
 });
 
 console.log("listening on port", port);
