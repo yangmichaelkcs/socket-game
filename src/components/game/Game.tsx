@@ -5,7 +5,6 @@ import VoteButtons from "./VoteButtons";
 import AllRounds from "./AllRounds";
 import RoundInfo from "./RoundInfo/RoundInfo";
 import PlayerList from "./PlayerList/PlayerList";
-import RoundResult from "./RoundResult/RoundResult";
 import {
   getPlayerDataById,
   getCurrentPlayerTurn,
@@ -48,31 +47,6 @@ class Game extends React.Component<GameStateProps, any> {
       voteOrder: []
     };
   }
-  // Shuffle makes different for every player, need to shuffle in server and pass as prop?, FIXME
-  // public voteShuffle() {
-  //   const { roundStatus, rounds, votes, currentRound } = this.props;
-  //   const playersNeeded = rounds[currentRound - 1].playersNeeded;
-  //   console.log(playersNeeded);
-  //   const missionVotes: string[] = [];
-  //   for (let k = 0; k < playersNeeded; k++) {
-  //     missionVotes[k] = "?";
-  //   }
-  //   if (roundStatus === ROUND_STATUS.MISSION_END) {
-  //     for (let j = 0; j < votes[VOTE_INDEX.NEG]; j++) {
-  //       missionVotes[j] = "F";
-  //     }
-  //     for (let i = votes[VOTE_INDEX.NEG]; i < playersNeeded; i++) {
-  //       missionVotes[i] = "P";
-  //     }
-  //     for (let m = missionVotes.length - 1; m > 0; m--) {
-  //       const n = Math.floor(Math.random() * (m + 1));
-  //       const temp = missionVotes[m];
-  //       missionVotes[m] = missionVotes[n];
-  //       missionVotes[n] = temp;
-  //     }
-  //   }
-  //   return missionVotes;
-  // }
 
   public showAnnouncment () {
     const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players, status, score } = this.props;
@@ -193,8 +167,6 @@ class Game extends React.Component<GameStateProps, any> {
       roundStatus,
       failedVotes
     } = this.props;
-    // const playersNeeded = rounds[currentRound - 1].playersNeeded;
-    // const missionVotes = this.voteShuffle();
     return (
       <div className="Game">
         <RoundInfo currentRound={currentRound} />
@@ -214,12 +186,6 @@ class Game extends React.Component<GameStateProps, any> {
     );
   }
 }
-
-{/* <RoundResult
-playersNeeded={playersNeeded}
-roundStatus={roundStatus}
-votes={missionVotes}
-/> */}
 
 const mapStateToProps = state => {
   const curentPlayerTurn: Player = getPlayerDataById(
