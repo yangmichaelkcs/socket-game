@@ -382,7 +382,7 @@ io.on("connection", socket => {
       resetVotes(socket);
       const game: Game = getGameBySocket(socket);
       for(let i = 0; i < shuffledVotesArr.length; i++) {
-        await wait(1500);
+        await wait(2000);
         if(shuffledVotesArr[i] === 1) {
           game.votes[VOTE_INDEX.POS]++;
         }
