@@ -86,17 +86,26 @@ class Game extends React.Component<GameStateProps, any> {
       );
     } else if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
       const playersNeeded = rounds[currentRound - 1].playersNeeded;
+      if(this.state.oldVotes[VOTE_INDEX.POS] === 0 && this.state.oldVotes[VOTE_INDEX.NEG] === 0 && this.state.voteOrder.length === 0){
+        return (
+        <div>
+          <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
+          <p>Pick {playersNeeded} players, {rounds[currentRound -1].failsNeeded} failures need for spies</p>
+        </div>
+        );
+      }
+      this.setState({oldVotes: [0,0], voteOrder: []});
       return (
         <div>
           <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
           <p>Pick {playersNeeded} players, {rounds[currentRound -1].failsNeeded} failures need for spies</p>
         </div>
-      );
+        );
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
       return (
         <div>
           <h2>Vote on the following team:</h2>
-          <p>{players.filter(player => player.selected).map(p => (<span>{p.nickName.substring(0, 7)} </span>))} </p>
+          <p>{players.filter(player => player.selected).map(p => (<span>| {p.nickName.substring(0, 7)} |</span>))} </p>
         </div>
       );
     } else if (roundStatus === ROUND_STATUS.VOTING_END) {
@@ -111,7 +120,7 @@ class Game extends React.Component<GameStateProps, any> {
       return (
         <div>
           <h2>The following players are on the mission </h2>
-          <p>{players.filter(player => player.selected).map(p => (<span>{p.nickName.substring(0, 7)} </span>))} </p>
+          <p>{players.filter(player => player.selected).map(p => (<span>| {p.nickName.substring(0, 7)} |</span>))} </p>
         </div>
       );}
       else {
