@@ -69,7 +69,7 @@ const createNewGame = () => {
 const addPlayerToGame = (gameId, socket) => {
   const player: Player = {
     socketId: socket.id,
-    nickName: `Random ${getRandomWord()}`,
+    nickName: `${getRandomWord()}`,
     role: "DETECTIVE USELESS",
     selected: 0,
     team: null
@@ -378,6 +378,7 @@ io.on("connection", socket => {
   socket.on("UPDATE_MISSION_VOTE",  async (vote : number) =>  {
     updateVote(socket, vote);
     if(checkMissionVoteComplete(socket)) {
+      const gameId = getGameIdBySocket(socket);
       const shuffledVotesArr = shuffleVotes(socket);
       resetVotes(socket);
       const game: Game = getGameBySocket(socket);
@@ -389,12 +390,21 @@ io.on("connection", socket => {
         else {
           game.votes[VOTE_INDEX.NEG]++;
         }
-        const gameId = getGameIdBySocket(socket);
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
       }
-      // checkMissionSucceed(socket) ? updateScore(socket, TEAM.GOOD) : updateScore(socket, TEAM.BAD)
-      // updateRoundStatus(socket);  //Mission_end without round update
-
+      await wait(3000);
+      checkMissionSucceed(socket) ? updateScore(socket, TEAM.GOOD) : updateScore(socket, TEAM.BAD)
+      updateRoundStatus(socket);  //Mission_end without round update
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      await wait(6000);
+      if(checkWinner(socket) !== false) {
+        endGame(socket);
+      }
+      resetVotes(socket);
+      resetSelectPlayers(socket);
+      nextPlayerTurn(socket);
+      updateRoundStatus(socket);  //Mission_end without round update
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
     }
   });
 

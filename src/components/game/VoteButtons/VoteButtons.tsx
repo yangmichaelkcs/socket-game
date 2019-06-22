@@ -18,8 +18,8 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
   constructor(props) {
     super(props);
     this.state = { 
-      success: false,
-      fail: false
+      success: true,
+      fail: true
     };
 
     this.onSuccess = this.onSuccess.bind(this);
@@ -27,20 +27,12 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
   }
  
   public onSuccess = () => {
-    if(this.state.fail || this.state.success)
-    {
-      return;
-    }
-    this.setState({success: true, fail: false});
+    this.setState({success: false, fail: false});
     updateMissionVote(1);
   };
 
   public onFail = () => {
-    if(this.state.fail || this.state.success)
-    {
-      return;
-    }
-    this.setState({fail: true, success: false});
+    this.setState({fail: false, success: false});
     updateMissionVote(-1);
   }
   
@@ -49,30 +41,30 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
     if(roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS && onMission) {
       return (
         <div className={"VotingButtons"}>
-          <button
-            onClick={this.onSuccess}
-            disabled={this.state.success}
-            style={{ margin: "1rem", width: "100px", height: "50px" }}
-          >
-            Success
-          </button>
-          <button
-            onClick={this.onFail}
-            disabled={this.state.fail}
-            style={{ margin: "1rem", width: "100px", height: "50px" }}
-          >
-            Fail
-          </button>
+          {this.state.success && 
+            <button
+              onClick={this.onSuccess}
+              style={{ margin: "1rem", width: "100px", height: "50px" }}>
+              Success
+            </button>
+          }
+          {this.state.fail && 
+            <button
+              onClick={this.onFail}
+              style={{ margin: "1rem", width: "100px", height: "50px" }}>
+              Fail
+            </button>
+          }
         </div>
       );
     }
   }
 
   public componentDidUpdate() {
-    if(!this.state.success && !this.state.fail) {
+    if(this.state.success && this.state.fail) {
       return;
     } else if (this.props.roundStatus === ROUND_STATUS.VOTING_END) {
-      this.setState({success: false, fail: false});
+      this.setState({success: true, fail: true});
     }
   }
 

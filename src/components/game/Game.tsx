@@ -120,11 +120,12 @@ class Game extends React.Component<GameStateProps, any> {
             <div>
               <h2>Mission votes are completed</h2>
               <p>{this.state.voteOrder.map((vote) => {
-                if(vote === TEAM.GOOD) {
+                 if(vote === TEAM.GOOD) {
                   return <span>| Success |</span>
                 } else {
                   return <span>| Fail |</span>
-                }})}</p>
+                }})}
+              </p>
             </div>
           );
         }
@@ -137,10 +138,18 @@ class Game extends React.Component<GameStateProps, any> {
         this.setState({oldVotes: votes})
       }
     } else if (roundStatus === ROUND_STATUS.MISSION_END) {
+      let winner = "";
+      votes[VOTE_INDEX.NEG] >= rounds[currentRound - 1].failsNeeded ? winner = "Spies" : winner = "Resistance"
       return (
         <div>
-          <h2>Mission Results </h2>
-          <p>Success: {votes[VOTE_INDEX.POS]}  Fail: {votes[VOTE_INDEX.NEG]}</p>
+          <h2>{winner} wins the mission</h2>
+          <p>{this.state.voteOrder.map((vote) => {
+                if(vote === TEAM.GOOD) {
+                  return <span>| Success |</span>
+                } else {
+                  return <span>| Fail |</span>
+                }})}
+          </p>
         </div>
       ); 
     }
