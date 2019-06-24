@@ -270,7 +270,7 @@ const checkWinner = socket => {
   if(game.score[VOTE_INDEX.POS] === 3) {
     return TEAM.GOOD;
   }
-  if(game.score[VOTE_INDEX.NEG]) {
+  if(game.score[VOTE_INDEX.NEG] === 3) {
     return TEAM.BAD
   }
   return false;
