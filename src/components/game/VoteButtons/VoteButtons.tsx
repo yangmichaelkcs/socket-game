@@ -3,55 +3,68 @@ import { ROUND_STATUS, Player } from "types/types";
 import {
     getPlayers, 
     getRoundStatus,
+    getPlayerData 
 } from "selectors";
 import { connect } from "react-redux";
+import { updateMissionVote } from "socket";
 
 interface VoteButtonsProps {
     players: Player[];
     roundStatus: ROUND_STATUS;
+    onMission: boolean;
   }
 
-  class VoteButtons extends React.Component<VoteButtonsProps, any> {
+class VoteButtons extends React.Component<VoteButtonsProps, any> {
+  constructor(props) {
+    super(props);
+    this.state = { 
+      success: true,
+      fail: true
+    };
+
+    this.onSuccess = this.onSuccess.bind(this);
+    this.onFail = this.onFail.bind(this);
+  }
  
   public onSuccess = () => {
-    // if(this.state.reject || this.state.accept)
-    // {
-    //   return;
-    // }
-    //  this.setState({accept: true, reject: false});
-    //  updateVote(1);
+    this.setState({success: false, fail: false});
+    updateMissionVote(1);
   };
 
   public onFail = () => {
-    // if(this.state.reject || this.state.accept)
-    // {
-    //   return;
-    // }
-    // this.setState({reject: true, accept: false});
-    // updateVote(-1);
+    this.setState({fail: false, success: false});
+    updateMissionVote(-1);
   }
   
   public showVoteButtons () {
-    const { roundStatus } = this.props;
-    if(roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
+    const { roundStatus, onMission } = this.props;
+    if(roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS && onMission) {
       return (
         <div className={"VotingButtons"}>
-          <button
-            onClick={this.onSuccess}
-            //   disabled={this.state.accept}
-            style={{ margin: "1rem", width: "100px", height: "50px" }}
-          >
-            Success
-          </button>
-          <button
-            onClick={this.onFail}
-            //   disabled={this.state.reject}
-            style={{ margin: "1rem", width: "100px", height: "50px" }}
-          >
-            Fail
-          </button>
+          {this.state.success && 
+            <button
+              onClick={this.onSuccess}
+              style={{ margin: "1rem", width: "100px", height: "50px" }}>
+              Success
+            </button>
+          }
+          {this.state.fail && 
+            <button
+              onClick={this.onFail}
+              style={{ margin: "1rem", width: "100px", height: "50px" }}>
+              Fail
+            </button>
+          }
         </div>
       );
+    }
+  }
+
+  public componentDidUpdate() {
+    if(this.state.success && this.state.fail) {
+      return;
+    } else if (this.props.roundStatus === ROUND_STATUS.VOTING_END) {
+      this.setState({success: true, fail: true});
     }
   }
 
@@ -67,10 +80,12 @@ interface VoteButtonsProps {
 
   const mapStateToProps = state => {
     const players: Player[] = getPlayers(state);
-  
+    const playerData: Player = getPlayerData(state);
+    const onMission = players.find(player => player.socketId === playerData.socketId).selected;
     return {
       players,
       roundStatus: getRoundStatus(state),
+      onMission
     };
   };
   

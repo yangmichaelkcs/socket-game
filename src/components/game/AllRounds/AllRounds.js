@@ -3,7 +3,6 @@ import SingleRound from "../SingleRound";
 
 class AllRounds extends Component {
 
-  // Pass more round info like round status, members required, failed votes, FIXME
   render() {
     return (
         <div className="Round" style={{height:"50%"}}>

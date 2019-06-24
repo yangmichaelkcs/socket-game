@@ -10,7 +10,6 @@ import {
   VOTE_INDEX,
   ROUND_REQ
 } from "./src/types/types";
-import { isNull, isNullOrUndefined } from "util";
 
 const port = 8888;
 const io = socketIo.listen(port);
@@ -69,7 +68,7 @@ const createNewGame = () => {
 const addPlayerToGame = (gameId, socket) => {
   const player: Player = {
     socketId: socket.id,
-    nickName: `Random ${getRandomWord()}`,
+    nickName: `${getRandomWord()}`,
     role: "DETECTIVE USELESS",
     selected: 0,
     team: null
@@ -130,7 +129,7 @@ const startGame = (gameId: string) => {
   game.currentPlayerTurn = game.players[0].socketId;
   game.failedVotes = 0;
   game.currentRound = 1;
-  game.score = [];
+  game.score = [0, 0];
   game.rounds.forEach(round => { 
     const id = round.id
     round.playersNeeded = ROUND_REQ[id][game.players.length].playerNeed;
@@ -224,18 +223,33 @@ const checkVoteComplete = socket => {
     }
   } 
 }
+const checkMissionVoteComplete = socket => {
+  const game: Game = getGameBySocket(socket);
+  if(game.votes[VOTE_INDEX.NEG] + game.votes[VOTE_INDEX.POS] == game.rounds[game.currentRound - 1].playersNeeded) {
+    return true;
+  }
+}
 
 //Cant reset failed votes here, need it in propose new team
 const checkVoteSucceed = socket => {
   const game: Game = getGameBySocket(socket);
+  const voteSucceed =  game.votes[VOTE_INDEX.POS] > game.votes[VOTE_INDEX.NEG] ? true : false;
   resetVotes(socket);
-  resetSelectPlayers(socket);
   nextPlayerTurn(socket);
-  return game.votes[VOTE_INDEX.POS] > game.votes[VOTE_INDEX.NEG] ? true : false;
+  return voteSucceed;
+
+}
+
+//Want to keep votes to display, think aobut updating score later to do reveal of mission
+const checkMissionSucceed = socket => {
+  const game: Game = getGameBySocket(socket);
+  const numFailNeeded = game.rounds[game.currentRound - 1].failsNeeded;
+  return game.votes[VOTE_INDEX.NEG] < numFailNeeded; 
 }
 
 const newTeamPropose = socket => {
   const game: Game = getGameBySocket(socket);
+  resetSelectPlayers(socket);
   game.failedVotes++;
   game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
   if(game.failedVotes === 5)
@@ -256,7 +270,7 @@ const checkWinner = socket => {
   if(game.score[VOTE_INDEX.POS] === 3) {
     return TEAM.GOOD;
   }
-  if(game.score[VOTE_INDEX.NEG]) {
+  if(game.score[VOTE_INDEX.NEG] === 3) {
     return TEAM.BAD
   }
   return false;
@@ -264,7 +278,7 @@ const checkWinner = socket => {
 
 const endGame = socket => {
   const game: Game = getGameBySocket(socket);
-  game.status = GAME_STATUS.END;
+  game.roundStatus = ROUND_STATUS.MISSION_END;
 }
 
 io.on("connection", socket => {
@@ -335,7 +349,7 @@ io.on("connection", socket => {
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
 
-  socket.on("UPDATE_VOTE",  async (vote : number) =>  {
+  socket.on("UPDATE_TEAM_VOTE",  async (vote : number) =>  {
     updateVote(socket, vote);
     if(checkVoteComplete(socket)) {
       updateRoundStatus(socket);  //Voting_end
@@ -343,7 +357,7 @@ io.on("connection", socket => {
       io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
       await wait(6000);
       //Team is going on Mission
-      if (checkVoteSucceed(socket)) {
+      if(checkVoteSucceed(socket)) {
         resetFailedVotes(socket);
         updateRoundStatus(socket);  //Mission_inprogress
         gameId = getGameIdBySocket(socket);
@@ -352,6 +366,11 @@ io.on("connection", socket => {
         if(!newTeamPropose(socket)) {
           if(checkWinner(socket) === TEAM.BAD) {
             endGame(socket);
+            await wait(20000);
+            const game: Game = getGameBySocket(socket);
+            game.status = GAME_STATUS.END;
+            io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+            return;
           }
         }
         gameId = getGameIdBySocket(socket);
@@ -360,12 +379,83 @@ io.on("connection", socket => {
     }
   });
 
+  socket.on("UPDATE_MISSION_VOTE",  async (vote : number) =>  {
+    updateVote(socket, vote);
+    if(checkMissionVoteComplete(socket)) {
+      const gameId = getGameIdBySocket(socket);
+      const shuffledVotesArr = shuffleVotes(socket);
+      resetVotes(socket);
+      const game: Game = getGameBySocket(socket);
+      for(let i = 0; i < shuffledVotesArr.length; i++) {
+        await wait(2000);
+        if(shuffledVotesArr[i] === 1) {
+          game.votes[VOTE_INDEX.POS]++;
+        }
+        else {
+          game.votes[VOTE_INDEX.NEG]++;
+        }
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      }
+      await wait(3000);
+      checkMissionSucceed(socket) ? updateScore(socket, TEAM.GOOD) : updateScore(socket, TEAM.BAD)
+      updateRoundStatus(socket);  //Mission_end without round update
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      await wait(6000);
+      if(checkWinner(socket) !== false) {
+        endGame(socket);
+        resetVotes(socket);
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+        await wait(20000);
+        game.status = GAME_STATUS.END;
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+        return;
+      }
+      resetVotes(socket);
+      resetSelectPlayers(socket);
+      nextPlayerTurn(socket);
+      updateRoundStatus(socket);  //Proposing team
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+    }
+  });
+
   async function wait(ms) {
     return new Promise(resolve => {
       setTimeout(resolve, ms);
     });
-  }
+  };
 
+  const shuffleVotes = socket => {
+    const game: Game = getGameBySocket(socket);
+    const numVotes = game.votes[VOTE_INDEX.POS] + game.votes[VOTE_INDEX.NEG];
+    let shuffledVoteArr = [];
+    for(let i = 0; i < numVotes; i++) {
+      if(game.votes[VOTE_INDEX.POS] > 0) {
+        game.votes[VOTE_INDEX.POS]--;
+        shuffledVoteArr[i] = 1;
+      } else {
+        game.votes[VOTE_INDEX.NEG]--;
+        shuffledVoteArr[i] = -1;
+      }
+    }
+    let currentIndex = numVotes;
+    let temporaryValue;
+    let randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+  
+      // And swap it with the current element.
+      temporaryValue = shuffledVoteArr[currentIndex];
+      shuffledVoteArr[currentIndex] = shuffledVoteArr[randomIndex];
+      shuffledVoteArr[randomIndex] = temporaryValue;
+  
+    }
+  
+    return shuffledVoteArr;
+  };
 });
 
 console.log("listening on port", port);

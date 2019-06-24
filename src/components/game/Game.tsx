@@ -5,7 +5,6 @@ import VoteButtons from "./VoteButtons";
 import AllRounds from "./AllRounds";
 import RoundInfo from "./RoundInfo/RoundInfo";
 import PlayerList from "./PlayerList/PlayerList";
-import RoundResult from "./RoundResult/RoundResult";
 import {
   getPlayerDataById,
   getCurrentPlayerTurn,
@@ -22,6 +21,11 @@ import {
 import { Player, ROUND_STATUS, Round, GAME_STATUS, VOTE_INDEX, TEAM } from "types/types";
 import { pickPlayer } from "socket";
 
+interface GameState {
+  oldVotes: number[];
+  voteOrder: string[];
+}
+
 interface GameStateProps {
   curentPlayerTurn: Player;
   players: Player[];
@@ -36,76 +40,100 @@ interface GameStateProps {
 }
 
 class Game extends React.Component<GameStateProps, any> {
-  // Shuffle makes different for every player, need to shuffle in server and pass as prop?, FIXME
-  public voteShuffle() {
-    const { roundStatus, failedVotes, rounds } = this.props;
-    const playersNeeded = rounds[this.props.currentRound - 1].playersNeeded;
-    const votes: string[] = [];
-    for (let k = 0; k < playersNeeded; k++) {
-      votes[k] = "?";
-    }
-    if (roundStatus === ROUND_STATUS.MISSION_END) {
-      for (let j = 0; j < failedVotes; j++) {
-        votes[j] = "F";
-      }
-      for (let i = failedVotes; i < playersNeeded; i++) {
-        votes[i] = "P";
-      }
-      for (let m = votes.length - 1; m > 0; m--) {
-        const n = Math.floor(Math.random() * (m + 1));
-        const temp = votes[m];
-        votes[m] = votes[n];
-        votes[n] = temp;
-      }
-    }
-    return votes;
+  constructor(props) {
+    super(props);
+    this.state = { 
+      oldVotes: [0, 0],
+      voteOrder: []
+    };
   }
 
   public showAnnouncment () {
-    const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players, status, score } = this.props;
-    if (status === GAME_STATUS.END) {
-      const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
-      return (
-        <div>
-          <h2>The {winningTeam} has won</h2>
-          <p>The score was Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
-        </div>
-      );
-    } else if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
+    const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players, score } = this.props;
+    if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
       const playersNeeded = rounds[currentRound - 1].playersNeeded;
+      if(this.state.oldVotes[VOTE_INDEX.POS] === 0 && this.state.oldVotes[VOTE_INDEX.NEG] === 0 && this.state.voteOrder.length === 0){
+        return (
+        <div>
+          <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
+          <p>Pick {playersNeeded} players, {rounds[currentRound -1].failsNeeded} failures need for spies</p>
+        </div>
+        );
+      }
+      this.setState({oldVotes: [0,0], voteOrder: []});
       return (
         <div>
           <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
           <p>Pick {playersNeeded} players, {rounds[currentRound -1].failsNeeded} failures need for spies</p>
         </div>
-      );
+        );
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
-      players.filter(p => p.selected)
       return (
         <div>
           <h2>Vote on the following team:</h2>
-          <p>{players.filter(player => player.selected).map(p => (<span>{p.nickName.substring(0, 7)} </span>))} </p>
+          <p>{players.filter(player => player.selected).map(p => (<span>| {p.nickName.substring(0, 7)} |</span>))} </p>
         </div>
       );
     } else if (roundStatus === ROUND_STATUS.VOTING_END) {
       return (
         <div>
           <h2>Voting has completed</h2>
-          <p>Approve: {votes[0]}  Reject: {votes[1]}</p>
+          <p>Approve: {votes[VOTE_INDEX.POS]}  Reject: {votes[VOTE_INDEX.NEG]}</p>
         </div>
       );
     } else if (roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
+      if(votes[VOTE_INDEX.POS] + votes[VOTE_INDEX.NEG] === 0) {
       return (
         <div>
           <h2>The following players are on the mission </h2>
-          <p>{players.filter(player => player.selected).map(p => (<span>{p.nickName.substring(0, 7)} </span>))} </p>
+          <p>{players.filter(player => player.selected).map(p => (<span>| {p.nickName.substring(0, 7)} |</span>))} </p>
         </div>
-      ); 
+      );}
+      else {
+        if(votes[VOTE_INDEX.POS] === this.state.oldVotes[VOTE_INDEX.POS] && votes[VOTE_INDEX.NEG] === this.state.oldVotes[VOTE_INDEX.NEG]) {
+          return (
+            <div>
+              <h2>Mission votes are completed</h2>
+              <p>{this.state.voteOrder.map((vote) => {
+                 if(vote === TEAM.GOOD) {
+                  return <span>| Success |</span>
+                } else {
+                  return <span>| Fail |</span>
+                }})}
+              </p>
+            </div>
+          );
+        }
+        if(votes[VOTE_INDEX.POS] === this.state.oldVotes[VOTE_INDEX.POS]) {
+          this.setState({voteOrder: [...this.state.voteOrder, TEAM.BAD]})
+        }
+        else {
+          this.setState({voteOrder: [...this.state.voteOrder, TEAM.GOOD]})
+        }
+        this.setState({oldVotes: votes})
+      }
     } else if (roundStatus === ROUND_STATUS.MISSION_END) {
+      if(score[VOTE_INDEX.POS] === 3 || score[VOTE_INDEX.NEG] === 3) {
+        const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
+        return (
+          <div>
+            <h2>The {winningTeam} have won</h2>
+            <p>The score was Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
+          </div>
+        );
+      }
+      let winner = "";
+      votes[VOTE_INDEX.NEG] >= rounds[currentRound - 1].failsNeeded ? winner = "Spies" : winner = "Resistance"
       return (
         <div>
-          <h2>Mission Results </h2>
-          <p>Success: {votes[0]}  Fail: {votes[1]}</p>
+          <h2>{winner} wins the mission</h2>
+          <p>{this.state.voteOrder.map((vote) => {
+                if(vote === TEAM.GOOD) {
+                  return <span>| Success |</span>
+                } else {
+                  return <span>| Fail |</span>
+                }})}
+          </p>
         </div>
       ); 
     }
@@ -132,16 +160,12 @@ class Game extends React.Component<GameStateProps, any> {
 
   public render() {
     const {
-      curentPlayerTurn,
       players,
       currentRound,
-      playerData,
       rounds,
       roundStatus,
       failedVotes
     } = this.props;
-    const playersNeeded = rounds[currentRound - 1].playersNeeded;
-    const votes = this.voteShuffle();
     return (
       <div className="Game">
         <RoundInfo currentRound={currentRound} />
@@ -152,11 +176,6 @@ class Game extends React.Component<GameStateProps, any> {
             failedVotes={failedVotes} 
         />
         <PlayerList />
-        <RoundResult
-          playersNeeded={playersNeeded}
-          roundStatus={roundStatus}
-          votes={votes}
-        />
         <VoteButtons 
           roundStatus={roundStatus}
           players = {players}
