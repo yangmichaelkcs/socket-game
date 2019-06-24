@@ -49,16 +49,8 @@ class Game extends React.Component<GameStateProps, any> {
   }
 
   public showAnnouncment () {
-    const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players, status, score } = this.props;
-    if (status === GAME_STATUS.END) {
-      const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
-      return (
-        <div>
-          <h2>The {winningTeam} has won</h2>
-          <p>The score was Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
-        </div>
-      );
-    } else if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
+    const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players, score } = this.props;
+    if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
       const playersNeeded = rounds[currentRound - 1].playersNeeded;
       if(this.state.oldVotes[VOTE_INDEX.POS] === 0 && this.state.oldVotes[VOTE_INDEX.NEG] === 0 && this.state.voteOrder.length === 0){
         return (
@@ -121,6 +113,15 @@ class Game extends React.Component<GameStateProps, any> {
         this.setState({oldVotes: votes})
       }
     } else if (roundStatus === ROUND_STATUS.MISSION_END) {
+      if(score[VOTE_INDEX.POS] === 3 || score[VOTE_INDEX.NEG] === 3) {
+        const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
+        return (
+          <div>
+            <h2>The {winningTeam} have won</h2>
+            <p>The score was Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
+          </div>
+        );
+      }
       let winner = "";
       votes[VOTE_INDEX.NEG] >= rounds[currentRound - 1].failsNeeded ? winner = "Spies" : winner = "Resistance"
       return (
@@ -159,10 +160,8 @@ class Game extends React.Component<GameStateProps, any> {
 
   public render() {
     const {
-      curentPlayerTurn,
       players,
       currentRound,
-      playerData,
       rounds,
       roundStatus,
       failedVotes
@@ -177,7 +176,6 @@ class Game extends React.Component<GameStateProps, any> {
             failedVotes={failedVotes} 
         />
         <PlayerList />
-
         <VoteButtons 
           roundStatus={roundStatus}
           players = {players}

@@ -10,7 +10,6 @@ import {
   VOTE_INDEX,
   ROUND_REQ
 } from "./src/types/types";
-import { isNull, isNullOrUndefined } from "util";
 
 const port = 8888;
 const io = socketIo.listen(port);
@@ -130,7 +129,7 @@ const startGame = (gameId: string) => {
   game.currentPlayerTurn = game.players[0].socketId;
   game.failedVotes = 0;
   game.currentRound = 1;
-  game.score = [];
+  game.score = [0, 0];
   game.rounds.forEach(round => { 
     const id = round.id
     round.playersNeeded = ROUND_REQ[id][game.players.length].playerNeed;
@@ -279,7 +278,7 @@ const checkWinner = socket => {
 
 const endGame = socket => {
   const game: Game = getGameBySocket(socket);
-  game.status = GAME_STATUS.END;
+  game.roundStatus = ROUND_STATUS.MISSION_END;
 }
 
 io.on("connection", socket => {
@@ -367,6 +366,11 @@ io.on("connection", socket => {
         if(!newTeamPropose(socket)) {
           if(checkWinner(socket) === TEAM.BAD) {
             endGame(socket);
+            await wait(20000);
+            const game: Game = getGameBySocket(socket);
+            game.status = GAME_STATUS.END;
+            io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+            return;
           }
         }
         gameId = getGameIdBySocket(socket);
@@ -399,11 +403,17 @@ io.on("connection", socket => {
       await wait(6000);
       if(checkWinner(socket) !== false) {
         endGame(socket);
+        resetVotes(socket);
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+        await wait(20000);
+        game.status = GAME_STATUS.END;
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+        return;
       }
       resetVotes(socket);
       resetSelectPlayers(socket);
       nextPlayerTurn(socket);
-      updateRoundStatus(socket);  //Mission_end without round update
+      updateRoundStatus(socket);  //Proposing team
       io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
     }
   });
