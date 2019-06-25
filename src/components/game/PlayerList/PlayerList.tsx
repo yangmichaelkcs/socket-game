@@ -59,7 +59,8 @@ class PlayerList extends React.Component<any, any> {
       return;
     }
     this.setState({accept: true, reject: false});
-    updateTeamVote(1);
+    const { playerData } = this.props; 
+    updateTeamVote(1, playerData.socketId);
   }
 
   public onReject = () => {
@@ -68,7 +69,8 @@ class PlayerList extends React.Component<any, any> {
       return;
     }
     this.setState({reject: true, accept: false});
-    updateTeamVote(-1);
+    const { playerData } = this.props; 
+    updateTeamVote(-1, playerData.socketId); 
   }
 
   public showProposeOrVoteButton() {
@@ -160,7 +162,7 @@ class PlayerList extends React.Component<any, any> {
               }}
             >
               <span>{player.nickName.substring(0, 7)}</span>
-              <PlayerComponent key={player.socketId} player={player} />
+              <PlayerComponent key={player.socketId} player={player}/>
             </li>
           ))}
         </ul>
@@ -187,7 +189,8 @@ const mapStateToProps = state => {
     turnToPick,
     roundStatus,
     rounds: getRounds(state),
-    currentRound
+    currentRound,
+    playerData
   };
 };
 

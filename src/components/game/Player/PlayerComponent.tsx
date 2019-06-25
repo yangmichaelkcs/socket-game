@@ -47,6 +47,22 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
     }
   };
 
+  // Turn into some kind of icon later
+  public displayVote = () => {
+    const { player, roundStatus } = this.props;
+    if (roundStatus === ROUND_STATUS.VOTING_END) {
+      if( player.vote === 1) {
+        return (
+          <span>A</span>
+        );
+      } else {
+        return (
+          <span>R</span>
+        );
+      }
+    } 
+  }
+
   public getPlayerClasses() {
     let classes = "";
     classes +=
@@ -57,8 +73,11 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
   public render() {
     const { player } = this.props;
     return (
-      <div className={this.getPlayerClasses()} onClick={this.onPlayerClick}>
-        <span>{player.nickName ? player.nickName.charAt(0) : ""}</span>
+      <div>
+        <div className={this.getPlayerClasses()} onClick={this.onPlayerClick}>
+          <span>{player.nickName ? player.nickName.charAt(0) : ""}</span>
+        </div>
+        {this.displayVote()}
       </div>
     );
   }
