@@ -132,4 +132,5 @@ export interface Player {
   team?: TEAM;
   role?: string;
   selected?: number;
+  vote?: number;
 }

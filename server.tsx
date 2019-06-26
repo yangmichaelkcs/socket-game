@@ -192,10 +192,18 @@ const updateVote = (socket, vote) => {
   vote === -1 ? game.votes[VOTE_INDEX.NEG]++ : game.votes[VOTE_INDEX.POS]++;
 }
 
+const updateTeamVote = (socket, vote, socketId) => {
+  const game: Game = getGameBySocket(socket);
+  vote === -1 ? game.votes[VOTE_INDEX.NEG]++ : game.votes[VOTE_INDEX.POS]++;
+  const player = game.players.find(p => p.socketId === socketId);
+  vote === -1 ? player.vote = -1 : player.vote = 1;
+}
+
 const resetVotes = socket => {
   const game: Game = getGameBySocket(socket);
   game.votes[VOTE_INDEX.POS] = 0;
   game.votes[VOTE_INDEX.NEG] = 0;
+  game.players.forEach(p => p.vote = 0);
 }
 
 const resetSelectPlayers = socket => {
@@ -250,6 +258,7 @@ const checkMissionSucceed = socket => {
 const newTeamPropose = socket => {
   const game: Game = getGameBySocket(socket);
   resetSelectPlayers(socket);
+  nextPlayerTurn(socket);
   game.failedVotes++;
   game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
   if(game.failedVotes === 5)
@@ -349,8 +358,8 @@ io.on("connection", socket => {
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
 
-  socket.on("UPDATE_TEAM_VOTE",  async (vote : number) =>  {
-    updateVote(socket, vote);
+  socket.on("UPDATE_TEAM_VOTE",  async (vote : number, socketId: string) =>  {
+    updateTeamVote(socket, vote, socketId);
     if(checkVoteComplete(socket)) {
       updateRoundStatus(socket);  //Voting_end
       let gameId = getGameIdBySocket(socket);
@@ -360,6 +369,7 @@ io.on("connection", socket => {
       if(checkVoteSucceed(socket)) {
         resetFailedVotes(socket);
         updateRoundStatus(socket);  //Mission_inprogress
+        nextPlayerTurn(socket)
         gameId = getGameIdBySocket(socket);
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
       } else { //New Vote
@@ -412,7 +422,6 @@ io.on("connection", socket => {
       }
       resetVotes(socket);
       resetSelectPlayers(socket);
-      nextPlayerTurn(socket);
       updateRoundStatus(socket);  //Proposing team
       io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
     }
