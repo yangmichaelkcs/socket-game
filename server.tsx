@@ -160,7 +160,6 @@ const shuffle = (players: Player[]): Player[] => {
 
 const assignRoles = (gameId: string) => {
   const players: Player[] = gamesById[gameId].players;
-  //const playerKeys = Object.keys(players);
   var numBadPlayer = 0;
   while(numBadPlayer < PLAYER_DISTRIBUTION[players.length].bad) {
     let index = Math.floor(Math.random() * players.length)
@@ -174,10 +173,6 @@ const assignRoles = (gameId: string) => {
       players[i].team = TEAM.GOOD;
     }
   }
-  //    playerKeys.forEach(playerId => {
-  //    const player: Player = players[playerId];
-  //    player.team = TEAM.GOOD;
-  //  });
 };
 
 const nextPlayerTurn = socket => {
