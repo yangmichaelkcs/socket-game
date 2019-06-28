@@ -53,6 +53,7 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
     return (
       <div className="Lobby">
         <h2>Game ID: {gameId}</h2>
+        <h2>You must have 5 - 10 players</h2>
         <h2> {playerCount} players have connected </h2>
         <ul>{playerListItems}</ul>
         <br />
