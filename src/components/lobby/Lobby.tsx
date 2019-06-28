@@ -67,7 +67,7 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
         </div>
         <br />
         <div>
-          <StartButton />
+          <StartButton playerCount={playerCount} />
           <MenuButton />
         </div>
       </div>
