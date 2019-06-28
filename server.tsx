@@ -159,25 +159,25 @@ const shuffle = (players: Player[]): Player[] => {
 };
 
 const assignRoles = (gameId: string) => {
-   const players: Player[] = gamesById[gameId].players;
-   const playerKeys = Object.keys(players);
-  // var numBadPlayer = 0;
-  // while(numBadPlayer < PLAYER_DISTRIBUTION[players.length].bad) {
-  //   let index = Math.floor(Math.random() * (players.length + 1))
-  //   if(isNullOrUndefined(players[index].team)) {
-  //     players[index].team = TEAM.BAD;
-  //     numBadPlayer++;
-  //   }
-  // }
-  // for(var i = 0; i < players.length; i++) { 
-  //   if(isNullOrUndefined(players[i].team)) {
-  //     players[i].team = TEAM.GOOD;
-  //   }
-  // }
-     playerKeys.forEach(playerId => {
-     const player: Player = players[playerId];
-     player.team = TEAM.GOOD;
-   });
+  const players: Player[] = gamesById[gameId].players;
+  //const playerKeys = Object.keys(players);
+  var numBadPlayer = 0;
+  while(numBadPlayer < PLAYER_DISTRIBUTION[players.length].bad) {
+    let index = Math.floor(Math.random() * players.length)
+    if(players[index].team === null || players[index].team === undefined) {
+      players[index].team = TEAM.BAD;
+      numBadPlayer++;
+    }
+  }
+  for(var i = 0; i < players.length; i++) { 
+    if(players[i].team === null || players[i].team === undefined) {
+      players[i].team = TEAM.GOOD;
+    }
+  }
+  //    playerKeys.forEach(playerId => {
+  //    const player: Player = players[playerId];
+  //    player.team = TEAM.GOOD;
+  //  });
 };
 
 const nextPlayerTurn = socket => {
