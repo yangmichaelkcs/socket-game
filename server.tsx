@@ -152,7 +152,6 @@ const shuffle = (players: Player[]): Player[] => {
     temporaryValue = players[currentIndex];
     players[currentIndex] = players[randomIndex];
     players[randomIndex] = temporaryValue;
-
   }
 
   return players;
@@ -285,6 +284,45 @@ const endGame = socket => {
   game.roundStatus = ROUND_STATUS.MISSION_END;
 }
 
+async function wait(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+};
+
+const shuffleVotes = socket => {
+  const game: Game = getGameBySocket(socket);
+  const numVotes = game.votes[VOTE_INDEX.POS] + game.votes[VOTE_INDEX.NEG];
+  let shuffledVoteArr = [];
+  for(let i = 0; i < numVotes; i++) {
+    if(game.votes[VOTE_INDEX.POS] > 0) {
+      game.votes[VOTE_INDEX.POS]--;
+      shuffledVoteArr[i] = 1;
+    } else {
+      game.votes[VOTE_INDEX.NEG]--;
+      shuffledVoteArr[i] = -1;
+    }
+  }
+  let currentIndex = numVotes;
+  let temporaryValue;
+  let randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = shuffledVoteArr[currentIndex];
+    shuffledVoteArr[currentIndex] = shuffledVoteArr[randomIndex];
+    shuffledVoteArr[randomIndex] = temporaryValue;
+
+  }
+
+  return shuffledVoteArr;
+};
+
 io.on("connection", socket => {
   socket.on("disconnect", function() {
     console.log("user disconnected: " + socket.id);
@@ -296,7 +334,20 @@ io.on("connection", socket => {
   socket.on("disconnecting", () => {
     const gameId = getGameIdBySocket(socket);
     if (gameId && gamesById[gameId]) {
-      delete gamesById[gameId].players[socket.id];
+      const game = gamesById[gameId];
+      const playersList = game.players
+      const playerIndex = playersList.findIndex(player => player.socketId === socket.id)
+      // Lobby Case
+      if(game.status === GAME_STATUS.LOBBY) {
+        playersList.splice(playerIndex, 1);
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+        return;
+      }
+      // Game Started Case
+      if(game.status === GAME_STATUS.IN_PROGRESS) {
+
+        return;
+      }
     }
   });
 
@@ -422,44 +473,17 @@ io.on("connection", socket => {
     }
   });
 
-  async function wait(ms) {
-    return new Promise(resolve => {
-      setTimeout(resolve, ms);
-    });
-  };
-
-  const shuffleVotes = socket => {
-    const game: Game = getGameBySocket(socket);
-    const numVotes = game.votes[VOTE_INDEX.POS] + game.votes[VOTE_INDEX.NEG];
-    let shuffledVoteArr = [];
-    for(let i = 0; i < numVotes; i++) {
-      if(game.votes[VOTE_INDEX.POS] > 0) {
-        game.votes[VOTE_INDEX.POS]--;
-        shuffledVoteArr[i] = 1;
-      } else {
-        game.votes[VOTE_INDEX.NEG]--;
-        shuffledVoteArr[i] = -1;
-      }
+  socket.on("MAIN_MENU", () => {
+    const gameId = getGameIdBySocket(socket);
+    if (gameId && gamesById[gameId]) {
+      const game = gamesById[gameId];
+      const playersList = game.players
+      const playerIndex = playersList.findIndex(player => player.socketId === socket.id)
+      playersList.splice(playerIndex, 1);
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      socket.emit("NAV_MAIN_MENU", { status: "" });
     }
-    let currentIndex = numVotes;
-    let temporaryValue;
-    let randomIndex;
-  
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-  
-      // And swap it with the current element.
-      temporaryValue = shuffledVoteArr[currentIndex];
-      shuffledVoteArr[currentIndex] = shuffledVoteArr[randomIndex];
-      shuffledVoteArr[randomIndex] = temporaryValue;
-  
-    }
-  
-    return shuffledVoteArr;
-  };
+  });
 });
 
 console.log("listening on port", port);

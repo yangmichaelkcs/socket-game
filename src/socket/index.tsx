@@ -1,5 +1,5 @@
 import * as io from "socket.io-client";
-import { setGameData } from "../actions";
+import { setGameData, navigateTo } from "../actions";
 import { setSocketId } from "../actions";
 
 const socket = io("http://localhost:8888");
@@ -20,12 +20,21 @@ export class SocketListener {
     socket.on("SET_SOCKET_ID", socketId => {
       store.dispatch(setSocketId(socketId));
     });
+
+    socket.on("NAV_MAIN_MENU", destination => {
+      store.dispatch(navigateTo(destination));
+    });
   }
 }
 
 export const createNewGame = () => {
   console.log("Client creating a new game");
   socket.emit("NEW_GAME");
+};
+
+export const mainMenu = () => {
+  console.log("Client leaving game to Main menu");
+  socket.emit("MAIN_MENU");
 };
 
 export const joinGame = gameId => {
