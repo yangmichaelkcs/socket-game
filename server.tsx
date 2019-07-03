@@ -328,8 +328,6 @@ io.on("connection", socket => {
     console.log("user disconnected: " + socket.id);
   });
 
-  // FIXME: This should only UPDATE_COUNT based on game state
-  // If game has not started, it should decrement
   // If game has started we need to implement socket reconnection
   socket.on("disconnecting", () => {
     const gameId = getGameIdBySocket(socket);
@@ -373,7 +371,6 @@ io.on("connection", socket => {
       console.log(`${socket.id} joined a game with gameId: ${gameId}`);
     } else {
       console.log(`Game Id ${gameId} does not exist.`);
-      // TODO: Add some error handling here
     }
   });
 
@@ -481,7 +478,7 @@ io.on("connection", socket => {
       const playerIndex = playersList.findIndex(player => player.socketId === socket.id)
       playersList.splice(playerIndex, 1);
       io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
-      socket.emit("NAV_MAIN_MENU", { status: "" });
+      socket.emit("NAV_MAIN_MENU", {});
     }
   });
 });

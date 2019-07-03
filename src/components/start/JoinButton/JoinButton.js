@@ -5,7 +5,7 @@ import { joinGame } from "socket";
 class JoinButton extends Component {
   constructor(props) {
     super(props);
-    this.state = { value: "" };
+    this.state = { value: "", invalidGame: false };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -17,6 +17,15 @@ class JoinButton extends Component {
 
   handleClick() {
     joinGame(this.state.value);
+    this.setState({ invalidGame: true })
+  }
+
+  showNotExists() {
+    if(this.state.invalidGame) {
+      return (
+        <span style={{color:"Tomato"}}>This Game ID does not exist</span>
+      );
+    } 
   }
 
   render() {
@@ -29,6 +38,9 @@ class JoinButton extends Component {
           placeholder="Game ID"
         />
         <button onClick={this.handleClick}>Join Game</button>
+        <br />
+        <br />
+        <span>{this.showNotExists()}</span>
       </div>
     );
   }

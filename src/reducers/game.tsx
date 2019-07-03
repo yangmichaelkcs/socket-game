@@ -5,7 +5,7 @@ const game = (state: Game | {} = {}, action): Game | {} => {
     case "SET_GAME":
       return { ...state, ...action.game };
     case "NAVIGATE_TO":
-      return { ...state, ...action.destination };
+      return { ...action.destination };
     default:
       return state;
   }
