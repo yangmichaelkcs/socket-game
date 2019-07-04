@@ -30,8 +30,8 @@ class PlayerList extends React.Component<any, any> {
     super(props);
     this.state = { 
       playerNeededTooltip: false,
-      accept: false,
-      reject: false
+      accept: true,
+      reject: true
     };
 
     this.onAccept = this.onAccept.bind(this);
@@ -54,21 +54,13 @@ class PlayerList extends React.Component<any, any> {
   };
 
   public onAccept = () => {
-    if(this.state.reject || this.state.accept)
-    {
-      return;
-    }
-    this.setState({accept: true, reject: false});
+    this.setState({accept: false, reject: false});
     const { playerData } = this.props; 
     updateTeamVote(1, playerData.socketId);
   }
 
   public onReject = () => {
-    if(this.state.reject || this.state.accept)
-    {
-      return;
-    }
-    this.setState({reject: true, accept: false});
+    this.setState({reject: false, accept: false});
     const { playerData } = this.props; 
     updateTeamVote(-1, playerData.socketId); 
   }
@@ -87,20 +79,22 @@ class PlayerList extends React.Component<any, any> {
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
       return (
         <div className={"VotingButtons"}>
-          <button
-            onClick={this.onAccept}
-            disabled={this.state.accept}
-            style={{ margin: "1rem", width: "100px", height: "50px" }}
-          >
+          {this.state.accept &&
+            <button
+              onClick={this.onAccept}
+              style={{ margin: "1rem", width: "100px", height: "50px" }}
+            >
             Approve
-          </button>
-          <button
-            onClick={this.onReject}
-            disabled={this.state.reject}
-            style={{ margin: "1rem", width: "100px", height: "50px" }}
-          >
+            </button>
+          }
+          {this.state.reject &&
+            <button
+              onClick={this.onReject}
+              style={{ margin: "1rem", width: "100px", height: "50px" }}
+            >
             Reject
-          </button>
+            </button>
+          }
         </div>
       );
     }
@@ -119,10 +113,10 @@ class PlayerList extends React.Component<any, any> {
   }
 
   public componentDidUpdate() {
-    if(!this.state.accept && !this.state.reject) {
+    if(this.state.accept && this.state.reject) {
       return;
     } else if (this.props.roundStatus === ROUND_STATUS.VOTING_END) {
-      this.setState({accept: false, reject: false});
+      this.setState({accept: true, reject: true});
     }
   }
   
