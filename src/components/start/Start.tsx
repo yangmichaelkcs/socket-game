@@ -18,7 +18,7 @@ class StartGame extends React.Component<any, any> {
         return (
           <div className="StartGame">
             <div style={{marginBottom: "2rem"}}>
-              <h1 className="display-1"><u>Avalon</u><FaCrown /></h1>
+              <h1 className="display-2"><u>Avalon</u><FaCrown style={{fontSize:"5rem"}}/></h1>
               <p>
                 Welcome to Avalon. Evil Mordred and his minions  
                 <br />

@@ -31,19 +31,15 @@ class JoinButton extends Component {
   render() {
     return (
       <div>
-        <form className="form-inline">
         <div>
-          <input
-            type="text"
-            value={this.state.value}
-            onChange={this.handleChange}
-            placeholder="Game ID"
-            className="form-control" 
-            type="text"
-          />
+          <div className="input-group mb-3">
+            <input type="text" value={this.state.value} onChange={this.handleChange}
+                   placeholder="Game ID" className="form-control" />
+            <div className="input-group-append">
+              <button type="button" className="btn btn-primary" onClick={this.handleClick}>Join Game</button>
+            </div>
+          </div>
         </div>
-        <button type="button" className="btn btn-primary" onClick={this.handleClick}>Join Game</button>
-        </form>
         <span>{this.showNotExists()}</span>
       </div>
     );

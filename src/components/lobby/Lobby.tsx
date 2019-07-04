@@ -58,17 +58,15 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
         <br />
         <ul className="list-unstyled">{playerListItems}</ul>
         <br />
-        <form className="form-inline">
-          <input
-            type="text"
-            value={this.state.value}
-            onChange={this.handleChange}
-            placeholder={this.getNick()}
-            className="form-control" 
-            style={{width:"50%"}}
-          />
-          <button type="button" className="btn btn-light" onClick={this.handleClick}>Update Nickname</button>
-        </form>
+        <div>
+          <div className="input-group mb-3">
+            <input type="text" value={this.state.value} onChange={this.handleChange}
+                   placeholder={this.getNick()} className="form-control" />
+            <div className="input-group-append">
+              <button type="button" className="btn btn-outline-secondary" onClick={this.handleClick}>Update Nickname</button>
+            </div>
+          </div>
+        </div>
         <br />
         <div>
           <StartButton playerCount={playerCount} />
