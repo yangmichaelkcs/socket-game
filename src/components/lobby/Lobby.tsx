@@ -32,9 +32,9 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
   }
 
   public handleClick() {
-    if(this.state.value.length >=1)
+    if(this.state.value.trim().length >=1)
     {
-      updateNickName(this.state.value);
+      updateNickName(this.state.value.trim());
     }
   }
 
@@ -63,7 +63,7 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
             <input type="text" value={this.state.value} onChange={this.handleChange}
                    placeholder={this.getNick()} className="form-control" />
             <div className="input-group-append">
-              <button type="button" className="btn btn-outline-secondary" onClick={this.handleClick}>Update Nickname</button>
+              <button type="button" className="NicknameButton btn btn-outline-secondary" onClick={this.handleClick}>Update Nickname</button>
             </div>
           </div>
         </div>

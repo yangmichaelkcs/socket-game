@@ -6,6 +6,8 @@
   height: 100%;
   justify-content: center;
   text-align: center;
+  width: 90%;
+  margin-left: 5%;
 }
 
 .ColorCode {
@@ -18,6 +20,7 @@
 }
 
 .Game {
+  padding-top: 1rem;
   padding-left: calc(30% - 190px);
   padding-right: calc(30% - 190px);
   flex-direction: column;
@@ -27,26 +30,40 @@
   text-align: center;
   padding-bottom: 4rem;
   margin-bottom: 4rem;
+  width: 90%;
+  margin-left: 5%;
 }
 
 .Role {
-  flex-direction: column;
-  align-items: left;
-  justify-content: center;
-  float: left;
   width: 100%;
   border-top: 1px solid #000;
   border-bottom: 1px solid #000;
-  min-height: 14px;
   margin-bottom: 1rem;
+  display: table
 }
 
 .RoleButton {
-  background: transparent;
-  border: none;
   float: right;
-  padding: 2rem;
-  outline: none;
+  font-size: 12px;
+  color: #222
+}
+
+.RoleButton:focus, .RoleButton:active, .RoleButton.hover {
+  outline: none !important;
+  box-shadow: none;
+  background: transparent;
+  color: #222
+}
+
+.NicknameButton {
+  color: #222
+}
+
+.NicknameButton:focus, .NicknameButton:active, .NicknameButton.hover {
+  outline: none !important;
+  box-shadow: none;
+  background: transparent;
+  color: #222
 }
 
 .PlayerSelectLegend {

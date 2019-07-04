@@ -5,8 +5,12 @@ import { startGame } from "socket";
 
 class StartButton extends Component {
   disableStart() {
-    const { playerCount } = this.props;
-    return playerCount < 5 || playerCount > 10;
+    // UNCOMMENT THIS
+    // const { playerCount } = this.props;
+    // return playerCount < 5 || playerCount > 10;
+
+    // FIXME TEMP FOR DEV
+    return false
   }
 
   render() {
