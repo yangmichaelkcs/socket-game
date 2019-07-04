@@ -86,6 +86,7 @@ const mapStateToProps = state => {
   return {
     gameId: getGameId(state),
     playerCount: getPlayerCount(state),
+    playerList,
     playerListItems,
     playerData,
   };

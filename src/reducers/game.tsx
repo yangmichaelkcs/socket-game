@@ -4,6 +4,8 @@ const game = (state: Game | {} = {}, action): Game | {} => {
   switch (action.type) {
     case "SET_GAME":
       return { ...state, ...action.game };
+    case "NAVIGATE_TO":
+      return { ...action.destination };
     default:
       return state;
   }
