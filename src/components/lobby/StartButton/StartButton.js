@@ -11,7 +11,7 @@ class StartButton extends Component {
 
   render() {
     const { onClick } = this.props;
-    return <button style={{margin:"1rem"}} disabled={this.disableStart()} onClick={onClick}>Start</button>;
+    return <button type="button" className="btn btn-primary" style={{margin:"1rem"}} disabled={this.disableStart()} onClick={onClick}>Start</button>;
   }
 }
 

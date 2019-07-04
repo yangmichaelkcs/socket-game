@@ -5,7 +5,7 @@ import { createNewGame } from "socket";
 class StartButton extends Component {
   render() {
     const { onClick } = this.props;
-    return <button onClick={onClick}>Start Game</button>;
+    return <button type="button" className="btn btn-primary" onClick={onClick}>Start Game</button>;
   }
 }
 

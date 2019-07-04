@@ -1,3 +1,4 @@
+import { FaMale } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
 import { getGameId, getPlayerCount, getPlayers, getPlayerData } from "selectors";
@@ -52,25 +53,28 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
     const { gameId, playerCount, playerListItems } = this.props;
     return (
       <div className="Lobby">
-        <h2>Game ID: {gameId}</h2>
-        <h2>You must have 5 - 10 players</h2>
-        <h2> {playerCount} players have connected </h2>
-        <ul>{playerListItems}</ul>
+        <h3><u>Game ID: {gameId}</u></h3>
+        <h4>{playerCount} player(s) connected </h4>
         <br />
-        <div>
+        <ul className="list-unstyled">{playerListItems}</ul>
+        <br />
+        <form className="form-inline">
           <input
             type="text"
             value={this.state.value}
             onChange={this.handleChange}
             placeholder={this.getNick()}
+            className="form-control" 
+            style={{width:"50%"}}
           />
-          <button onClick={this.handleClick}>Update Nickname</button>
-        </div>
+          <button type="button" className="btn btn-light" onClick={this.handleClick}>Update Nickname</button>
+        </form>
         <br />
         <div>
           <StartButton playerCount={playerCount} />
           <MenuButton />
         </div>
+        <h5>You must have 5 - 10 players</h5>
       </div>
     );
   }
@@ -79,7 +83,10 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
 const mapStateToProps = state => {
   const playerList: Player[] = getPlayers(state);
   const playerListItems = playerList.map(player => (
-    <li key={player.socketId}>{player.nickName}</li>
+    <li key={player.socketId}>
+      <FaMale style={{fontSize:"1rem"}}/>
+      {player.nickName}
+    </li>
   ));
   const playerData: Player = getPlayerData(state);
 

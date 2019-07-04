@@ -42,7 +42,7 @@ function getPlayerCount(gameId) {
 }
 
 const createNewGame = () => {
-  const id = getRandomWord() + getRandomWord() + getRandomWord();
+  const id = getRandomWord() + getRandomWord()
   const game = {
     players: [],
     status: GAME_STATUS.LOBBY,
