@@ -328,7 +328,7 @@ io.on("connection", socket => {
     console.log("user disconnected: " + socket.id);
   });
 
-  // If game has started we need to implement socket reconnection
+  // FIXME: If game has started we need to implement socket reconnection
   socket.on("disconnecting", () => {
     const gameId = getGameIdBySocket(socket);
     if (gameId && gamesById[gameId]) {
@@ -344,7 +344,6 @@ io.on("connection", socket => {
       // Game Started Case
       if(game.status === GAME_STATUS.IN_PROGRESS) {
 
-        return;
       }
     }
   });

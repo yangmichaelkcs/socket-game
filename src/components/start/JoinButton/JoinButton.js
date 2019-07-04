@@ -17,7 +17,9 @@ class JoinButton extends Component {
 
   handleClick() {
     joinGame(this.state.value);
-    this.setState({ invalidGame: true })
+    setTimeout(() => { 
+      this.setState(() => ({invalidGame: true}))
+    }, 500);
   }
 
   showNotExists() {
