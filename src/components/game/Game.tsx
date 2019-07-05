@@ -71,7 +71,7 @@ class Game extends React.Component<GameStateProps, any> {
       return (
         <div>
           <h2>Vote on the following team:</h2>
-          <p>{players.filter(player => player.selected).map(p => (<span>| {p.nickName.substring(0, 7)} |</span>))} </p>
+          <p>{players.filter(player => player.selected).map(p => (<span key={p.socketId}>| {p.nickName.substring(0, 7)} |</span>))} </p>
         </div>
       );
     } else if (roundStatus === ROUND_STATUS.VOTING_END) {
@@ -86,7 +86,7 @@ class Game extends React.Component<GameStateProps, any> {
       return (
         <div>
           <h2>The following players are on the mission </h2>
-          <p>{players.filter(player => player.selected).map(p => (<span>| {p.nickName.substring(0, 7)} |</span>))} </p>
+          <p>{players.filter(player => player.selected).map(p => (<span key={p.socketId}>| {p.nickName.substring(0, 7)} |</span>))} </p>
         </div>
       );}
       else {
