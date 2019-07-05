@@ -18,15 +18,15 @@ class StartGame extends React.Component<any, any> {
         return (
           <div className="StartGame">
             <div style={{marginBottom: "2rem"}}>
-              <h1 className="display-2"><u>Avalon</u><FaCrown style={{fontSize:"5rem"}}/></h1>
-              <p>
-                Welcome to Avalon. Evil Mordred and his minions  
+              <h1 className="display-2"><u>Avalon</u><FaCrown style={{fontSize:"4rem"}}/></h1>
+              <p style={{textAlign:"center"}}>
+                Evil Mordred and his minions have infiltrated
                 <br />
-                have infiltrated the kingdom of Avalon. It is up 
+                the kingdom of Avalon. It is up to the knights
                 <br />
-                to the knights to defeat Mordred. Deduce who is  
+                to defeat Mordred. Deduce who is friend and 
                 <br />
-                friend and who is foe and win 3 rounds to claim victory.               
+                who is foe and win 3 rounds to claim victory.               
               </p>
             </div>
             <StartButton />

@@ -1,34 +1,40 @@
+import { FaChessKnight, FaSkull, FaRegQuestionCircle } from 'react-icons/fa'
 import React, {Component} from "react";
 import { TEAM } from 'types/types';
 
 class SingleRound extends Component{
   roundStatus() {
-    if(this.props.value==null)
+    if(this.props.value == null)
     {
-      return null;
+      return <FaRegQuestionCircle className="RoundIcon card-img-top"/>;
     }
     else if(this.props.value === TEAM.GOOD)
     {
-      return (
-        <circle cx="50%" cy="50%" r="25%" stroke="blue" strokeWidth="5" fill="blue" />
-      );
+      return <FaChessKnight className="Knight RoundIcon card-img-top"/>;
     } 
     else
     {
-      return (
-        <circle cx="50%" cy="50%" r="25%" stroke="red" strokeWidth="5" fill="red" />  
-      );
+      return <FaSkull className="Spy RoundIcon card-img-top"/>;
     }
   }
 
+  isCurrentRound() {
+    return this.props.currentRound === this.props.roundNumber ? "RoundCurrentRound card" : "card";
+  }
+
   render() {
+    const { roundNumber, playersNeeded, failsNeeded } = this.props;
     return (
-        <svg width="20%" height="80%">
-            <rect width="85%" height="70%" x="7.5%" y="15%" strokeWidth="2" stroke="#000000" fill="#FFFFFF"/>
-            <text x="30%" y="25%" fontSize="20" fill="Black">Round {this.props.roundNumber}</text>
-            <text x="40%" y="60%" fontSize="80" fill="Black">{this.props.membersRequired}</text>
-            {this.roundStatus()}
-        </svg>
+      <div className="RoundCol col">
+        <div className={this.isCurrentRound()}>
+          {this.roundStatus()}
+          <div className="RoundCardBody card-body">
+            <p className="card-text" style={{marginBottom: "0"}}>Round {roundNumber}</p>
+            <p className="card-text" style={{fontSize: "13px", marginBottom: "0"}}>Players: {playersNeeded}</p>
+            <p className="card-text" style={{fontSize: "13px"}}>Fails: {failsNeeded}</p>
+          </div>
+        </div>
+      </div>
     );
   }
 

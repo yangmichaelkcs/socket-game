@@ -28,8 +28,6 @@
   height: 100%;
   justify-content: center;
   text-align: center;
-  padding-bottom: 4rem;
-  margin-bottom: 4rem;
   width: 90%;
   margin-left: 5%;
 }
@@ -38,32 +36,32 @@
   width: 100%;
   border-top: 1px solid #000;
   border-bottom: 1px solid #000;
-  margin-bottom: 1rem;
-  display: table
+  color: black;
+  display: table;
 }
 
 .RoleButton {
   float: right;
   font-size: 12px;
-  color: #222
+  color: rgb(106, 122, 129);
 }
 
 .RoleButton:focus, .RoleButton:active, .RoleButton.hover {
   outline: none !important;
   box-shadow: none;
   background: transparent;
-  color: #222
+  color: rgb(106, 122, 129);
 }
 
 .NicknameButton {
-  color: #222
+  color: rgb(106, 122, 129);
 }
 
 .NicknameButton:focus, .NicknameButton:active, .NicknameButton.hover {
   outline: none !important;
   box-shadow: none;
   background: transparent;
-  color: #222
+  color: rgb(106, 122, 129);
 }
 
 .PlayerSelectLegend {
@@ -166,6 +164,30 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+.Knight {
+  color:rgb(15, 132, 228);
+}
+
+.Spy {
+  color: tomato;
+}
+
+.RoundCol {
+  padding: 0;
+}
+
+.RoundCardBody {
+  padding: 0
+}
+
+.RoundIcon {
+  font-size: 3rem;
+}
+
+.RoundCurrentRound {
+  border-color: darkgreen
 }
 
 @keyframes App-logo-spin {

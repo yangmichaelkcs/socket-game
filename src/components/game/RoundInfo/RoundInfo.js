@@ -4,7 +4,7 @@ class RoundInfo extends Component{
   render() {
     return (
         <div>
-          <h1>
+          <h1 className="display-2">
             Round {this.props.currentRound}
           </h1>
         </div>  

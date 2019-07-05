@@ -55,18 +55,18 @@ class Game extends React.Component<GameStateProps, any> {
       if(this.state.oldVotes[VOTE_INDEX.POS] === 0 && this.state.oldVotes[VOTE_INDEX.NEG] === 0 && this.state.voteOrder.length === 0){
         return (
         <div>
-          <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
-          <p>Pick {playersNeeded} players, {rounds[currentRound -1].failsNeeded} failures need for spies</p>
+          <h4>Turn to Pick: {curentPlayerTurn.nickName}</h4>
+          <p>Players needed: {playersNeeded} <br/> Fails needed: {rounds[currentRound -1].failsNeeded}</p>
         </div>
         );
       }
       this.setState({oldVotes: [0,0], voteOrder: []});
-      return (
-        <div>
-          <h2>{curentPlayerTurn.nickName}'s turn to pick a team</h2>
-          <p>Pick {playersNeeded} players, {rounds[currentRound -1].failsNeeded} failures need for spies</p>
-        </div>
-        );
+      // return (
+      //     <div>
+      //       <h4>Turn to Pick: {curentPlayerTurn.nickName}</h4>
+      //       <p>Players needed: {playersNeeded} <br/> Fails needed: {rounds[currentRound -1].failsNeeded}</p>
+      //     </div>
+      // );
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
       return (
         <div>
@@ -168,12 +168,13 @@ class Game extends React.Component<GameStateProps, any> {
     } = this.props;
     return (
       <div className="Game">
-        <RoundInfo currentRound={currentRound} />
+        {/* <RoundInfo currentRound={currentRound} />  FIXME TRY THIS OUT*/}
         <RoleButton />
         {this.showAnnouncment()}
         <AllRounds 
             rounds={rounds} 
-            failedVotes={failedVotes} 
+            failedVotes={failedVotes}
+            currentRound={currentRound} 
         />
         <PlayerList />
         <VoteButtons 
