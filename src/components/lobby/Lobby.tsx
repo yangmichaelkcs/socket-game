@@ -1,4 +1,4 @@
-import { FaMale } from 'react-icons/fa'
+import { FaRegUser } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
 import { getGameId, getPlayerCount, getPlayers, getPlayerData } from "selectors";
@@ -82,7 +82,7 @@ const mapStateToProps = state => {
   const playerList: Player[] = getPlayers(state);
   const playerListItems = playerList.map(player => (
     <li key={player.socketId}>
-      <FaMale style={{fontSize:"1rem"}}/>
+      <FaRegUser style={{fontSize:"1rem"}}/>
       {player.nickName}
     </li>
   ));

@@ -73,7 +73,7 @@ class PlayerList extends React.Component<any, any> {
           onClick={this.onProposeClick}
           style={{ margin: "1rem", width: "100px", height: "50px" }}
         >
-          Propose Team
+          Select Team
         </button>
       );
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
@@ -119,49 +119,31 @@ class PlayerList extends React.Component<any, any> {
       this.setState({accept: true, reject: true});
     }
   }
+
+  public firstPlayerRow() {
+    const firstRow = this.props.players.slice(0, 5);
+    return firstRow.map(player => (<PlayerComponent key={player.socketId} player={player} />));
+  }
+  
+  public secondPlayerRow() {
+    const firstRow = this.props.players.slice(5, 10);
+    return firstRow.map(player => (<PlayerComponent key={player.socketId} player={player} />))
+  }
   
   public render() {
     return (
       <div className="PlayerList">
-        <h3 style={{ marginTop: "1rem" }}>
-          Proposed Team:
-          <div
-            style={{
-              flexDirection: "row",
-              display: "flex",
-              justifyContent: "center"
-            }}
-          >
-            <div className="PlayerSelectLegend">
-              <div
-                className="ColorCode"
-                style={{ backgroundColor: "rgb(15, 132, 228)" }}
-              />
-              <span>Selected</span>
-            </div>
-            <div className="PlayerSelectLegend">
-              <div className="ColorCode" style={{ backgroundColor: "#FFF" }} />
-              <span>Not Selected</span>
-            </div>
-          </div>
-        </h3>
-        <ul className="PlayerListItems">
-          {this.props.players.map(player => (
-            <li
-              className="PlayerName"
-              key={player.socketId}
-              style={{
-                display: "flex",
-                flexDirection: "column"
-              }}
-            >
-              <span>{player.nickName.substring(0, 7)}</span>
-              <PlayerComponent key={player.socketId} player={player}/>
-            </li>
-          ))}
-        </ul>
-        {this.showPlayerNeededToolTip()}
+        <h4 style={{ marginTop: "1rem" }}>
+          Team:
+        </h4>
+        <div className="row">
+          {this.firstPlayerRow()}
+        </div>
+        <div className="row">
+          {this.secondPlayerRow()}
+        </div>
         {this.showProposeOrVoteButton()}
+        {this.showPlayerNeededToolTip()}
       </div>
     );
   }

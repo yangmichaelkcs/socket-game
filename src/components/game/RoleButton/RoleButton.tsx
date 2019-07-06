@@ -35,7 +35,7 @@ class RoleButton extends React.Component<RoleButtonProps, RoleButtonState> {
     const { playerData, players } = this.props;
     if( playerData.team === TEAM.BAD) {
       const spies = players.filter(player => player.team === TEAM.BAD && player.socketId !== playerData.socketId)
-      return spies.map(spy => spy.nickName).join(' ,')
+      return spies.map(spy => spy.nickName).join(', ')
     } else {
       return "???";
     } 
