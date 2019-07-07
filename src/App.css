@@ -40,6 +40,7 @@
   display: table;
 }
 
+/* Buttons Start*/
 .RoleButton {
   float: right;
   font-size: 12px;
@@ -63,6 +64,47 @@
   background: transparent;
   color: rgb(106, 122, 129);
 }
+
+.SelectTeamButton {
+  color: #28a745
+}
+
+.SelectTeamButton:focus, .SelectTeamButton:active, .SelectTeamButton:hover {
+  outline: none !important;
+  box-shadow: none;
+  background: transparent;
+  color: #28a745
+}
+
+.SuccessButton {
+  color: #28a745
+}
+
+.SuccessButton:focus, .SelectTeamButton:active, .SelectTeamButton:hover {
+  outline: none !important;
+  box-shadow: none;
+  background: transparent;
+  color: #28a745
+}
+
+.VotingButtons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.RejectButton {
+  color:tomato;
+  border-color: tomato;
+  outline-color: tomato;
+}
+
+.SideBySideButton {
+  margin: 1rem;
+}
+/* Buttons End */
 
 .PlayerSelectLegend {
   display: flex;
@@ -116,24 +158,8 @@
   font-size: large;
 }
 
-.VotingButtons {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
 
-.Knight,
-.PlayerPicked {
-  color:rgb(15, 132, 228);
-}
-
-.Spy,
-.Fail {
-  color: tomato;
-}
-
+/* Card Start */
 .PlayerCol {
   padding: .5rem;
 }
@@ -156,10 +182,6 @@
   cursor: pointer;
 }
 
-.RoundIcon {
-  font-size: 3rem;
-}
-
 .cardInfo,
 .legend {
   font-size: 13px;
@@ -167,12 +189,39 @@
 }
 
 .RoundCurrentRound {
-  border-color: darkgreen
+  border-color: #28a745
+}
+/* Card End */
+
+/* Font Awesome Icons Start*/
+.Knight,
+.PlayerPicked {
+  color:rgb(15, 132, 228);
+}
+
+.Spy,
+.Fail,
+.Warning,
+.Thumbsdown {
+  color: tomato;
+}
+
+.Thumbsup {
+  color: #28a745
+}
+
+.RoundIcon {
+  font-size: 3rem;
 }
 
 .Iconsize {
   font-size: 1rem;
 }
+
+.Thumbsize {
+  font-size: 13px;
+}
+/* Font Awesome Icons End*/
 
 @keyframes App-logo-spin {
   from {

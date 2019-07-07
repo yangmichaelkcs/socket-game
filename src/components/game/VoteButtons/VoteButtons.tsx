@@ -41,20 +41,12 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
     if(roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS && onMission) {
       return (
         <div className={"VotingButtons"}>
-          {this.state.success && 
-            <button
-              onClick={this.onSuccess}
-              style={{ margin: "1rem", width: "100px", height: "50px" }}>
+          {this.state.success && <button onClick={this.onSuccess} type="button" className="SideBySideButton btn btn-outline-primary">
               Success
-            </button>
-          }
-          {this.state.fail && 
-            <button
-              onClick={this.onFail}
-              style={{ margin: "1rem", width: "100px", height: "50px" }}>
+          </button>}
+          {this.state.fail && <button onClick={this.onFail} type="button" className="SideBySideButton RejectButton btn btn-outline-danger">
               Fail
-            </button>
-          }
+          </button>}
         </div>
       );
     }

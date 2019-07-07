@@ -1,4 +1,4 @@
-import { FaRegUser, FaUser } from 'react-icons/fa'
+import { FaRegUser, FaUser, FaThumbsUp, FaThumbsDown } from 'react-icons/fa'
 import * as React from "react";
 import { ROUND_STATUS, Player, Round } from "types/types";
 import { pickPlayer } from "socket";
@@ -12,6 +12,7 @@ import {
   getRoundStatus
 } from "selectors";
 import { connect } from "react-redux";
+import { throws } from 'assert';
 
 interface PlayerComponentOwnProps {
   readonly key: number;
@@ -54,11 +55,11 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
     if (roundStatus === ROUND_STATUS.VOTING_END) {
       if( player.vote === 1) {
         return (
-          <span>A</span>
+          <FaThumbsUp className="Thumbsup Thumbsize"/>
         );
       } else {
         return (
-          <span>R</span>
+          <FaThumbsDown className="Thumbsdown Thumbsize"/>
         );
       }
     } 
@@ -75,7 +76,7 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
         <div className="PlayerCard card" onClick={this.onPlayerClick}>
           <div className="PlayerCardBody card-body">
             <p className="cardInfo card-text">{player.nickName.substring(0,7)}</p>
-            <p className="Iconsize card-text">{this.getPlayerIcon()}</p>
+            <p className="Iconsize card-text">{this.getPlayerIcon()}&nbsp;{this.displayVote()}</p>
           </div>
         </div>
       </div>

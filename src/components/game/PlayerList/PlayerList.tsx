@@ -1,4 +1,4 @@
-import { FaRegUser, FaUser } from 'react-icons/fa'
+import { FaRegUser, FaUser, FaThumbsUp, FaThumbsDown } from 'react-icons/fa'
 import * as React from "react";
 import PlayerComponent from "../Player";
 import {
@@ -70,32 +70,19 @@ class PlayerList extends React.Component<any, any> {
     const { turnToPick, roundStatus } = this.props;
     if (turnToPick && roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
       return (
-        <button
-          onClick={this.onProposeClick}
-          style={{ margin: "1rem", width: "100px", height: "50px" }}
-        >
+        <button onClick={this.onProposeClick} type="button" className="SelectTeamButton btn btn-outline-success">
           Select Team
         </button>
       );
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
       return (
         <div className={"VotingButtons"}>
-          {this.state.accept &&
-            <button
-              onClick={this.onAccept}
-              style={{ margin: "1rem", width: "100px", height: "50px" }}
-            >
+          {this.state.accept && <button type="button" className="SideBySideButton btn btn-outline-primary" onClick={this.onAccept}>
             Approve
-            </button>
-          }
-          {this.state.reject &&
-            <button
-              onClick={this.onReject}
-              style={{ margin: "1rem", width: "100px", height: "50px" }}
-            >
+          </button>}
+          {this.state.reject && <button type="button" className="SideBySideButton RejectButton btn btn-outline-danger" onClick={this.onReject}>
             Reject
-            </button>
-          }
+          </button>}
         </div>
       );
     }
@@ -106,9 +93,9 @@ class PlayerList extends React.Component<any, any> {
       const { rounds, currentRound } = this.props;
       const playerNeeded = rounds[currentRound - 1].playersNeeded;
       return (
-        <div>
+        <span className="Warning">
           Please select {playerNeeded} players
-        </div>
+        </span>
       );
     }
   }
@@ -138,6 +125,7 @@ class PlayerList extends React.Component<any, any> {
           Team:
         </h4>
         <p className="legend"><FaRegUser/>Unselected&ensp;&ensp;&ensp;<FaUser className="PlayerPicked"/>Selected</p>
+        <p className="legend"><FaThumbsUp className="Thumbsup"/>Approved Team&ensp;&ensp;&ensp;<FaThumbsDown className="Thumbsdown"/>Rejected Team</p>
         <div className="row">
           {this.firstPlayerRow()}
         </div>

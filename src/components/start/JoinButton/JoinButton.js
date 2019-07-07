@@ -23,7 +23,7 @@ class JoinButton extends Component {
   showNotExists() {
     if(this.state.invalidGame) {
       return (
-        <span style={{color:"Tomato"}}>This Game ID does not exist</span>
+        <span className="Warning">This Game ID does not exist</span>
       );
     } 
   }

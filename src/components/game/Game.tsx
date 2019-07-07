@@ -72,14 +72,14 @@ class Game extends React.Component<GameStateProps, any> {
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
       return (
         <div>
-          <h2>Vote on the following team:</h2>
+          <h4>Vote on the following team:</h4>
           <p>{players.filter(player => player.selected).map(p => (<span key={p.socketId}>| {p.nickName.substring(0, 7)} |</span>))} </p>
         </div>
       );
     } else if (roundStatus === ROUND_STATUS.VOTING_END) {
       return (
         <div>
-          <h2>Voting has completed</h2>
+          <h4>Voting has completed</h4>
           <p>Approve: {votes[VOTE_INDEX.POS]}  Reject: {votes[VOTE_INDEX.NEG]}</p>
         </div>
       );
@@ -87,7 +87,7 @@ class Game extends React.Component<GameStateProps, any> {
       if(votes[VOTE_INDEX.POS] + votes[VOTE_INDEX.NEG] === 0) {
       return (
         <div>
-          <h2>The following players are on the mission </h2>
+          <h4>The following players are on the mission </h4>
           <p>{players.filter(player => player.selected).map(p => (<span key={p.socketId}>| {p.nickName.substring(0, 7)} |</span>))} </p>
         </div>
       );}
@@ -95,7 +95,7 @@ class Game extends React.Component<GameStateProps, any> {
         if(votes[VOTE_INDEX.POS] === this.state.oldVotes[VOTE_INDEX.POS] && votes[VOTE_INDEX.NEG] === this.state.oldVotes[VOTE_INDEX.NEG]) {
           return (
             <div>
-              <h2>Mission votes are completed</h2>
+              <h4>Mission votes are completed</h4>
               <p>{this.state.voteOrder.map((vote) => {
                  if(vote === TEAM.GOOD) {
                   return <span>| Success |</span>
@@ -119,7 +119,7 @@ class Game extends React.Component<GameStateProps, any> {
         const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
         return (
           <div>
-            <h2>The {winningTeam} have won</h2>
+            <h4>The {winningTeam} have won</h4>
             <p>The score was Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
           </div>
         );
@@ -128,7 +128,7 @@ class Game extends React.Component<GameStateProps, any> {
       votes[VOTE_INDEX.NEG] >= rounds[currentRound - 1].failsNeeded ? winner = "Spies" : winner = "Resistance"
       return (
         <div>
-          <h2>{winner} wins the mission</h2>
+          <h4>{winner} wins the mission</h4>
           <p>{this.state.voteOrder.map((vote) => {
                 if(vote === TEAM.GOOD) {
                   return <span>| Success |</span>
