@@ -103,16 +103,16 @@ class Game extends React.Component<GameStateProps, any> {
         const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
         return (
           <div>
-            <h4>The {winningTeam} have won</h4>
+            <h4>{winningTeam} WINS</h4>
             <p>Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
           </div>
         );
       }
       let winner = "";
-      votes[VOTE_INDEX.NEG] >= rounds[currentRound - 1].failsNeeded ? winner = "Spies" : winner = "Resistance"
+      votes[VOTE_INDEX.NEG] >= rounds[currentRound - 1].failsNeeded ? winner = "Fails" : winner = "Succeeds"
       return (
         <div>
-          <h4>{winner} wins the mission</h4>
+          <h4>Mission {winner}</h4>
           <p>{this.state.voteOrder.map((vote, index) => {
                 if(vote === TEAM.GOOD) {
                   return <FaCheck className="MissionVoteSize Success" key={index}/>;
