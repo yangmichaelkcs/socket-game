@@ -40,6 +40,10 @@
   display: table;
 }
 
+.Legend {
+  text-align: center;
+  padding-top: 3rem;
+}
 /* Buttons Start*/
 .RoleButton {
   float: right;
@@ -183,7 +187,7 @@
 }
 
 .cardInfo,
-.legend {
+.LegendText {
   font-size: 13px;
   margin-bottom: 0;
 }
@@ -195,7 +199,8 @@
 
 /* Font Awesome Icons Start*/
 .Knight,
-.PlayerPicked {
+.PlayerPicked,
+.Success {
   color:rgb(15, 132, 228);
 }
 
@@ -216,6 +221,10 @@
 
 .Iconsize {
   font-size: 1rem;
+}
+
+.MissionVoteSize {
+  font-size: 2rem;
 }
 
 .Thumbsize {

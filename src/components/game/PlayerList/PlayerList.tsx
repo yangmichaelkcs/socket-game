@@ -121,11 +121,9 @@ class PlayerList extends React.Component<any, any> {
   public render() {
     return (
       <div className="PlayerList">
-        <h4 style={{ marginTop: "1rem" }}>
+        <h4 style={{ marginTop: "1rem", marginBottom: "0" }}>
           Team:
         </h4>
-        <p className="legend"><FaRegUser/>Unselected&ensp;&ensp;&ensp;<FaUser className="PlayerPicked"/>Selected</p>
-        <p className="legend"><FaThumbsUp className="Thumbsup"/>Approved Team&ensp;&ensp;&ensp;<FaThumbsDown className="Thumbsdown"/>Rejected Team</p>
         <div className="row">
           {this.firstPlayerRow()}
         </div>

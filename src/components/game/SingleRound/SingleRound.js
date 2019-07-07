@@ -29,7 +29,7 @@ class SingleRound extends Component{
         <div className={this.isCurrentRound()}>
           {this.roundStatus()}
           <div className="RoundCardBody card-body">
-            <p className="card-text" style={{marginBottom: "0"}}>Round {roundNumber}</p>
+            <p className="cardInfo card-text" style={{marginBottom: "0"}}>Mission {roundNumber}</p>
             <p className="cardInfo card-text">Players: {playersNeeded}</p>
             <p className="cardInfo card-text">Fails: {failsNeeded}</p>
           </div>

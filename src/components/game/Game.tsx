@@ -1,11 +1,11 @@
-import { FaRegUser, FaTimes } from 'react-icons/fa'
+import { FaRegUser, FaTimes, FaCheck } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
 import RoleButton from "./RoleButton";
 import VoteButtons from "./VoteButtons";
 import AllRounds from "./AllRounds";
-import RoundInfo from "./RoundInfo/RoundInfo";
 import PlayerList from "./PlayerList/PlayerList";
+import Legend from "./Legend/Legend";
 import {
   getPlayerDataById,
   getCurrentPlayerTurn,
@@ -20,7 +20,6 @@ import {
   getScore
 } from "selectors";
 import { Player, ROUND_STATUS, Round, GAME_STATUS, VOTE_INDEX, TEAM } from "types/types";
-import { pickPlayer } from "socket";
 
 interface GameState {
   oldVotes: number[];
@@ -53,7 +52,6 @@ class Game extends React.Component<GameStateProps, any> {
     const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players, score } = this.props;
     if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
       const playersNeeded = rounds[currentRound - 1].playersNeeded;
-      if(this.state.oldVotes[VOTE_INDEX.POS] === 0 && this.state.oldVotes[VOTE_INDEX.NEG] === 0 && this.state.voteOrder.length === 0){
         return (
         <div>
           <h4>Turn to Pick: {curentPlayerTurn.nickName}</h4>
@@ -61,58 +59,44 @@ class Game extends React.Component<GameStateProps, any> {
           <br/><FaTimes className="Iconsize Fail"/>Fails needed: {rounds[currentRound -1].failsNeeded}</p>
         </div>
         );
-      }
-      this.setState({oldVotes: [0,0], voteOrder: []});
-      // return (
-      //     <div>
-      //       <h4>Turn to Pick: {curentPlayerTurn.nickName}</h4>
-      //       <p>Players needed: {playersNeeded} <br/> Fails needed: {rounds[currentRound -1].failsNeeded}</p>
-      //     </div>
-      // );
-    } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
+    }
+    else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
       return (
         <div>
-          <h4>Vote on the following team:</h4>
-          <p>{players.filter(player => player.selected).map(p => (<span key={p.socketId}>| {p.nickName.substring(0, 7)} |</span>))} </p>
+          <h4>Vote on the team:</h4>
+          <p>{players.filter(player => player.selected).map(p => p.nickName).join(", ")} </p>
         </div>
       );
     } else if (roundStatus === ROUND_STATUS.VOTING_END) {
       return (
         <div>
           <h4>Voting has completed</h4>
-          <p>Approve: {votes[VOTE_INDEX.POS]}  Reject: {votes[VOTE_INDEX.NEG]}</p>
+          <p>Approved: {votes[VOTE_INDEX.POS]}  Rejected: {votes[VOTE_INDEX.NEG]}</p>
         </div>
       );
     } else if (roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
       if(votes[VOTE_INDEX.POS] + votes[VOTE_INDEX.NEG] === 0) {
       return (
         <div>
-          <h4>The following players are on the mission </h4>
-          <p>{players.filter(player => player.selected).map(p => (<span key={p.socketId}>| {p.nickName.substring(0, 7)} |</span>))} </p>
+          <h4>Players are on the mission:</h4>
+          <p>{players.filter(player => player.selected).map(p => p.nickName).join(", ")}</p>
         </div>
       );}
       else {
         if(votes[VOTE_INDEX.POS] === this.state.oldVotes[VOTE_INDEX.POS] && votes[VOTE_INDEX.NEG] === this.state.oldVotes[VOTE_INDEX.NEG]) {
           return (
             <div>
-              <h4>Mission votes are completed</h4>
-              <p>{this.state.voteOrder.map((vote) => {
+              <h4>Mission has completed</h4>
+              <p>{this.state.voteOrder.map((vote, index) => {
                  if(vote === TEAM.GOOD) {
-                  return <span>| Success |</span>
+                  return <FaCheck className="MissionVoteSize Success" key={index}/>;
                 } else {
-                  return <span>| Fail |</span>
+                  return <FaTimes className="MissionVoteSize Fail" key={index}/>;
                 }})}
               </p>
             </div>
           );
         }
-        if(votes[VOTE_INDEX.POS] === this.state.oldVotes[VOTE_INDEX.POS]) {
-          this.setState({voteOrder: [...this.state.voteOrder, TEAM.BAD]})
-        }
-        else {
-          this.setState({voteOrder: [...this.state.voteOrder, TEAM.GOOD]})
-        }
-        this.setState({oldVotes: votes})
       }
     } else if (roundStatus === ROUND_STATUS.MISSION_END) {
       if(score[VOTE_INDEX.POS] === 3 || score[VOTE_INDEX.NEG] === 3) {
@@ -129,11 +113,11 @@ class Game extends React.Component<GameStateProps, any> {
       return (
         <div>
           <h4>{winner} wins the mission</h4>
-          <p>{this.state.voteOrder.map((vote) => {
+          <p>{this.state.voteOrder.map((vote, index) => {
                 if(vote === TEAM.GOOD) {
-                  return <span>| Success |</span>
+                  return <FaCheck className="MissionVoteSize Success" key={index}/>;
                 } else {
-                  return <span>| Fail |</span>
+                  return <FaTimes className="MissionVoteSize Fail" key={index}/>;
                 }})}
           </p>
         </div>
@@ -141,24 +125,26 @@ class Game extends React.Component<GameStateProps, any> {
     }
   }
 
-  public onPlayerClick = socketId => {
-    const { roundStatus, rounds } = this.props;
-    if (
-      this.props.playerData.socketId === this.props.curentPlayerTurn.socketId &&
-      roundStatus === ROUND_STATUS.PROPOSING_TEAM
-    ) {
-      const { players } = this.props;
-      const playerPicked = players.find(player => player.socketId === socketId);
-      let numPlayers = 0;
-      players.forEach(p => (p.selected ? numPlayers++ : 0));
-      const pNeeded = rounds[this.props.currentRound - 1].playersNeeded;
-      if (numPlayers < pNeeded && playerPicked!.selected === 0) {
-        pickPlayer(socketId, 1);
-      } else {
-        pickPlayer(socketId, 0);
+  public componentDidUpdate() {
+    const { roundStatus, votes} = this.props;
+    if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
+      if(!(this.state.oldVotes[VOTE_INDEX.POS] === 0 && this.state.oldVotes[VOTE_INDEX.NEG] === 0 && this.state.voteOrder.length === 0)) {
+        this.setState({oldVotes: [0,0], voteOrder: []});
+      }
+    } else if (roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
+      if(!(votes[VOTE_INDEX.POS] + votes[VOTE_INDEX.NEG] === 0)) {
+        if(!(votes[VOTE_INDEX.POS] === this.state.oldVotes[VOTE_INDEX.POS] && votes[VOTE_INDEX.NEG] === this.state.oldVotes[VOTE_INDEX.NEG])) {
+          if(votes[VOTE_INDEX.POS] === this.state.oldVotes[VOTE_INDEX.POS]) {
+            this.setState({voteOrder: [...this.state.voteOrder, TEAM.BAD]})
+          }
+          else {
+            this.setState({voteOrder: [...this.state.voteOrder, TEAM.GOOD]})
+          }
+          this.setState({oldVotes: votes})
+        }
       }
     }
-  };
+  }
 
   public render() {
     const {
@@ -170,19 +156,12 @@ class Game extends React.Component<GameStateProps, any> {
     } = this.props;
     return (
       <div className="Game">
-        {/* <RoundInfo currentRound={currentRound} />  FIXME TRY THIS OUT*/}
         <RoleButton />
-        {this.showAnnouncment()}
-        <AllRounds 
-            rounds={rounds} 
-            failedVotes={failedVotes}
-            currentRound={currentRound} 
-        />
+        <div style={{minHeight:"85px"}}>{this.showAnnouncment()}</div>
+        <AllRounds rounds={rounds} failedVotes={failedVotes} currentRound={currentRound} />
         <PlayerList />
-        <VoteButtons 
-          roundStatus={roundStatus}
-          players = {players}
-        />
+        <VoteButtons roundStatus={roundStatus} players = {players}/>
+        <Legend/>
       </div>
     );
   }
