@@ -189,9 +189,10 @@
 }
 
 .cardInfo,
-.LegendText {
+.LegendText,
+.NickTooltip {
   font-size: 12px;
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
 }
 
 .RoundCurrentRound {
