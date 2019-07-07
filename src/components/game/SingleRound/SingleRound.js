@@ -31,7 +31,7 @@ class SingleRound extends Component{
           <div className="RoundCardBody card-body">
             <p className="card-text" style={{marginBottom: "0"}}>Round {roundNumber}</p>
             <p className="cardInfo card-text">Players: {playersNeeded}</p>
-            <p className="cardInfo card-text" style={{fontSize: "13px"}}>Fails: {failsNeeded}</p>
+            <p className="cardInfo card-text">Fails: {failsNeeded}</p>
           </div>
         </div>
       </div>

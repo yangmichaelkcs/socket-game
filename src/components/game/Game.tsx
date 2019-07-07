@@ -1,3 +1,4 @@
+import { FaRegUser, FaTimes } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
 import RoleButton from "./RoleButton";
@@ -56,7 +57,8 @@ class Game extends React.Component<GameStateProps, any> {
         return (
         <div>
           <h4>Turn to Pick: {curentPlayerTurn.nickName}</h4>
-          <p>Players needed: {playersNeeded} <br/> Fails needed: {rounds[currentRound -1].failsNeeded}</p>
+          <p><FaRegUser className="Iconsize"/>Players needed: {playersNeeded} 
+          <br/><FaTimes className="Iconsize Fail"/>Fails needed: {rounds[currentRound -1].failsNeeded}</p>
         </div>
         );
       }

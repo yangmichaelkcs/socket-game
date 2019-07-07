@@ -45,7 +45,7 @@ class RoleButton extends React.Component<RoleButtonProps, RoleButtonState> {
     const { playerData } = this.props;
     if (this.state.showRole) {
       return (
-        <p style={{ fontSize:"13px", float: "left", marginBottom:"0", textAlign: "left" }}>
+        <p style={{ fontSize:"13px", float: "left", marginBottom:"0", textAlign: "left", maxWidth: "80%" }}>
           Nickname: {playerData.nickName}
           <br />
           Team: {playerData.team} {this.displayTeamIcon()}
@@ -63,12 +63,12 @@ class RoleButton extends React.Component<RoleButtonProps, RoleButtonState> {
   public render() {
     return (
       <div className="Role">
-        {this.roleInfo()}
         <div style={{float: "right"}}>
-        <button type="button" className="RoleButton btn btn-outline-secondary btn-lg" onClick={this.handleClick}>
-          {this.state.showRole ? "Hide" : "Show "}
-        </button>
+          <button type="button" className="RoleButton btn btn-outline-secondary btn-lg" onClick={this.handleClick}>
+            {this.state.showRole ? "Hide" : "Show "}
+          </button>
         </div>
+        {this.roleInfo()}
       </div>
     );
   }

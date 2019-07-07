@@ -1,3 +1,4 @@
+import { FaRegUser, FaUser } from 'react-icons/fa'
 import * as React from "react";
 import PlayerComponent from "../Player";
 import {
@@ -129,13 +130,14 @@ class PlayerList extends React.Component<any, any> {
     const firstRow = this.props.players.slice(5, 10);
     return firstRow.map(player => (<PlayerComponent key={player.socketId} player={player} />))
   }
-  
+
   public render() {
     return (
       <div className="PlayerList">
         <h4 style={{ marginTop: "1rem" }}>
           Team:
         </h4>
+        <p className="legend"><FaRegUser/>Unselected&ensp;&ensp;&ensp;<FaUser className="PlayerPicked"/>Selected</p>
         <div className="row">
           {this.firstPlayerRow()}
         </div>

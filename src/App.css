@@ -124,11 +124,13 @@
   text-align: center;
 }
 
-.Knight {
+.Knight,
+.PlayerPicked {
   color:rgb(15, 132, 228);
 }
 
-.Spy {
+.Spy,
+.Fail {
   color: tomato;
 }
 
@@ -151,19 +153,25 @@
 
 .PlayerCard {
   border: 0;
+  cursor: pointer;
 }
 
 .RoundIcon {
   font-size: 3rem;
 }
 
-.cardInfo {
+.cardInfo,
+.legend {
   font-size: 13px;
   margin-bottom: 0;
 }
 
 .RoundCurrentRound {
   border-color: darkgreen
+}
+
+.Iconsize {
+  font-size: 1rem;
 }
 
 @keyframes App-logo-spin {

@@ -65,7 +65,7 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
   }
 
   public getPlayerIcon() {
-    return this.props.player.selected === 0 ? <FaRegUser /> : <FaUser style={{color:"rgb(15, 132, 228)"}}/>;
+    return this.props.player.selected === 0 ? <FaRegUser /> : <FaUser className="PlayerPicked"/>;
   }
 
   public render() {
@@ -75,7 +75,7 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
         <div className="PlayerCard card" onClick={this.onPlayerClick}>
           <div className="PlayerCardBody card-body">
             <p className="cardInfo card-text">{player.nickName.substring(0,7)}</p>
-            <p className="card-text" style={{fontSize: "1.25rem"}}>{this.getPlayerIcon()}</p>
+            <p className="Iconsize card-text">{this.getPlayerIcon()}</p>
           </div>
         </div>
       </div>
