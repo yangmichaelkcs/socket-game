@@ -17,15 +17,13 @@ class JoinButton extends Component {
 
   handleClick() {
     joinGame(this.state.value);
-    setTimeout(() => { 
-      this.setState(() => ({invalidGame: true}))
-    }, 500);
+    this.setState(() => ({invalidGame: true}))
   }
 
   showNotExists() {
     if(this.state.invalidGame) {
       return (
-        <span style={{color:"Tomato"}}>This Game ID does not exist</span>
+        <span className="Warning">This Game ID does not exist</span>
       );
     } 
   }
@@ -33,15 +31,15 @@ class JoinButton extends Component {
   render() {
     return (
       <div>
-        <input
-          type="text"
-          value={this.state.value}
-          onChange={this.handleChange}
-          placeholder="Game ID"
-        />
-        <button onClick={this.handleClick}>Join Game</button>
-        <br />
-        <br />
+        <div>
+          <div className="input-group mb-3">
+            <input type="text" value={this.state.value} onChange={this.handleChange}
+                   placeholder="Game ID" className="form-control" />
+            <div className="input-group-append">
+              <button type="button" className="btn btn-primary" onClick={this.handleClick}>Join Game</button>
+            </div>
+          </div>
+        </div>
         <span>{this.showNotExists()}</span>
       </div>
     );

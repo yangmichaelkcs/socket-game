@@ -5,6 +5,9 @@
   align-items: center;
   height: 100%;
   justify-content: center;
+  text-align: center;
+  width: 90%;
+  margin-left: 5%;
 }
 
 .ColorCode {
@@ -17,6 +20,7 @@
 }
 
 .Game {
+  padding-top: 1rem;
   padding-left: calc(30% - 190px);
   padding-right: calc(30% - 190px);
   flex-direction: column;
@@ -24,29 +28,89 @@
   height: 100%;
   justify-content: center;
   text-align: center;
-  padding-bottom: 4rem;
-  margin-bottom: 4rem;
+  width: 90%;
+  margin-left: 5%;
 }
 
 .Role {
-  flex-direction: column;
-  align-items: left;
-  justify-content: center;
-  float: left;
   width: 100%;
   border-top: 1px solid #000;
   border-bottom: 1px solid #000;
-  min-height: 14px;
-  margin-bottom: 1rem;
+  color: black;
+  display: table;
 }
 
-.RoleButton {
-  background: transparent;
-  border: none;
-  float: right;
-  padding: 2rem;
-  outline: none;
+.Legend {
+  text-align: center;
+  padding-top: 1rem;
 }
+
+/* Buttons Start*/
+.RoleButton {
+  float: right;
+  font-size: 12px;
+  color: rgb(106, 122, 129);
+}
+
+.RoleButton:focus, .RoleButton:active, .RoleButton.hover {
+  outline: none !important;
+  box-shadow: none;
+  background: transparent;
+  color: rgb(106, 122, 129);
+}
+
+.NicknameButton {
+  color: rgb(106, 122, 129);
+}
+
+.NicknameButton:focus, .NicknameButton:active, .NicknameButton.hover {
+  outline: none !important;
+  box-shadow: none;
+  background: transparent;
+  color: rgb(106, 122, 129);
+}
+
+.SelectTeamButton {
+  color: #28a745
+}
+
+.SelectTeamButton:focus, .SelectTeamButton:active, .SelectTeamButton:hover {
+  outline: none !important;
+  box-shadow: none;
+  background: transparent;
+  color: #28a745
+}
+
+.SuccessButton {
+  color: #28a745
+}
+
+.SuccessButton:focus, .SelectTeamButton:active, .SelectTeamButton:hover {
+  outline: none !important;
+  box-shadow: none;
+  background: transparent;
+  color: #28a745
+}
+
+.VotingButtons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.RejectButton {
+  color:tomato;
+  border-color: tomato;
+  outline-color: tomato;
+}
+
+.SideBySideButton {
+  margin: 1rem;
+  margin-bottom: 0;
+}
+/* Buttons End */
 
 .PlayerSelectLegend {
   display: flex;
@@ -61,50 +125,8 @@
   padding-left: 0;
 }
 
-.PlayerName {
-  padding-top: 0;
-  padding-bottom: 0;
-  border-radius: 1;
-  border: solid 5px #fff;
-  color: #000;
-  margin-right: 1rem;
-  margin-left: 1rem;
-  margin-bottom: 0;
-  min-width: 4rem;
-  max-width: 4rem;
-}
-
-.PlayerUnclicked {
-  background-color: #fff;
-  padding-top: 15%;
-  padding-bottom: 15%;
-  border-radius: 50%;
-  border: solid 3px rgb(106, 122, 129);
-  transition: all 0.1s ease-out;
-  color: #000;
-  margin-left: .5rem;
-  margin-right: .5rem;
-  margin-top: 5%;
-  cursor: pointer;
-}
-
-.PlayerClicked {
-  background-color: rgb(15, 132, 228);
-  padding-top: 15%;
-  padding-bottom: 15%;
-  border-radius: 50%;
-  border: solid 3px rgb(106, 122, 129);
-  transition: all 0.1s ease-out;
-  color: #fff;
-  margin-left: .5rem;
-  margin-right: .5rem;
-  margin-top: 5%;
-  cursor: pointer;
-}
-
 .RoundResult,
 .PlayerList {
-  border-bottom: 1px solid #000;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -142,13 +164,75 @@
   font-size: large;
 }
 
-.VotingButtons {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+
+/* Card Start */
+.PlayerCol {
+  padding: .5rem;
 }
+
+.RoundCol {
+  padding: 0;
+}
+
+.RoundCardBody
+ {
+  padding: 0;
+}
+
+.PlayerCardBody {
+  padding: 1px;
+}
+
+.PlayerCard {
+  border: 0;
+  cursor: pointer;
+}
+
+.cardInfo,
+.LegendText {
+  font-size: 12px;
+  margin-bottom: 0;
+}
+
+.RoundCurrentRound {
+  border-color: #28a745
+}
+/* Card End */
+
+/* Font Awesome Icons Start*/
+.Knight,
+.PlayerPicked,
+.Success {
+  color:rgb(15, 132, 228);
+}
+
+.Spy,
+.Fail,
+.Warning,
+.Thumbsdown {
+  color: tomato;
+}
+
+.Thumbsup {
+  color: #28a745
+}
+
+.RoundIcon {
+  font-size: 3rem;
+}
+
+.Iconsize {
+  font-size: 1rem;
+}
+
+.MissionVoteSize {
+  font-size: 2rem;
+}
+
+.Thumbsize {
+  font-size: 13px;
+}
+/* Font Awesome Icons End*/
 
 @keyframes App-logo-spin {
   from {

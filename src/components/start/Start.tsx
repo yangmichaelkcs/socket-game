@@ -1,3 +1,4 @@
+import { FaCrown } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
 import StartButton from "./StartButton";
@@ -16,23 +17,21 @@ class StartGame extends React.Component<any, any> {
       default:
         return (
           <div className="StartGame">
-            <div style={{marginBottom: "2rem", textAlign:"center"}}>
-              <h1 style={{borderBottom: "1px solid #000"}}>
-                Avalon
-              </h1>
-              <p>
-                Welcome to Avalon. Evil Mordred and his minions  
+            <div style={{marginBottom: "2rem"}}>
+              <h1 className="display-2"><u>Avalon</u><FaCrown style={{fontSize:"4rem"}}/></h1>
+              <p style={{textAlign:"center"}}>
+                Evil Mordred and his minions have infiltrated
                 <br />
-                have infiltrated the kingdom of Avalon. It is up 
+                the kingdom of Avalon. It is up to the knights
                 <br />
-                to the knights to defeat Mordred. Deduce who is  
+                to defeat Mordred. Deduce who is friend and 
                 <br />
-                friend and who is foe and win  3 rounds to claim victory.               
+                who is foe and win 3 rounds to claim victory.               
               </p>
             </div>
             <StartButton />
             <br />
-            <div>OR</div>
+            <h3>OR</h3>
             <br />
             <JoinButton />
           </div>

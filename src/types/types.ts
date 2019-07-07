@@ -23,6 +23,7 @@ export enum VOTE_INDEX {
 }
 
 export const PLAYER_DISTRIBUTION = {
+  1: { good: 1, bad: 0 },
   2: { good: 1, bad: 1 },
   3: { good: 2, bad: 1 },
   4: { good: 3, bad: 1 },
@@ -37,6 +38,7 @@ export const PLAYER_DISTRIBUTION = {
 export const ROUND_REQ = {
   1: 
     { 
+      1: { playerNeed: 1, failNeed: 0 },
       2: { playerNeed: 2, failNeed: 1 }, 
       3: { playerNeed: 2, failNeed: 1 }, 
       4: { playerNeed: 2, failNeed: 1 }, 
@@ -49,6 +51,7 @@ export const ROUND_REQ = {
     },
   2: 
     { 
+      1: { playerNeed: 1, failNeed: 0 },
       2: { playerNeed: 2, failNeed: 1 }, 
       3: { playerNeed: 2, failNeed: 1 }, 
       4: { playerNeed: 2, failNeed: 1 }, 
@@ -61,6 +64,7 @@ export const ROUND_REQ = {
     },
   3: 
     { 
+      1: { playerNeed: 1, failNeed: 0 },
       2: { playerNeed: 2, failNeed: 1 }, 
       3: { playerNeed: 2, failNeed: 1 }, 
       4: { playerNeed: 2, failNeed: 1 }, 
@@ -73,6 +77,7 @@ export const ROUND_REQ = {
     },
   4: 
     { 
+      1: { playerNeed: 1, failNeed: 0 },
       2: { playerNeed: 2, failNeed: 1 }, 
       3: { playerNeed: 2, failNeed: 1 }, 
       4: { playerNeed: 2, failNeed: 1 }, 
@@ -85,6 +90,7 @@ export const ROUND_REQ = {
     },
   5: 
     { 
+      1: { playerNeed: 1, failNeed: 0 },
       2: { playerNeed: 2, failNeed: 1 }, 
       3: { playerNeed: 2, failNeed: 1 }, 
       4: { playerNeed: 2, failNeed: 1 }, 

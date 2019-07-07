@@ -6,7 +6,7 @@ import { mainMenu } from "socket";
 class MenuButton extends Component {
   render() {
     const { onClick } = this.props;
-    return <button style={{margin:"1rem"}} onClick={onClick}>Main Menu</button>;
+    return <button type="button" className="btn btn-primary" style={{margin:"1rem"}} onClick={onClick}>Main Menu</button>;
   }
 }
 
