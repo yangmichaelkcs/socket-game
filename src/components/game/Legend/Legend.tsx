@@ -19,8 +19,8 @@ class Legend extends React.Component<any, any> {
           <div className="col"><FaThumbsUp className="Thumbsup"/>Approved Team</div>
           <div className="col"><FaThumbsDown className="Thumbsdown"/>Rejected Team</div>
           <div className="w-100"/>
-          <div className="col"><FaCheck className="Success"/>Succeed Mission</div>
-          <div className="col"><FaTimes className="Fail"/>Fail Mission</div>
+          <div className="col"><FaCheck className="Success"/>Mission Success</div>
+          <div className="col"><FaTimes className="Fail"/>Mission Fail</div>
       </div>
     </div>
     );

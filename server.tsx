@@ -88,7 +88,9 @@ const updatePlayerName = (socket, nickName) => {
 };
 
 const updatePlayerSelected = (socket, socketId, selected) => {
-  const playerSelected = getGameBySocket(socket).players.find(
+  const game: Game =  getGameBySocket(socket);
+  
+  const playerSelected = game.players.find(
     player => player.socketId === socketId
   );
   playerSelected.selected = selected;

@@ -78,7 +78,7 @@ class Game extends React.Component<GameStateProps, any> {
       if(votes[VOTE_INDEX.POS] + votes[VOTE_INDEX.NEG] === 0) {
       return (
         <div>
-          <h4>Players are on the mission:</h4>
+          <h4>Players on the mission:</h4>
           <p>{players.filter(player => player.selected).map(p => p.nickName).join(", ")}</p>
         </div>
       );}
@@ -104,7 +104,7 @@ class Game extends React.Component<GameStateProps, any> {
         return (
           <div>
             <h4>The {winningTeam} have won</h4>
-            <p>The score was Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
+            <p>Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
           </div>
         );
       }
@@ -159,8 +159,10 @@ class Game extends React.Component<GameStateProps, any> {
         <RoleButton />
         <div style={{minHeight:"85px"}}>{this.showAnnouncment()}</div>
         <AllRounds rounds={rounds} failedVotes={failedVotes} currentRound={currentRound} />
-        <PlayerList />
+        <div style={{minHeight:"218px"}}>
+        <PlayerList/>
         <VoteButtons roundStatus={roundStatus} players = {players}/>
+        </div>
         <Legend/>
       </div>
     );
