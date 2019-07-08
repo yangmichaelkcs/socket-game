@@ -24,6 +24,14 @@ function getRandomWord() {
   return capitalizeFirstLetter(randomWord());
 }
 
+function getRandomName(nameLength) {
+  let name = capitalizeFirstLetter(randomWord());
+  while(name.length > nameLength) {
+    name = capitalizeFirstLetter(randomWord());
+  }
+  return name;
+}
+
 const getGameIdBySocket = socket => {
   const rooms = Object.keys(socket && socket.rooms);
   return rooms && rooms[rooms.length - 1];
@@ -68,7 +76,7 @@ const createNewGame = () => {
 const addPlayerToGame = (gameId, socket) => {
   const player: Player = {
     socketId: socket.id,
-    nickName: `${getRandomWord()}`,
+    nickName: `${getRandomName(7)}`,
     role: "DETECTIVE USELESS",
     selected: 0,
     team: null
