@@ -18,15 +18,21 @@ class StartGame extends React.Component<any, any> {
         return (
           <div className="StartGame">
             <div style={{marginBottom: "2rem"}}>
-              <h1 className="display-2"><u>Avalon</u><FaCrown style={{fontSize:"4rem"}}/></h1>
+              <h1><FaCrown style={{fontSize:"3rem"}}/><u>Resistance</u></h1>
               <p style={{textAlign:"center"}}>
-                Evil Mordred and his minions have infiltrated
+                An evil government has taken over the 
                 <br />
-                the kingdom of Avalon. It is up to the knights
+                world. It is up to the Resistance to fight  
                 <br />
-                to defeat Mordred. Deduce who is friend and 
+                back and overthrow the corrupt. The 
                 <br />
-                who is foe and win 3 rounds to claim victory.               
+                government has deployed spies to
+                <br />
+                inflitrate the Resistance. Deduce
+                <br />
+                who is friend or foe. Win 3 rounds to 
+                <br />
+                claim victory.               
               </p>
             </div>
             <StartButton />
