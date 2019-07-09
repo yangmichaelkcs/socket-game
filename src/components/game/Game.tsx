@@ -48,57 +48,97 @@ class Game extends React.Component<GameStateProps, any> {
     };
   }
 
+  // Returns current players turn to pick and the requirements
+  public displayProposingTeam() {
+    const { rounds, currentRound, curentPlayerTurn } = this.props;
+    const playersNeeded = rounds[currentRound - 1].playersNeeded;
+    return (
+      <div>
+        <h4>Turn to Pick: {curentPlayerTurn.nickName}</h4>
+        <p><FaRegUser className="Iconsize"/>Players needed: {playersNeeded} 
+        <br/><FaTimes className="Iconsize Fail"/>Fails needed: {rounds[currentRound -1].failsNeeded}</p>
+      </div>
+    );
+  }
+  
+  // Returns proposed team
+  public displayProposedTeam() {
+    const { players } = this.props;
+    return (
+      <div>
+        <h4>Vote on the team:</h4>
+        <p>{players.filter(player => player.selected).map(p => p.nickName).join(", ")} </p>
+      </div>
+    );
+  }
+
+  // Returns team proposal votes
+  public displayProposedTeamResult() {
+    const { votes } = this.props;
+    return (
+      <div>
+        <h4>Voting has completed</h4>
+        <p>Approved: {votes[VOTE_INDEX.POS]}  Rejected: {votes[VOTE_INDEX.NEG]}</p>
+      </div>
+    );
+  }
+
+  // Returns players on mission
+  public displayPlayersOnMission() {
+    const { players } = this.props;
+    return (
+      <div>
+        <h4>Players on the mission:</h4>
+        <p>{players.filter(player => player.selected).map(p => p.nickName).join(", ")}</p>
+      </div>
+    );
+  }
+  
+  public displayMissionVotingResults() {
+    return (
+      <div>
+        <h4>Mission has completed</h4>
+        <p>{this.state.voteOrder.map((vote, index) => {
+           if(vote === TEAM.GOOD) {
+            return <FaCheck className="MissionVoteSize Success" key={index}/>;
+          } else {
+            return <FaTimes className="MissionVoteSize Fail" key={index}/>;
+          }})}
+        </p>
+      </div>
+    );
+  }
+
   public showAnnouncment () {
-    const { roundStatus, rounds, currentRound, votes, curentPlayerTurn, players, score } = this.props;
+    const { roundStatus, rounds, currentRound, votes, score } = this.props;
+    // Start of Round: Proposing Team
     if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
-      const playersNeeded = rounds[currentRound - 1].playersNeeded;
-        return (
-        <div>
-          <h4>Turn to Pick: {curentPlayerTurn.nickName}</h4>
-          <p><FaRegUser className="Iconsize"/>Players needed: {playersNeeded} 
-          <br/><FaTimes className="Iconsize Fail"/>Fails needed: {rounds[currentRound -1].failsNeeded}</p>
-        </div>
-        );
+      return this.displayProposingTeam();
     }
+    // Proposed team: vote on it
     else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
-      return (
-        <div>
-          <h4>Vote on the team:</h4>
-          <p>{players.filter(player => player.selected).map(p => p.nickName).join(", ")} </p>
-        </div>
-      );
-    } else if (roundStatus === ROUND_STATUS.VOTING_END) {
-      return (
-        <div>
-          <h4>Voting has completed</h4>
-          <p>Approved: {votes[VOTE_INDEX.POS]}  Rejected: {votes[VOTE_INDEX.NEG]}</p>
-        </div>
-      );
-    } else if (roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
+      return this.displayProposedTeam();
+    }
+    // Voting on team has ended 
+    else if (roundStatus === ROUND_STATUS.VOTING_END) {
+      return this.displayProposedTeamResult();
+    }
+    // Mission in progress
+    else if (roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
+      // If mission voting has not completed, display players on mission
       if(votes[VOTE_INDEX.POS] + votes[VOTE_INDEX.NEG] === 0) {
-      return (
-        <div>
-          <h4>Players on the mission:</h4>
-          <p>{players.filter(player => player.selected).map(p => p.nickName).join(", ")}</p>
-        </div>
-      );}
+        return this.displayPlayersOnMission();
+      }
+      /* Mission voting has completed, server will update one by one for climatic reveal.
+       * This happens by by updating oldVotes every time a new vote comes in from the server
+       */
       else {
         if(votes[VOTE_INDEX.POS] === this.state.oldVotes[VOTE_INDEX.POS] && votes[VOTE_INDEX.NEG] === this.state.oldVotes[VOTE_INDEX.NEG]) {
-          return (
-            <div>
-              <h4>Mission has completed</h4>
-              <p>{this.state.voteOrder.map((vote, index) => {
-                 if(vote === TEAM.GOOD) {
-                  return <FaCheck className="MissionVoteSize Success" key={index}/>;
-                } else {
-                  return <FaTimes className="MissionVoteSize Fail" key={index}/>;
-                }})}
-              </p>
-            </div>
-          );
+          return this.displayMissionVotingResults();
         }
       }
-    } else if (roundStatus === ROUND_STATUS.MISSION_END) {
+    } 
+    else if (roundStatus === ROUND_STATUS.MISSION_END) {
       if(score[VOTE_INDEX.POS] === 3 || score[VOTE_INDEX.NEG] === 3) {
         const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
         return (

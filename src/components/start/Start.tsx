@@ -18,7 +18,7 @@ class StartGame extends React.Component<any, any> {
         return (
           <div className="StartGame">
             <div style={{marginBottom: "2rem"}}>
-              <h1><FaCrown style={{fontSize:"3rem"}}/><u>Resistance</u></h1>
+              <h1><FaCrown style={{fontSize:"3rem"}}/><u><b>Resistance</b></u></h1>
               <p style={{textAlign:"center"}}>
                 An evil government has taken over the 
                 <br />

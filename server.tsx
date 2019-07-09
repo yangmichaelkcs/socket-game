@@ -242,7 +242,7 @@ const checkMissionVoteComplete = socket => {
   }
 }
 
-//Cant reset failed votes here, need it in propose new team
+// Cant reset failed votes here, need it in propose new team
 const checkVoteSucceed = socket => {
   const game: Game = getGameBySocket(socket);
   const voteSucceed =  game.votes[VOTE_INDEX.POS] > game.votes[VOTE_INDEX.NEG] ? true : false;

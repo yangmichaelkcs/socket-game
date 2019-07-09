@@ -1,3 +1,4 @@
+/*Main Screens */
 .Lobby,
 .StartGame {
   display: flex;
@@ -8,15 +9,6 @@
   text-align: center;
   width: 90%;
   margin-left: 5%;
-}
-
-.ColorCode {
-  height: 1rem;
-  width: 1rem;
-  border: 1px solid rgb(106, 122, 129);
-  margin-left: 1rem;
-  vertical-align: text-top;
-  margin-right: 3px;
 }
 
 .Game {
@@ -31,7 +23,9 @@
   width: 90%;
   margin-left: 5%;
 }
+/* Main Screens */
 
+/* Components */
 .Role {
   width: 100%;
   border-top: 1px solid #000;
@@ -44,6 +38,34 @@
   text-align: center;
   padding-top: 1rem;
 }
+
+.RoundResultItems,
+.PlayerListItems {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding-left: 0;
+}
+
+.RoundResult,
+.PlayerList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.Round {
+  border-bottom: 1px solid #000;
+}
+
+.singleResult {
+  width: 2rem;
+  height: 3rem;
+  text-align: center;
+  justify-content: center;
+  font-size: 1.5em;
+}
+/* Components */
 
 /* Buttons Start*/
 .RoleButton {
@@ -112,60 +134,7 @@
 }
 /* Buttons End */
 
-.PlayerSelectLegend {
-  display: flex;
-  flex-direction: row;
-}
-
-.RoundResultItems,
-.PlayerListItems {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  padding-left: 0;
-}
-
-.RoundResult,
-.PlayerList {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.Round {
-  border-bottom: 1px solid #000;
-}
-
-.singleResult {
-  width: 2rem;
-  height: 3rem;
-  text-align: center;
-  justify-content: center;
-  font-size: 1.5em;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-}
-
-.App-title {
-  font-size: 1.5em;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-
-/* Card Start */
+/* Card */
 .PlayerCol {
   padding: .5rem;
 }
@@ -198,9 +167,9 @@
 .RoundCurrentRound {
   border-color: #28a745
 }
-/* Card End */
+/* Card */
 
-/* Font Awesome Icons Start*/
+/* Font Awesome Icons */
 .Knight,
 .PlayerPicked,
 .Success {
@@ -233,7 +202,29 @@
 .Thumbsize {
   font-size: 13px;
 }
-/* Font Awesome Icons End*/
+/* Font Awesome Icons */
+
+/* Misc */
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+/* Misc */
 
 @keyframes App-logo-spin {
   from {

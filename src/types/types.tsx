@@ -1,3 +1,4 @@
+/* STATUS */
 export enum GAME_STATUS {
   LOBBY = "LOBBY",
   IN_PROGRESS = "IN_PROGRESS",
@@ -12,6 +13,7 @@ export enum ROUND_STATUS {
   MISSION_END = "MISSION_END", // Everyone views results of mission
 }
 
+/* Voting and Team */
 export enum TEAM {
   GOOD = "GOOD",
   BAD = "BAD"
@@ -22,6 +24,7 @@ export enum VOTE_INDEX {
   NEG = 1
 }
 
+/* Player Number Requirements */
 export const PLAYER_DISTRIBUTION = {
   1: { good: 1, bad: 0 },
   2: { good: 1, bad: 1 },
@@ -103,6 +106,7 @@ export const ROUND_REQ = {
     }
 }
 
+/* Definitions */
 export interface RootState {
   game: Game;
   user: User;

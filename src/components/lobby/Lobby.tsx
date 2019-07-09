@@ -32,10 +32,12 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
     this.handleClick = this.handleClick.bind(this);
   }
 
+  // Changes in nickname input box reflected in value state
   public handleChange(event) {
     this.setState({ value: event.target.value });
   }
 
+  // On clicking update nick, checks if its between 1-7 characters and unique
   public handleClick() {
     const { playerList } = this.props
     const nick = this.state.value.trim()
@@ -49,6 +51,7 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
     }
   }
 
+  // Nickname input box display 
   public getNick() {
     if(this.props.playerData === undefined)
     {
@@ -60,6 +63,7 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
     }
   }
 
+  // Tooltip
   public showNickTooltip() {
     if(this.state.tooltip) {
       return (<span className="Warning">Nickname must be unique and 1-7 letters</span>);
