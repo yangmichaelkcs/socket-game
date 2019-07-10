@@ -1,9 +1,9 @@
-import React, {Component} from "react";
+import * as React from "react";
 import SingleRound from "../SingleRound";
 
-class AllRounds extends Component {
+class AllRounds extends React.Component <any,any> {
 
-  render() {
+  public render() {
     return (
       <div>
         <div className="row">

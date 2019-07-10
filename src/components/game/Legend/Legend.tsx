@@ -2,12 +2,6 @@ import { FaRegUser, FaUser, FaThumbsUp, FaThumbsDown, FaTimes, FaCheck } from 'r
 import * as React from "react";
 import { connect } from "react-redux";
 
-{/* <div className="Legend">
-<p className="LegendText">&ensp;&ensp;&ensp;</p>
-<p className="LegendText">&ensp;&ensp;&ensp;</p>
-<p className="LegendText">&ensp;&ensp;&ensp;</p>
-</div> */}
-
 class Legend extends React.Component<any, any> {
   public render() {
     return (
