@@ -16,6 +16,7 @@ const io = socketIo.listen(port);
 
 const gamesById: { string?: Game } = {};
 
+/* Random Word */
 function capitalizeFirstLetter(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
@@ -24,6 +25,7 @@ function getRandomWord() {
   return capitalizeFirstLetter(randomWord());
 }
 
+// Returns random word of shorter than nameLength
 function getRandomName(nameLength) {
   let name = capitalizeFirstLetter(randomWord());
   while(name.length > nameLength) {
@@ -31,7 +33,9 @@ function getRandomName(nameLength) {
   }
   return name;
 }
+/* Random Word */
 
+/* Get Game */
 const getGameIdBySocket = socket => {
   const rooms = Object.keys(socket && socket.rooms);
   return rooms && rooms[rooms.length - 1];
@@ -44,11 +48,9 @@ const getGameBySocket = socket => {
 const getGameById = gameId => {
   return gamesById[gameId];
 };
+/* Get Game */
 
-function getPlayerCount(gameId) {
-  return Object.keys(gamesById[gameId].players).length;
-}
-
+/* Init */
 const createNewGame = () => {
   const id = getRandomWord() + getRandomWord()
   const game = {
@@ -73,6 +75,7 @@ const createNewGame = () => {
   return id;
 };
 
+// FIXME Change this stuff for Avalon
 const addPlayerToGame = (gameId, socket) => {
   const player: Player = {
     socketId: socket.id,
@@ -83,52 +86,6 @@ const addPlayerToGame = (gameId, socket) => {
   };
   socket.join(gameId);
   getGameById(gameId).players.push(player);
-};
-
-const getPlayerBySocket = socket => {
-  const game = getGameBySocket(socket);
-  return game.players.find(player => player.socketId === socket.id);
-};
-
-const updatePlayerName = (socket, nickName) => {
-  const player: Player = getPlayerBySocket(socket);
-  player.nickName = nickName;
-};
-
-const updatePlayerSelected = (socket, socketId, selected) => {
-  const game: Game =  getGameBySocket(socket);
-  
-  const playerSelected = game.players.find(
-    player => player.socketId === socketId
-  );
-  playerSelected.selected = selected;
-};
-
-const nextRoundStatus = roundStatus => {
-  let nextStatus;
-  switch(roundStatus) {
-    case ROUND_STATUS.PROPOSING_TEAM:
-      nextStatus = ROUND_STATUS.VOTING_TEAM;
-      break;
-    case ROUND_STATUS.VOTING_TEAM:
-      nextStatus = ROUND_STATUS.VOTING_END;
-      break;
-    case ROUND_STATUS.VOTING_END:
-      nextStatus = ROUND_STATUS.MISSION_IN_PROGRESS;
-      break;
-    case ROUND_STATUS.MISSION_IN_PROGRESS:
-      nextStatus = ROUND_STATUS.MISSION_END;
-      break;
-    case ROUND_STATUS.MISSION_END:
-      nextStatus = ROUND_STATUS.PROPOSING_TEAM;
-      break;
-  }
-  return nextStatus;
-}
-
-const updateRoundStatus = socket => {
-  const game: Game = getGameBySocket(socket);
-  game.roundStatus = nextRoundStatus(game.roundStatus);
 };
 
 const startGame = (gameId: string) => {
@@ -183,7 +140,30 @@ const assignRoles = (gameId: string) => {
     }
   }
 };
+/* Init */
 
+/* Player */
+const getPlayerBySocket = socket => {
+  const game = getGameBySocket(socket);
+  return game.players.find(player => player.socketId === socket.id);
+};
+
+const updatePlayerName = (socket, nickName) => {
+  const player: Player = getPlayerBySocket(socket);
+  player.nickName = nickName;
+};
+
+// Sets the player in corresponding game to param selected
+const updatePlayerSelected = (socket, socketId, selected) => {
+  const game: Game =  getGameBySocket(socket);
+  
+  const playerSelected = game.players.find(
+    player => player.socketId === socketId
+  );
+  playerSelected.selected = selected;
+};
+
+// Makes next player the current player
 const nextPlayerTurn = socket => {
   const game: Game = getGameBySocket(socket);
   const currPlayerIndex = game.players.findIndex(p => p.socketId === game.currentPlayerTurn);
@@ -191,11 +171,58 @@ const nextPlayerTurn = socket => {
   game.currentPlayerTurn = game.players[nextPlayerIndex].socketId;
 }
 
+// Resets all players to unselected
+const resetSelectPlayers = socket => {
+  const game: Game = getGameBySocket(socket);
+  game.players.forEach(player => player.selected = 0);
+}
+/* Player */
+
+/* Round */
+// Gets next round
+const nextRoundStatus = roundStatus => {
+  let nextStatus;
+  switch(roundStatus) {
+    case ROUND_STATUS.PROPOSING_TEAM:
+      nextStatus = ROUND_STATUS.VOTING_TEAM;
+      break;
+    case ROUND_STATUS.VOTING_TEAM:
+      nextStatus = ROUND_STATUS.VOTING_END;
+      break;
+    case ROUND_STATUS.VOTING_END:
+      nextStatus = ROUND_STATUS.MISSION_IN_PROGRESS;
+      break;
+    case ROUND_STATUS.MISSION_IN_PROGRESS:
+      nextStatus = ROUND_STATUS.MISSION_END;
+      break;
+    case ROUND_STATUS.MISSION_END:
+      nextStatus = ROUND_STATUS.PROPOSING_TEAM;
+      break;
+  }
+  return nextStatus;
+}
+
+// Sets next round to current round
+const updateRoundStatus = socket => {
+  const game: Game = getGameBySocket(socket);
+  game.roundStatus = nextRoundStatus(game.roundStatus);
+};
+
+const updateSocketToNextRound = socket => {
+  updateRoundStatus(socket);  
+  let gameId = getGameIdBySocket(socket);
+  io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+}
+/* Round */
+
+/* Votes */
+// Updates the mission Vote
 const updateVote = (socket, vote) => {
   const game: Game = getGameBySocket(socket);
   vote === -1 ? game.votes[VOTE_INDEX.NEG]++ : game.votes[VOTE_INDEX.POS]++;
 }
 
+// Updates team proposal vote and corresponding player
 const updateTeamVote = (socket, vote, socketId) => {
   const game: Game = getGameBySocket(socket);
   vote === -1 ? game.votes[VOTE_INDEX.NEG]++ : game.votes[VOTE_INDEX.POS]++;
@@ -203,6 +230,7 @@ const updateTeamVote = (socket, vote, socketId) => {
   vote === -1 ? player.vote = -1 : player.vote = 1;
 }
 
+// Resets votes
 const resetVotes = socket => {
   const game: Game = getGameBySocket(socket);
   game.votes[VOTE_INDEX.POS] = 0;
@@ -210,23 +238,7 @@ const resetVotes = socket => {
   game.players.forEach(p => p.vote = 0);
 }
 
-const resetSelectPlayers = socket => {
-  const game: Game = getGameBySocket(socket);
-  game.players.forEach(player => player.selected = 0);
-}
-
-const updateScore = (socket, point) => {
-  const game: Game = getGameBySocket(socket);
-  if(point === TEAM.BAD) { 
-    game.score[VOTE_INDEX.NEG]++;
-    game.rounds[game.currentRound - 1].value = TEAM.BAD;
-  } else {
-    game.score[VOTE_INDEX.POS]++;
-    game.rounds[game.currentRound - 1].value = TEAM.GOOD;
-  }
-  game.currentRound++;
-}
-
+// Checks if team proposal voting is complete
 const checkVoteComplete = socket => {
   const game: Game = getGameBySocket(socket);
   if(game.roundStatus == ROUND_STATUS.VOTING_TEAM) {
@@ -235,6 +247,8 @@ const checkVoteComplete = socket => {
     }
   } 
 }
+
+// Checks if mission voting is complete
 const checkMissionVoteComplete = socket => {
   const game: Game = getGameBySocket(socket);
   if(game.votes[VOTE_INDEX.NEG] + game.votes[VOTE_INDEX.POS] == game.rounds[game.currentRound - 1].playersNeeded) {
@@ -242,63 +256,26 @@ const checkMissionVoteComplete = socket => {
   }
 }
 
-//Cant reset failed votes here, need it in propose new team
+// Checks if team proposal votes is accept
 const checkVoteSucceed = socket => {
   const game: Game = getGameBySocket(socket);
   const voteSucceed =  game.votes[VOTE_INDEX.POS] > game.votes[VOTE_INDEX.NEG] ? true : false;
   resetVotes(socket);
-  nextPlayerTurn(socket);
   return voteSucceed;
-
 }
 
-//Want to keep votes to display, think aobut updating score later to do reveal of mission
+// Checks if mission succeeds 
 const checkMissionSucceed = socket => {
   const game: Game = getGameBySocket(socket);
   const numFailNeeded = game.rounds[game.currentRound - 1].failsNeeded;
   return game.votes[VOTE_INDEX.NEG] < numFailNeeded; 
 }
 
-const newTeamPropose = socket => {
-  const game: Game = getGameBySocket(socket);
-  resetSelectPlayers(socket);
-  nextPlayerTurn(socket);
-  game.failedVotes++;
-  game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
-  if(game.failedVotes === 5)
-  {
-    updateScore(socket, TEAM.BAD);
-    resetFailedVotes(socket);
-    return false; //Bad team gets point
-  }
-};
-
+// Resets team failed proposal count
 const resetFailedVotes = socket => {
   const game: Game = getGameBySocket(socket);
   game.failedVotes = 0;
 }
-
-const checkWinner = socket => {
-  const game: Game = getGameBySocket(socket);
-  if(game.score[VOTE_INDEX.POS] === 3) {
-    return TEAM.GOOD;
-  }
-  if(game.score[VOTE_INDEX.NEG] === 3) {
-    return TEAM.BAD
-  }
-  return false;
-}
-
-const endGame = socket => {
-  const game: Game = getGameBySocket(socket);
-  game.roundStatus = ROUND_STATUS.MISSION_END;
-}
-
-async function wait(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-};
 
 const shuffleVotes = socket => {
   const game: Game = getGameBySocket(socket);
@@ -331,6 +308,62 @@ const shuffleVotes = socket => {
   }
 
   return shuffledVoteArr;
+};
+/* Votes */
+
+/* Game Score */
+// Updates game score
+const updateScore = (socket, point) => {
+  const game: Game = getGameBySocket(socket);
+  if(point === TEAM.BAD) { 
+    game.score[VOTE_INDEX.NEG]++;
+    game.rounds[game.currentRound - 1].value = TEAM.BAD;
+  } else {
+    game.score[VOTE_INDEX.POS]++;
+    game.rounds[game.currentRound - 1].value = TEAM.GOOD;
+  }
+  game.currentRound++;
+}
+
+// Check if a team has won, if no team has won return false
+const checkWinner = socket => {
+  const game: Game = getGameBySocket(socket);
+  if(game.score[VOTE_INDEX.POS] === 3) {
+    return TEAM.GOOD;
+  }
+  if(game.score[VOTE_INDEX.NEG] === 3) {
+    return TEAM.BAD
+  }
+  return false;
+}
+
+// Moves game to mission end
+const endGame = socket => {
+  const game: Game = getGameBySocket(socket);
+  game.roundStatus = ROUND_STATUS.MISSION_END;
+}
+/* Game Score */
+
+// When team proposal is rejected then update and go to next player. If 5 rejects then returns false
+const newTeamPropose = socket => {
+  const game: Game = getGameBySocket(socket);
+  resetSelectPlayers(socket);
+  nextPlayerTurn(socket);
+  game.failedVotes++;
+  game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
+  if(game.failedVotes === 5)
+  {
+    updateScore(socket, TEAM.BAD);
+    resetFailedVotes(socket);
+    return false; 
+  }
+};
+
+// Async timeout
+async function wait(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
 };
 
 io.on("connection", socket => {
@@ -383,6 +416,7 @@ io.on("connection", socket => {
     }
   });
 
+  // Starts game and assign roles
   socket.on("START_GAME", () => {
     const gameId = getGameIdBySocket(socket);
     if (gameId && gamesById[gameId]) {
@@ -392,93 +426,92 @@ io.on("connection", socket => {
     }
   });
 
+  // Updates nickname in lobby
   socket.on("UPDATE_NICKNAME", (nickName: string) => {
     updatePlayerName(socket, nickName);
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
 
+  // Pick player makes player selected
   socket.on("PICK_PLAYER", (socketId: string, selected: number) => {
     updatePlayerSelected(socket, socketId, selected);
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
 
+  // Propose team moves game to next round state
   socket.on("PROPOSE_TEAM", () => {
     updateRoundStatus(socket);
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
 
+ /* Once voting is complete either sees if teams is accepted or not. 
+  * Goes to next round status if team accepted, else increments failed vote for new team
+  */
   socket.on("UPDATE_TEAM_VOTE",  async (vote : number, socketId: string) =>  {
+    let gameId = getGameIdBySocket(socket);
     updateTeamVote(socket, vote, socketId);
     if(checkVoteComplete(socket)) {
-      updateRoundStatus(socket);  //Voting_end
-      let gameId = getGameIdBySocket(socket);
-      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      updateSocketToNextRound(socket);
       await wait(6000);
-      //Team is going on Mission
       if(checkVoteSucceed(socket)) {
-        resetFailedVotes(socket);
-        updateRoundStatus(socket);  //Mission_inprogress
-        nextPlayerTurn(socket)
-        gameId = getGameIdBySocket(socket);
-        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
-      } else { //New Vote
+        updateSocketToNextRound(socket);
+      } else { 
         if(!newTeamPropose(socket)) {
           if(checkWinner(socket) === TEAM.BAD) {
             endGame(socket);
             await wait(20000);
-            const game: Game = getGameBySocket(socket);
-            game.status = GAME_STATUS.END;
+            gamesById[gameId].status = GAME_STATUS.END
             io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
             return;
           }
         }
-        gameId = getGameIdBySocket(socket);
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
       }
     }
   });
 
+ /* Once voting is complete shuffle the votes and send to socket one by one
+  * Updates score based on number of fails and goes to next round and checks to see if a team won
+  */
   socket.on("UPDATE_MISSION_VOTE",  async (vote : number) =>  {
     updateVote(socket, vote);
     if(checkMissionVoteComplete(socket)) {
       const gameId = getGameIdBySocket(socket);
       const shuffledVotesArr = shuffleVotes(socket);
       resetVotes(socket);
-      const game: Game = getGameBySocket(socket);
       for(let i = 0; i < shuffledVotesArr.length; i++) {
         await wait(2000);
         if(shuffledVotesArr[i] === 1) {
-          game.votes[VOTE_INDEX.POS]++;
+          gamesById[gameId].votes[VOTE_INDEX.POS]++;
         }
         else {
-          game.votes[VOTE_INDEX.NEG]++;
+          gamesById[gameId].votes[VOTE_INDEX.NEG]++;
         }
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
       }
       await wait(3000);
       checkMissionSucceed(socket) ? updateScore(socket, TEAM.GOOD) : updateScore(socket, TEAM.BAD)
-      updateRoundStatus(socket);  //Mission_end without round update
-      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      updateSocketToNextRound(socket);
       await wait(6000);
-      if(checkWinner(socket) !== false) {
-        endGame(socket);
-        resetVotes(socket);
+      if(checkWinner(socket)) {
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
         await wait(20000);
-        game.status = GAME_STATUS.END;
+        gamesById[gameId].status = GAME_STATUS.END;
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
         return;
       }
       resetVotes(socket);
       resetSelectPlayers(socket);
-      updateRoundStatus(socket);  //Proposing team
-      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      resetFailedVotes(socket);
+      nextPlayerTurn(socket);
+      updateSocketToNextRound(socket);
     }
   });
 
+  // Main menu button will send player back to main menu and remove that player from game
   socket.on("MAIN_MENU", () => {
     const gameId = getGameIdBySocket(socket);
     if (gameId && gamesById[gameId]) {
@@ -486,9 +519,12 @@ io.on("connection", socket => {
       const playersList = game.players
       const playerIndex = playersList.findIndex(player => player.socketId === socket.id)
       playersList.splice(playerIndex, 1);
-      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      delete gamesById[gameId].players[socket.id];
+      socket.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+      socket.leave(gameId);
       socket.emit("NAV_MAIN_MENU", {});
-    }
+      console.log(socket.id + " left the game with gameId: " + gameId)
+     }
   });
 });
 

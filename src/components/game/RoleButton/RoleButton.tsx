@@ -20,17 +20,20 @@ class RoleButton extends React.Component<RoleButtonProps, RoleButtonState> {
     this.handleClick = this.handleClick.bind(this);
   }
 
+  // Show or Hides role info
   public handleClick() {
     this.setState(prevState => ({
       showRole: !prevState.showRole
     }));
   }
 
+  // Displys team icon based on team
   public displayTeamIcon() {
     const { playerData } = this.props;
     return playerData.team === TEAM.GOOD ? <FaChessKnight className="Knight"/> : <FaSkull className="Spy"/>;
   }
 
+  // Displays team members depending on role
   public displayTeamMembers() {
     const { playerData, players } = this.props;
     if( playerData.team === TEAM.BAD) {
@@ -41,6 +44,7 @@ class RoleButton extends React.Component<RoleButtonProps, RoleButtonState> {
     } 
   }
 
+  // Returns the role information
   public roleInfo() {
     const { playerData } = this.props;
     if (this.state.showRole) {

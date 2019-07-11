@@ -1,9 +1,11 @@
 import { FaChessKnight, FaSkull, FaRegQuestionCircle } from 'react-icons/fa'
-import React, {Component} from "react";
+import * as React from "react";
 import { TEAM } from 'types/types';
 
-class SingleRound extends Component{
-  roundStatus() {
+class SingleRound extends React.Component<any, any> {
+  
+  // Returns correct icon depending on who won mission
+  public roundStatus() {
     if(this.props.value == null)
     {
       return <FaRegQuestionCircle className="RoundIcon card-img-top"/>;
@@ -18,11 +20,12 @@ class SingleRound extends Component{
     }
   }
 
-  isCurrentRound() {
+  // Sets class for current round or not current round
+  public isCurrentRound() {
     return this.props.currentRound === this.props.roundNumber ? "RoundCurrentRound card" : "card";
   }
 
-  render() {
+  public render() {
     const { roundNumber, playersNeeded, failsNeeded } = this.props;
     return (
       <div className="RoundCol col">

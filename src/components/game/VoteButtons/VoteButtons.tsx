@@ -25,17 +25,20 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
     this.onSuccess = this.onSuccess.bind(this);
     this.onFail = this.onFail.bind(this);
   }
- 
+  
+  // Clicking success hides buttons and emits server
   public onSuccess = () => {
     this.setState({success: false, fail: false});
     updateMissionVote(1);
   };
 
+  // Clicking fail hides buttons and emits server
   public onFail = () => {
     this.setState({fail: false, success: false});
     updateMissionVote(-1);
   }
   
+  // Shows vote buttons only for those players who are on the mission and at the correct round
   public showVoteButtons () {
     const { roundStatus, onMission } = this.props;
     if(roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS && onMission) {
@@ -52,6 +55,7 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
     }
   }
 
+  // Resets buttons so they are displayed
   public componentDidUpdate() {
     if(this.state.success && this.state.fail) {
       return;

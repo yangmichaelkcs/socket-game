@@ -33,6 +33,7 @@ interface PlayerComponentProps
     PlayerComponentStateProps {}
 
 class PlayerComponent extends React.Component<PlayerComponentProps, any> {
+  // Only current players turn can click players. Cannot click more than players needed for round
   public onPlayerClick = () => {
     const { players, player, currentRound, rounds, currentPlayerTurn, playerData, roundStatus } = this.props;
     if(playerData.socketId === currentPlayerTurn.socketId && roundStatus === ROUND_STATUS.PROPOSING_TEAM ) {
@@ -49,7 +50,7 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
     }
   };
 
-  // Turn into some kind of icon later
+  // Returns thumbs up if accepted team and thumbs down if rejected
   public displayVote = () => {
     const { player, roundStatus } = this.props;
     if (roundStatus === ROUND_STATUS.VOTING_END) {
@@ -65,6 +66,7 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
     } 
   }
 
+  // Get icon for if player is selected or not
   public getPlayerIcon() {
     return this.props.player.selected === 0 ? <FaRegUser /> : <FaUser className="PlayerPicked"/>;
   }
