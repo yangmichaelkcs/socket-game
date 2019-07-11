@@ -119,7 +119,7 @@ class Game extends React.Component<GameStateProps, any> {
     const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
     return (
       <div>
-        <h4>{winningTeam} WINS</h4>
+        <h4>{winningTeam} Win!</h4>
         <p>Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
       </div>
     );
