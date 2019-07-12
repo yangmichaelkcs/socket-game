@@ -2,7 +2,8 @@
 export enum GAME_STATUS {
   LOBBY = "LOBBY",
   IN_PROGRESS = "IN_PROGRESS",
-  END = "END"
+  END = "END",
+  REJOIN = "REJOIN"
 }
 
 export enum ROUND_STATUS {
