@@ -5,6 +5,7 @@ import StartButton from "./StartButton";
 import JoinButton from "./JoinButton";
 import Lobby from "components/lobby";
 import Game from "components/game";
+import Rejoin from "components/rejoin";
 import { getCurrentPage } from "selectors";
 
 class StartGame extends React.Component<any, any> {
@@ -14,6 +15,8 @@ class StartGame extends React.Component<any, any> {
         return <Lobby />;
       case "IN_PROGRESS":
         return <Game />;
+      case "REJOIN":
+        return <Rejoin />
       default:
         return (
           <div className="StartGame">

@@ -77,15 +77,26 @@ const createNewGame = () => {
 
 // FIXME Change this stuff for Avalon
 const addPlayerToGame = (gameId, socket) => {
-  const player: Player = {
-    socketId: socket.id,
-    nickName: `${getRandomName(7)}`,
-    role: "DETECTIVE USELESS",
-    selected: 0,
-    team: null
-  };
-  socket.join(gameId);
-  getGameById(gameId).players.push(player);
+  const game: Game = getGameById(gameId)
+  if(game.status != GAME_STATUS.IN_PROGRESS) { 
+    const player: Player = {
+      socketId: socket.id,
+      nickName: `${getRandomName(7)}`,
+      role: "DETECTIVE USELESS",
+      selected: 0,
+      team: null
+    };
+    socket.join(gameId);
+    game.players.push(player);
+    return true;
+  }
+  else {
+    const dupGame = Object.assign({}, game);
+    dupGame.status = GAME_STATUS.REJOIN;
+    socket.join(gameId);
+    socket.emit("NAV_MAIN_MENU", dupGame);
+    return false;
+  }
 };
 
 const startGame = (gameId: string) => {
@@ -371,7 +382,6 @@ io.on("connection", socket => {
     console.log("user disconnected: " + socket.id);
   });
 
-  // FIXME: If game has started we need to implement socket reconnection
   socket.on("disconnecting", () => {
     const gameId = getGameIdBySocket(socket);
     if (gameId && gamesById[gameId]) {
@@ -383,10 +393,6 @@ io.on("connection", socket => {
         playersList.splice(playerIndex, 1);
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
         return;
-      }
-      // Game Started Case
-      if(game.status === GAME_STATUS.IN_PROGRESS) {
-
       }
     }
   });
@@ -405,7 +411,10 @@ io.on("connection", socket => {
   socket.on("JOIN_GAME", gameId => {
     const gameIds = Object.keys(gamesById);
     if (gameIds.includes(gameId)) {
-      addPlayerToGame(gameId, socket);
+      if(!addPlayerToGame(gameId, socket)){
+        console.log(`${socket.id} rejoining a game with gameId: ${gameId}`)
+        return;
+      }
 
       io.to(gameId).emit("JOINED_GAME", getGameById(gameId));
       socket.emit("SET_SOCKET_ID", socket.id);
@@ -525,6 +534,21 @@ io.on("connection", socket => {
       socket.emit("NAV_MAIN_MENU", {});
       console.log(socket.id + " left the game with gameId: " + gameId)
      }
+  });
+
+  // Player rejoning game sets new socket id to all the right places
+  socket.on("REJOIN_GAME", (nickName: string) => {
+    const gameId = getGameIdBySocket(socket);
+    if (gameId && gamesById[gameId]) {
+      const playerList = gamesById[gameId].players
+      const replacePlayer = playerList.find(player => player.nickName === nickName);
+      if (replacePlayer.socketId === gamesById[gameId].currentPlayerTurn) {
+        gamesById[gameId].currentPlayerTurn = socket.id;
+      }
+      replacePlayer.socketId = socket.id;
+      socket.emit("SET_SOCKET_ID", socket.id);
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+    }
   });
 });
 

@@ -61,9 +61,13 @@ export const proposeTeam = () => {
 
 export const updateTeamVote = (vote: number, playerId: string) => {
   socket.emit("UPDATE_TEAM_VOTE", vote, playerId);
-}
+};
 
 export const updateMissionVote = (vote: number) => {
   socket.emit("UPDATE_MISSION_VOTE", vote);
-}
+};
+
+export const rejoinGame = (nickname: string) => {
+  socket.emit("REJOIN_GAME", nickname);
+};
 
