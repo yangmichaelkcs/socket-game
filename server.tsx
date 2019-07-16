@@ -52,7 +52,10 @@ const getGameById = gameId => {
 
 /* Init */
 const createNewGame = () => {
-  const id = getRandomWord() + getRandomWord()
+  let id = getRandomWord() + getRandomWord()
+  while( gamesById[id] !== undefined) {
+    id = getRandomWord() + getRandomWord()
+  }
   const game = {
     players: [],
     status: GAME_STATUS.LOBBY,
@@ -378,8 +381,19 @@ async function wait(ms) {
 };
 
 io.on("connection", socket => {
+
   socket.on("disconnect", function() {
-    console.log("user disconnected: " + socket.id);
+     console.log("user disconnected: " + socket.id);
+  });
+
+  socket.on("disconnecting", function () {
+    const gameId = getGameIdBySocket(socket);
+    socket.leave(gameId);
+    io.of('/').in(gameId).clients(function(error, clients) {
+      if (clients.length == 0) {
+        delete gamesById[gameId];
+      }
+    });
   });
 
   socket.on("disconnecting", () => {
@@ -464,16 +478,24 @@ io.on("connection", socket => {
     updateTeamVote(socket, vote, socketId);
     if(checkVoteComplete(socket)) {
       updateSocketToNextRound(socket);
-      await wait(6000);
+      await wait(3000);
       if(checkVoteSucceed(socket)) {
         updateSocketToNextRound(socket);
       } else { 
         if(!newTeamPropose(socket)) {
           if(checkWinner(socket) === TEAM.BAD) {
             endGame(socket);
-            await wait(20000);
-            gamesById[gameId].status = GAME_STATUS.END
+            await wait(5000);
+            gamesById[gameId].status = GAME_STATUS.END;
             io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+            io.of('/').in(gameId).clients(function(error, clients) {
+              if (clients.length > 0) {
+                  clients.forEach(function (socket_id) {
+                      io.sockets.sockets[socket_id].leave(gameId);
+                  });
+              }
+            });
+            delete gamesById[gameId];
             return;
           }
         }
@@ -504,12 +526,20 @@ io.on("connection", socket => {
       await wait(3000);
       checkMissionSucceed(socket) ? updateScore(socket, TEAM.GOOD) : updateScore(socket, TEAM.BAD)
       updateSocketToNextRound(socket);
-      await wait(6000);
+      await wait(3000);
       if(checkWinner(socket)) {
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
-        await wait(20000);
+        await wait(5000);
         gamesById[gameId].status = GAME_STATUS.END;
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+        io.of('/').in(gameId).clients(function(error, clients) {
+          if (clients.length > 0) {
+              clients.forEach(function (socket_id) {
+                  io.sockets.sockets[socket_id].leave(gameId);
+              });
+          }
+        });
+        delete gamesById[gameId];
         return;
       }
       resetVotes(socket);
