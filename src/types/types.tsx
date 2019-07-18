@@ -145,3 +145,10 @@ export interface Player {
   selected?: number;
   vote?: number;
 }
+
+export enum SPECIAL_CHAR_INDEX {
+  ASSMERLIN = 0,
+  PERCIVAL = 1,
+  MORGANA = 2,
+  MORDRED = 3
+}

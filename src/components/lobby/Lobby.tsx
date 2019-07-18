@@ -6,6 +6,7 @@ import StartButton from "./StartButton";
 import { Player } from "types/types";
 import { updateNickName } from "socket";
 import MenuButton from './MenuButton';
+import { SPECIAL_CHAR_INDEX } from '../../types/types';
 
 interface LobbyPropsFromState {
   gameId: string;
@@ -18,6 +19,7 @@ interface LobbyPropsFromState {
 interface LobbyState {
   value: string;
   tooltip: boolean;
+  includes: boolean[];
 }
 
 class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
@@ -25,11 +27,16 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
     super(props);
     this.state = { 
       value: "",
-      tooltip: false
+      tooltip: false,
+      includes: [false, false, false, false]
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.checkAssMerlin = this.checkAssMerlin.bind(this);
+    this.checkMordred = this.checkMordred.bind(this);
+    this.checkMorgana = this.checkMorgana.bind(this);
+    this.checkPercival = this.checkPercival.bind(this);
   }
 
   // Changes in nickname input box reflected in value state
@@ -69,6 +76,27 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
       return (<span className="Warning">Nickname must be unique and 1-7 letters</span>);
     } 
   }
+  
+  // Check boxes for special chars
+  public checkMordred() {
+    this.state.includes[SPECIAL_CHAR_INDEX.MORDRED] = !this.state.includes[SPECIAL_CHAR_INDEX.MORDRED];
+    this.forceUpdate()
+  }
+
+  public checkMorgana() {
+    this.state.includes[SPECIAL_CHAR_INDEX.MORGANA] = !this.state.includes[SPECIAL_CHAR_INDEX.MORGANA];
+    this.forceUpdate()
+  }
+
+  public checkPercival() {
+    this.state.includes[SPECIAL_CHAR_INDEX.PERCIVAL] = !this.state.includes[SPECIAL_CHAR_INDEX.PERCIVAL];
+    this.forceUpdate()
+  }
+
+  public checkAssMerlin() {
+    this.state.includes[SPECIAL_CHAR_INDEX.ASSMERLIN] = !this.state.includes[SPECIAL_CHAR_INDEX.ASSMERLIN];
+    this.forceUpdate()
+  }
 
   public render() {
     const { gameId, playerCount, playerListItems } = this.props;
@@ -76,8 +104,9 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
       <div className="Lobby">
         <h3 style={{wordBreak:"break-all"}}><u>Game ID:<br/>{gameId}</u></h3>
         <h4>{playerCount} player(s) connected: </h4>
-        <ul className="list-unstyled">{playerListItems}</ul>
+        <h5 className="Warning">You must have 5 - 10 players</h5>
         <br />
+        <div className="row" style={{width:"75%", paddingBottom:"1rem"}}>{playerListItems}</div>
         <div>
           <div className="NickTooltip input-group mb-3">
             <input type="text" value={this.state.value} onChange={this.handleChange}
@@ -88,11 +117,40 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
           </div>
           {this.showNickTooltip()}
         </div>
+        <br />
+        <form>
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="checkbox" id="assassinMerlin" onClick={this.checkAssMerlin} />
+            <label className="form-check-label" htmlFor="assassinMerlin">Assassin &amp; Merlin </label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="checkbox" id="percival" onClick={this.checkPercival} />
+            <label className="form-check-label" htmlFor="percival">Percival</label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="checkbox" id="morgana" onClick={this.checkMorgana} />
+            <label className="form-check-label" htmlFor="morgana">Morgana</label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="checkbox" id="Mordred" onClick={this.checkMordred}/>
+            <label className="form-check-label" htmlFor="Mordred">Mordred</label>
+          </div>
+        </form>
         <div>
-          <StartButton playerCount={playerCount} />
+          <StartButton playerCount={playerCount} includes={this.state.includes}/>
           <MenuButton />
         </div>
-        <h5>You must have 5 - 10 players</h5>
+        <p style={{fontSize:".75rem"}}>
+          Merlin - Sees all evil minions
+          <br />
+          Assassin - Kill Merlin, win game
+          <br />
+          Percival - Sees Morgana and Merlin
+          <br />
+          Morgana - Appears as Merlin to Percival
+          <br />
+          Mordred - Not revealed to Merlin
+        </p>
       </div>
     );
   }
@@ -101,10 +159,10 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
 const mapStateToProps = state => {
   const playerList: Player[] = getPlayers(state);
   const playerListItems = playerList.map(player => (
-    <li key={player.socketId}>
+    <div className="col-6" key={player.socketId}>
       <FaRegUser style={{fontSize:"1rem"}}/>
       {player.nickName}
-    </li>
+    </div>
   ));
   const playerData: Player = getPlayerData(state);
 
