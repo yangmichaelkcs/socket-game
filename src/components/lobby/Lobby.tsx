@@ -1,10 +1,10 @@
 import { FaRegUser } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
-import { getGameId, getPlayerCount, getPlayers, getPlayerData } from "selectors";
+import { getGameId, getPlayerCount, getPlayers, getPlayerData, getIncludes } from "selectors";
 import StartButton from "./StartButton";
 import { Player } from "types/types";
-import { updateNickName } from "socket";
+import { updateNickName, updateIncludes } from "socket";
 import MenuButton from './MenuButton';
 import { SPECIAL_CHAR_INDEX } from '../../types/types';
 
@@ -79,23 +79,19 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
   
   // Check boxes for special chars
   public checkMordred() {
-    this.state.includes[SPECIAL_CHAR_INDEX.MORDRED] = !this.state.includes[SPECIAL_CHAR_INDEX.MORDRED];
-    this.forceUpdate()
+    updateIncludes(SPECIAL_CHAR_INDEX.MORDRED);
   }
 
   public checkMorgana() {
-    this.state.includes[SPECIAL_CHAR_INDEX.MORGANA] = !this.state.includes[SPECIAL_CHAR_INDEX.MORGANA];
-    this.forceUpdate()
+    updateIncludes(SPECIAL_CHAR_INDEX.MORGANA);
   }
 
   public checkPercival() {
-    this.state.includes[SPECIAL_CHAR_INDEX.PERCIVAL] = !this.state.includes[SPECIAL_CHAR_INDEX.PERCIVAL];
-    this.forceUpdate()
+    updateIncludes(SPECIAL_CHAR_INDEX.PERCIVAL);
   }
 
   public checkAssMerlin() {
-    this.state.includes[SPECIAL_CHAR_INDEX.ASSMERLIN] = !this.state.includes[SPECIAL_CHAR_INDEX.ASSMERLIN];
-    this.forceUpdate()
+    updateIncludes(SPECIAL_CHAR_INDEX.ASSMERLIN);
   }
 
   public render() {
@@ -137,7 +133,7 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
           </div>
         </form>
         <div>
-          <StartButton playerCount={playerCount} includes={this.state.includes}/>
+          <StartButton playerCount={playerCount}/>
           <MenuButton />
         </div>
         <p style={{fontSize:".75rem"}}>
@@ -172,6 +168,7 @@ const mapStateToProps = state => {
     playerList,
     playerListItems,
     playerData,
+    includes: getIncludes(state)
   };
 };
 

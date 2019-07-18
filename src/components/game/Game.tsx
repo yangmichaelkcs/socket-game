@@ -17,7 +17,8 @@ import {
   getRoundStatus,
   getVotes,
   getCurrentPage,
-  getScore
+  getScore,
+  getIncludes
 } from "selectors";
 import { Player, ROUND_STATUS, Round, GAME_STATUS, VOTE_INDEX, TEAM } from "types/types";
 
@@ -37,6 +38,7 @@ interface GameStateProps {
   votes: number[];
   status: GAME_STATUS;
   score: number[];
+  includes: boolean[];
 }
 
 // Initial state so we can reset to this
@@ -264,7 +266,8 @@ const mapStateToProps = state => {
     roundStatus: getRoundStatus(state),
     votes: getVotes(state),
     status: getCurrentPage(state),
-    score: getScore(state)
+    score: getScore(state),
+    includes: getIncludes(state)
   };
 };
 

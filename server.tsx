@@ -58,6 +58,7 @@ const createNewGame = () => {
   }
   const game = {
     players: [],
+    includes: [false, false, false, false],
     status: GAME_STATUS.LOBBY,
     id,
     failedVotes: 0,
@@ -102,8 +103,9 @@ const addPlayerToGame = (gameId, socket) => {
   }
 };
 
-const startGame = (gameId: string) => {
+const startGame = (gameId: string, includes: boolean[]) => {
   const game: Game = gamesById[gameId];
+  game.includes = includes
   game.status = GAME_STATUS.IN_PROGRESS;
   game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
   game.players = shuffle(game.players);
@@ -138,7 +140,7 @@ const shuffle = (players: Player[]): Player[] => {
   return players;
 };
 
-const assignRoles = (gameId: string) => {
+const assignRoles = (gameId: string, includes: boolean[]) => {
   const players: Player[] = gamesById[gameId].players;
   var numBadPlayer = 0;
   while(numBadPlayer < PLAYER_DISTRIBUTION[players.length].bad) {
@@ -154,6 +156,11 @@ const assignRoles = (gameId: string) => {
     }
   }
 };
+
+const updateIncludes = (socket, index) => {
+  const game = getGameBySocket(socket);
+  game.includes[index] = !game.includes[index];
+}
 /* Init */
 
 /* Player */
@@ -439,15 +446,25 @@ io.on("connection", socket => {
     }
   });
 
-  // Starts game and assign roles
-  socket.on("START_GAME", () => {
-    const gameId = getGameIdBySocket(socket);
-    if (gameId && gamesById[gameId]) {
-      assignRoles(gameId);
-      startGame(gameId);
-      io.to(gameId).emit("GAME_STARTING", getGameById(gameId));
-    }
-  });
+  // // Starts game and assign roles
+  // socket.on("START_GAME", () => {
+  //   const gameId = getGameIdBySocket(socket);
+  //   if (gameId && gamesById[gameId]) {
+  //     assignRoles(gameId);
+  //     startGame(gameId);
+  //     io.to(gameId).emit("GAME_STARTING", getGameById(gameId));
+  //   }
+  // });
+
+    // Starts game and assign roles
+    socket.on("START_GAME", (includes : boolean[]) => {
+      const gameId = getGameIdBySocket(socket);
+      if (gameId && gamesById[gameId]) {
+        assignRoles(gameId, includes);
+        startGame(gameId, includes);
+        io.to(gameId).emit("GAME_STARTING", getGameById(gameId));
+      }
+    });
 
   // Updates nickname in lobby
   socket.on("UPDATE_NICKNAME", (nickName: string) => {
@@ -455,6 +472,13 @@ io.on("connection", socket => {
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
+
+  // Updates nickname in lobby
+    socket.on("UPDATE_INCLUDES", (index: number) => {
+      updateIncludes(socket, index);
+      const gameId = getGameIdBySocket(socket);
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+    });
 
   // Pick player makes player selected
   socket.on("PICK_PLAYER", (socketId: string, selected: number) => {

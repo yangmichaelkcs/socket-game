@@ -47,6 +47,11 @@ export const startGame = () => {
   socket.emit("START_GAME");
 };
 
+export const startGameIncludes = (includes : boolean[]) => {
+  console.log(`Client started game`);
+  socket.emit("START_GAME", includes);
+};
+
 export const updateNickName = (nickName: string) => {
   socket.emit("UPDATE_NICKNAME", nickName);
 };
@@ -69,5 +74,9 @@ export const updateMissionVote = (vote: number) => {
 
 export const rejoinGame = (nickname: string) => {
   socket.emit("REJOIN_GAME", nickname);
+};
+
+export const updateIncludes = (index : number) => {
+  socket.emit("UPDATE_INCLUDES", index);
 };
 

@@ -128,6 +128,7 @@ export interface Game {
   currentPlayerTurn: string;
   rounds: Round[];
   votes: number[];
+  includes: boolean[];
 }
 
 export interface Round {
