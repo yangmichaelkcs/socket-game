@@ -2,7 +2,7 @@ import { FaChessKnight, FaSkull } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
 import { getPlayerData, getPlayers } from "selectors";
-import { Player, TEAM, ROLES } from "types/types";
+import { Player, TEAM, ROLES, SPECIAL_CHAR_INDEX } from "types/types";
 
 interface RoleButtonProps {
   playerData: Player;
@@ -36,10 +36,18 @@ class RoleButton extends React.Component<RoleButtonProps, RoleButtonState> {
   // Displays team members depending on role
   public displayTeamMembers() {
     const { playerData, players } = this.props;
+    const minions = players.filter(player => player.team === TEAM.BAD && player.socketId !== playerData.socketId)
     if( playerData.team === TEAM.BAD) {
-      const spies = players.filter(player => player.team === TEAM.BAD && player.socketId !== playerData.socketId)
-      return spies.map(spy => spy.nickName).join(', ')
+      return minions.map(minion => minion.nickName).join(', ');
     } else {
+      if(playerData.role === ROLES.MERLIN) {
+        return minions.filter(player => player.role !== ROLES.MORDRED).map(minion => minion.nickName).join(', ');
+      }
+      
+      if(playerData.role === ROLES.PERCIVAL) {
+        const merlinMorgana = players.filter(player => player.role === ROLES.MERLIN || player.role === ROLES.MORGANA)
+        return merlinMorgana.map(minion => minion.nickName).join(', ');
+      }
       return "???";
     } 
   }
