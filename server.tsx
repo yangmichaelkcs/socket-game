@@ -8,7 +8,10 @@ import {
   ROUND_STATUS,
   PLAYER_DISTRIBUTION,
   VOTE_INDEX,
-  ROUND_REQ
+  ROUND_REQ,
+  SPECIAL_CHAR_INDEX,
+  ROLES,
+  SCORE_TYPE
 } from "./src/types/types";
 
 const port = 8888;
@@ -58,6 +61,7 @@ const createNewGame = () => {
   }
   const game = {
     players: [],
+    includes: [false, false, false, false],
     status: GAME_STATUS.LOBBY,
     id,
     failedVotes: 0,
@@ -78,14 +82,13 @@ const createNewGame = () => {
   return id;
 };
 
-// FIXME Change this stuff for Avalon
 const addPlayerToGame = (gameId, socket) => {
   const game: Game = getGameById(gameId)
   if(game.status != GAME_STATUS.IN_PROGRESS) { 
     const player: Player = {
       socketId: socket.id,
       nickName: `${getRandomName(7)}`,
-      role: "DETECTIVE USELESS",
+      role: ROLES.NONE,
       selected: 0,
       team: null
     };
@@ -102,8 +105,9 @@ const addPlayerToGame = (gameId, socket) => {
   }
 };
 
-const startGame = (gameId: string) => {
+const startGame = (gameId: string, includes: boolean[]) => {
   const game: Game = gamesById[gameId];
+  game.includes = includes
   game.status = GAME_STATUS.IN_PROGRESS;
   game.roundStatus = ROUND_STATUS.PROPOSING_TEAM;
   game.players = shuffle(game.players);
@@ -138,22 +142,56 @@ const shuffle = (players: Player[]): Player[] => {
   return players;
 };
 
-const assignRoles = (gameId: string) => {
+const assignRoles = (gameId: string, includes: boolean[]) => {
   const players: Player[] = gamesById[gameId].players;
+  const  badPlayers = [];
+  const goodPlayers = [];
+  let badPlayersRoleIndex = 0;
+  let goodPlayersRoleIndex = 0;
   var numBadPlayer = 0;
   while(numBadPlayer < PLAYER_DISTRIBUTION[players.length].bad) {
     let index = Math.floor(Math.random() * players.length)
     if(players[index].team === null || players[index].team === undefined) {
       players[index].team = TEAM.BAD;
       numBadPlayer++;
+      badPlayers.push(index);
     }
   }
   for(var i = 0; i < players.length; i++) { 
     if(players[i].team === null || players[i].team === undefined) {
       players[i].team = TEAM.GOOD;
+      goodPlayers.push(i);
     }
   }
+
+  if(includes[SPECIAL_CHAR_INDEX.ASSMERLIN]) {
+    players[badPlayers[badPlayersRoleIndex]].role = ROLES.ASSASSIN
+    players[goodPlayers[goodPlayersRoleIndex]].role = ROLES.MERLIN
+    badPlayersRoleIndex++;
+    goodPlayersRoleIndex++;
+  }
+
+  if(includes[SPECIAL_CHAR_INDEX.MORDRED]) {
+    players[badPlayers[badPlayersRoleIndex]].role = ROLES.MORDRED
+    badPlayersRoleIndex++;
+  }
+
+  if(includes[SPECIAL_CHAR_INDEX.MORGANA]) {
+    players[badPlayers[badPlayersRoleIndex]].role = ROLES.MORGANA
+    badPlayersRoleIndex++;
+  }
+
+  if(includes[SPECIAL_CHAR_INDEX.PERCIVAL]) {
+    players[goodPlayers[goodPlayersRoleIndex]].role= ROLES.PERCIVAL
+    goodPlayersRoleIndex++;
+  }
+
 };
+
+const updateIncludes = (socket, index) => {
+  const game = getGameBySocket(socket);
+  game.includes[index] = !game.includes[index];
+}
 /* Init */
 
 /* Player */
@@ -326,6 +364,27 @@ const shuffleVotes = socket => {
 /* Votes */
 
 /* Game Score */
+const checkMerlinCorrect = (socket) => {
+  const game: Game = getGameBySocket(socket);
+  return game.players.find(player => player.role === ROLES.MERLIN).selected === 1
+}
+
+const checkAssassin = (socket) => {
+  const game: Game = getGameBySocket(socket);
+  return game.includes[SPECIAL_CHAR_INDEX.ASSMERLIN];
+}
+
+const updateToAssassinRound = (socket) => {
+  const game: Game = getGameBySocket(socket);
+  game.currentPlayerTurn = game.players.find(player => player.role === ROLES.ASSASSIN).socketId
+  game.roundStatus = ROUND_STATUS.ASSASSIN_CHOOSE;
+}
+
+const updateToMerlinPicked = (socket) => {
+  const game: Game = getGameBySocket(socket);
+  game.roundStatus = ROUND_STATUS.MERLIN_PICKED;
+}
+
 // Updates game score
 const updateScore = (socket, point) => {
   const game: Game = getGameBySocket(socket);
@@ -435,19 +494,31 @@ io.on("connection", socket => {
 
       console.log(`${socket.id} joined a game with gameId: ${gameId}`);
     } else {
+      const game = {status: GAME_STATUS.NON_EXIST}
+      socket.emit("NAV_MAIN_MENU", game);
       console.log(`Game Id ${gameId} does not exist.`);
     }
   });
 
-  // Starts game and assign roles
-  socket.on("START_GAME", () => {
-    const gameId = getGameIdBySocket(socket);
-    if (gameId && gamesById[gameId]) {
-      assignRoles(gameId);
-      startGame(gameId);
-      io.to(gameId).emit("GAME_STARTING", getGameById(gameId));
-    }
-  });
+  // // Starts game and assign roles
+  // socket.on("START_GAME", () => {
+  //   const gameId = getGameIdBySocket(socket);
+  //   if (gameId && gamesById[gameId]) {
+  //     assignRoles(gameId);
+  //     startGame(gameId);
+  //     io.to(gameId).emit("GAME_STARTING", getGameById(gameId));
+  //   }
+  // });
+
+    // Starts game and assign roles
+    socket.on("START_GAME", (includes : boolean[]) => {
+      const gameId = getGameIdBySocket(socket);
+      if (gameId && gamesById[gameId]) {
+        assignRoles(gameId, includes);
+        startGame(gameId, includes);
+        io.to(gameId).emit("GAME_STARTING", getGameById(gameId));
+      }
+    });
 
   // Updates nickname in lobby
   socket.on("UPDATE_NICKNAME", (nickName: string) => {
@@ -455,6 +526,13 @@ io.on("connection", socket => {
     const gameId = getGameIdBySocket(socket);
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
+
+  // Updates nickname in lobby
+    socket.on("UPDATE_INCLUDES", (index: number) => {
+      updateIncludes(socket, index);
+      const gameId = getGameIdBySocket(socket);
+      io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+    });
 
   // Pick player makes player selected
   socket.on("PICK_PLAYER", (socketId: string, selected: number) => {
@@ -470,24 +548,64 @@ io.on("connection", socket => {
     io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
   });
 
+  // Kill Merlin
+  socket.on("KILL_MERLIN", async() => {
+
+    const gameId = getGameIdBySocket(socket);
+    const game : Game = getGameBySocket(socket);
+    updateToMerlinPicked(socket);
+
+    // if Merlin picked correct
+    if(checkMerlinCorrect(socket)) {
+      game.score[VOTE_INDEX.NEG] = SCORE_TYPE.ASSASSIN;
+    }
+    io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+
+    await wait(5000);
+    // Cleanup game
+    gamesById[gameId].status = GAME_STATUS.END;
+    io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+    io.of('/').in(gameId).clients(function(error, clients) {
+    if (clients.length > 0) {
+        clients.forEach(function (socket_id) {
+            io.sockets.sockets[socket_id].leave(gameId);
+        });
+      }
+    });
+    delete gamesById[gameId];
+    return;
+  });
+
  /* Once voting is complete either sees if teams is accepted or not. 
   * Goes to next round status if team accepted, else increments failed vote for new team
   */
   socket.on("UPDATE_TEAM_VOTE",  async (vote : number, socketId: string) =>  {
     let gameId = getGameIdBySocket(socket);
+
     updateTeamVote(socket, vote, socketId);
+
     if(checkVoteComplete(socket)) {
       updateSocketToNextRound(socket);
       await wait(3000);
+
+      // Go to Mission Voting
       if(checkVoteSucceed(socket)) {
         updateSocketToNextRound(socket);
-      } else { 
+      } 
+
+      // Team proposal has failed
+      else 
+      { 
+        // Should we propose a new team, has team proposal failed 5 times?
         if(!newTeamPropose(socket)) {
+
+          // Evil team got a point, check if they won
           if(checkWinner(socket) === TEAM.BAD) {
             endGame(socket);
             await wait(5000);
             gamesById[gameId].status = GAME_STATUS.END;
             io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+            //Clean up game
             io.of('/').in(gameId).clients(function(error, clients) {
               if (clients.length > 0) {
                   clients.forEach(function (socket_id) {
@@ -511,8 +629,12 @@ io.on("connection", socket => {
     updateVote(socket, vote);
     if(checkMissionVoteComplete(socket)) {
       const gameId = getGameIdBySocket(socket);
+
+      // Shuffle the votes
       const shuffledVotesArr = shuffleVotes(socket);
       resetVotes(socket);
+
+      // Updating Mission votes 2 seconds apart
       for(let i = 0; i < shuffledVotesArr.length; i++) {
         await wait(2000);
         if(shuffledVotesArr[i] === 1) {
@@ -524,14 +646,30 @@ io.on("connection", socket => {
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
       }
       await wait(3000);
+
+      // Check is mission succeeded or not based on fail requirements
       checkMissionSucceed(socket) ? updateScore(socket, TEAM.GOOD) : updateScore(socket, TEAM.BAD)
       updateSocketToNextRound(socket);
       await wait(3000);
+      
+      // Check if a team got 3 points
       if(checkWinner(socket)) {
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+
+        // If assassin is included
+        if(checkAssassin(socket))
+        {
+          updateToAssassinRound(socket);
+          resetSelectPlayers(socket);
+          io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+          return;
+        }
+        // Assassin not included
         await wait(5000);
         gamesById[gameId].status = GAME_STATUS.END;
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+        
+        // Cleanup game
         io.of('/').in(gameId).clients(function(error, clients) {
           if (clients.length > 0) {
               clients.forEach(function (socket_id) {
@@ -542,6 +680,8 @@ io.on("connection", socket => {
         delete gamesById[gameId];
         return;
       }
+
+      // Reset things to next round
       resetVotes(socket);
       resetSelectPlayers(socket);
       resetFailedVotes(socket);

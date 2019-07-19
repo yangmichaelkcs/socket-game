@@ -36,7 +36,7 @@ class PlayerComponent extends React.Component<PlayerComponentProps, any> {
   // Only current players turn can click players. Cannot click more than players needed for round
   public onPlayerClick = () => {
     const { players, player, currentRound, rounds, currentPlayerTurn, playerData, roundStatus } = this.props;
-    if(playerData.socketId === currentPlayerTurn.socketId && roundStatus === ROUND_STATUS.PROPOSING_TEAM ) {
+    if(playerData.socketId === currentPlayerTurn.socketId && (roundStatus === ROUND_STATUS.PROPOSING_TEAM || roundStatus === ROUND_STATUS.ASSASSIN_CHOOSE)) {
       const socketId = player.socketId;
       const playerPicked = players.find(p => p.socketId === socketId);
       let numPlayers = 0;

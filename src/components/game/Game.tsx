@@ -17,9 +17,10 @@ import {
   getRoundStatus,
   getVotes,
   getCurrentPage,
-  getScore
+  getScore,
+  getIncludes
 } from "selectors";
-import { Player, ROUND_STATUS, Round, GAME_STATUS, VOTE_INDEX, TEAM } from "types/types";
+import { Player, ROUND_STATUS, Round, GAME_STATUS, VOTE_INDEX, TEAM, SCORE_TYPE } from "types/types";
 
 interface GameState {
   oldVotes: number[];
@@ -37,6 +38,7 @@ interface GameStateProps {
   votes: number[];
   status: GAME_STATUS;
   score: number[];
+  includes: boolean[];
 }
 
 // Initial state so we can reset to this
@@ -116,11 +118,11 @@ class Game extends React.Component<GameStateProps, any> {
   // Returns the winner of the game
   public displayWinner() {
     const { score } = this.props;
-    const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
+    const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Minions" : "Knights";
     return (
       <div>
         <h4>{winningTeam} Win!</h4>
-        <p>Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
+        <p>Knights: {score[VOTE_INDEX.POS]}  Minions: {score[VOTE_INDEX.NEG]}</p>
       </div>
     );
   }
@@ -143,43 +145,69 @@ class Game extends React.Component<GameStateProps, any> {
     ); 
   }
 
+  public displayAssassinChoose() {
+    return (
+      <div>
+        <h4>One last chance for evil</h4>
+        <p>Assassin select Merlin to kill</p>
+      </div>
+    );
+  }
+
+  public displayMerlinPicked() {
+    const { score } = this.props
+    if(score[VOTE_INDEX.NEG] === SCORE_TYPE.ASSASSIN) {
+      return (
+        <div>
+          <h4>Merlin is killed!</h4>
+          <p>Minions win!</p>
+        </div>
+      ); 
+    }
+    return (
+      <div>
+        <h4>Merlin is safe!</h4>
+        <p>Knights win!</p>
+      </div>
+    );
+  }
+
   public showAnnouncment () {
     const { roundStatus, votes, score } = this.props;
-    // Start of Round: Proposing Team
-    if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
-      return this.displayProposingTeam();
-    }
-    // Proposed team: vote on it
-    else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
-      return this.displayProposedTeam();
-    }
-    // Voting on team has ended 
-    else if (roundStatus === ROUND_STATUS.VOTING_END) {
-      return this.displayProposedTeamResult();
-    }
-    // Mission in progress
-    else if (roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
-      // If mission voting has not completed, display players on mission
-      if(votes[VOTE_INDEX.POS] + votes[VOTE_INDEX.NEG] === 0) {
-        return this.displayPlayersOnMission();
-      }
-      /* Mission voting has completed, server will update one by one for climatic reveal.
-       * This happens by by updating oldVotes every time a new vote comes in from the server
-       */
-      else {
-        if(votes[VOTE_INDEX.POS] === this.state.oldVotes[VOTE_INDEX.POS] && votes[VOTE_INDEX.NEG] === this.state.oldVotes[VOTE_INDEX.NEG]) {
-          return this.displayMissionVotingResults();
+    switch(roundStatus) {
+      // Start of Round: Proposing Team
+      case ROUND_STATUS.PROPOSING_TEAM:
+        return this.displayProposingTeam();
+      // Proposed team: vote on it
+      case ROUND_STATUS.VOTING_TEAM:
+        return this.displayProposedTeam();
+      // Voting on team has ended 
+      case ROUND_STATUS.VOTING_END:
+        return this.displayProposedTeamResult();
+      // Mission in progress
+      case ROUND_STATUS.MISSION_IN_PROGRESS:
+        // If mission voting has not completed, display players on mission
+        if(votes[VOTE_INDEX.POS] + votes[VOTE_INDEX.NEG] === 0) {
+          return this.displayPlayersOnMission();
         }
-      }
-    } 
-    // Mission End
-    else if (roundStatus === ROUND_STATUS.MISSION_END) {
-      // A team has won the game
-      if(score[VOTE_INDEX.POS] === 3 || score[VOTE_INDEX.NEG] === 3) {
-        return this.displayWinner();
-      }
-      // Game still going
-      return this.displayMissionResults()
+        /* Mission voting has completed, server will update one by one for climatic reveal.
+         * This happens by by updating oldVotes every time a new vote comes in from the server
+         */
+          return this.displayMissionVotingResults();
+      // Mission End
+      case ROUND_STATUS.MISSION_END:
+        // A team has won the game
+        if(score[VOTE_INDEX.POS] === 3 || score[VOTE_INDEX.NEG] === 3) {
+          return this.displayWinner();
+        }
+        // Game still going
+        return this.displayMissionResults()
+      // Assassination Round
+      case ROUND_STATUS.ASSASSIN_CHOOSE:
+        return this.displayAssassinChoose();
+      // Merlin Picked
+      case ROUND_STATUS.MERLIN_PICKED:
+        return this.displayMerlinPicked();
     }
   }
 
@@ -264,7 +292,8 @@ const mapStateToProps = state => {
     roundStatus: getRoundStatus(state),
     votes: getVotes(state),
     status: getCurrentPage(state),
-    score: getScore(state)
+    score: getScore(state),
+    includes: getIncludes(state)
   };
 };
 

@@ -3,7 +3,8 @@ export enum GAME_STATUS {
   LOBBY = "LOBBY",
   IN_PROGRESS = "IN_PROGRESS",
   END = "END",
-  REJOIN = "REJOIN"
+  REJOIN = "REJOIN",
+  NON_EXIST = "NON_EXIST"
 }
 
 export enum ROUND_STATUS {
@@ -12,12 +13,14 @@ export enum ROUND_STATUS {
   VOTING_END = "VOTING_END", // All players view results of the team vote
   MISSION_IN_PROGRESS = "MISSION_IN_PROGRESS", // Team passes or fails mission
   MISSION_END = "MISSION_END", // Everyone views results of mission
+  ASSASSIN_CHOOSE = "ASSASSIN_CHOOSE", // Assassin attemps to pick Merlin
+  MERLIN_PICKED = "MERLIN_PICKED" // After Merlin has been picked whether evil won or not
 }
 
 /* Voting and Team */
 export enum TEAM {
   GOOD = "GOOD",
-  BAD = "BAD"
+  BAD = "EVIL"
 }
 
 export enum VOTE_INDEX {
@@ -128,6 +131,7 @@ export interface Game {
   currentPlayerTurn: string;
   rounds: Round[];
   votes: number[];
+  includes: boolean[];
 }
 
 export interface Round {
@@ -144,4 +148,24 @@ export interface Player {
   role?: string;
   selected?: number;
   vote?: number;
+}
+
+export enum SPECIAL_CHAR_INDEX {
+  ASSMERLIN = 0,
+  PERCIVAL = 1,
+  MORGANA = 2,
+  MORDRED = 3
+}
+
+export enum ROLES {
+  NONE = "None",
+  MORGANA = "Morgana",
+  MORDRED = "Mordred",
+  MERLIN = "Merlin",
+  PERCIVAL = "Percival",
+  ASSASSIN = "Assassin"
+}
+
+export enum SCORE_TYPE {
+  ASSASSIN = 4
 }
