@@ -14,9 +14,10 @@ class StartButton extends React.Component<any, any> {
     // UNCOMMENT THIS
     // const { playerCount } = this.props;
     // return playerCount < 5 || playerCount > 10;
-
+    
     // FIXME TEMP FOR DEV
-    return false
+    const { disableStart } = this.props
+    return disableStart
   }
     
   public handleClick() {

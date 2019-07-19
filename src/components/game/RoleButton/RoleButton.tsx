@@ -2,7 +2,7 @@ import { FaChessKnight, FaSkull } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
 import { getPlayerData, getPlayers } from "selectors";
-import { Player, TEAM } from "types/types";
+import { Player, TEAM, ROLES } from "types/types";
 
 interface RoleButtonProps {
   playerData: Player;
@@ -44,6 +44,25 @@ class RoleButton extends React.Component<RoleButtonProps, RoleButtonState> {
     } 
   }
 
+  // Displays the special powers of the player 
+  public displaySpecial() {
+    const { playerData } = this.props;
+    switch(playerData.role) {
+      case ROLES.ASSASSIN:
+        return "At end kill Merlin to win"
+      case ROLES.MERLIN:
+        return "Sees all evil minions but Mordred "
+      case ROLES.MORDRED:
+        return "Not revealed to Merlin"
+      case ROLES.MORGANA:
+        return "Appears as Merlin to Percival"
+      case ROLES.PERCIVAL:
+        return "Sees Merlin and Morgana"
+      default:
+        return "No special powers"
+    }
+  }
+
   // Returns the role information
   public roleInfo() {
     const { playerData } = this.props;
@@ -56,7 +75,7 @@ class RoleButton extends React.Component<RoleButtonProps, RoleButtonState> {
           <br />
           Role: {playerData.role}
           <br />
-          Special:
+          Special: {this.displaySpecial()}
           <br />
           Teammates: {this.displayTeamMembers()}
         </p>

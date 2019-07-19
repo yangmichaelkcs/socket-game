@@ -3,10 +3,10 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { getGameId, getPlayerCount, getPlayers, getPlayerData, getIncludes } from "selectors";
 import StartButton from "./StartButton";
-import { Player } from "types/types";
+import { Player, TEAM } from "types/types";
 import { updateNickName, updateIncludes } from "socket";
 import MenuButton from './MenuButton';
-import { SPECIAL_CHAR_INDEX } from '../../types/types';
+import { SPECIAL_CHAR_INDEX, PLAYER_DISTRIBUTION } from '../../types/types';
 
 interface LobbyPropsFromState {
   gameId: string;
@@ -14,12 +14,12 @@ interface LobbyPropsFromState {
   playerListItems: any;
   playerData: Player;
   playerList: Player[];
+  includes: boolean[];
 }
 
 interface LobbyState {
   value: string;
   tooltip: boolean;
-  includes: boolean[];
 }
 
 class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
@@ -28,7 +28,6 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
     this.state = { 
       value: "",
       tooltip: false,
-      includes: [false, false, false, false]
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -76,6 +75,31 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
       return (<span className="Warning">Nickname must be unique and 1-7 letters</span>);
     } 
   }
+
+  // Disable Start
+  public disableStart() {
+    const { playerCount } = this.props
+    let tooManyBad = 0;
+    if(this.props.includes[SPECIAL_CHAR_INDEX.ASSMERLIN]) { tooManyBad++; }
+    if(this.props.includes[SPECIAL_CHAR_INDEX.MORDRED]) { tooManyBad++; }
+    if(this.props.includes[SPECIAL_CHAR_INDEX.MORGANA]) { tooManyBad++; }
+    if(tooManyBad > PLAYER_DISTRIBUTION[playerCount].bad) {  
+      return true;
+    } 
+    return false;
+  }
+
+  // Special Tooltip
+  public showSpecialTooltip() {
+    if(this.disableStart()) {
+      return (<span className="Warning">Too many bad special roles</span>);
+    }
+  }
+
+  public displayPlayerDistr() {
+    const { playerCount } = this.props
+    return <span>There will be Good: {PLAYER_DISTRIBUTION[playerCount].good} Bad: {PLAYER_DISTRIBUTION[playerCount].bad}</span>
+  }
   
   // Check boxes for special chars
   public checkMordred() {
@@ -95,12 +119,13 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
   }
 
   public render() {
-    const { gameId, playerCount, playerListItems } = this.props;
+    const { gameId, playerCount, playerListItems, includes } = this.props;
     return (
       <div className="Lobby">
         <h3 style={{wordBreak:"break-all"}}><u>Game ID:<br/>{gameId}</u></h3>
         <h4>{playerCount} player(s) connected: </h4>
         <h5 className="Warning">You must have 5 - 10 players</h5>
+        {this.displayPlayerDistr()}
         <br />
         <div className="row" style={{width:"75%", paddingBottom:"1rem"}}>{playerListItems}</div>
         <div>
@@ -116,36 +141,37 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
         <br />
         <form>
           <div className="form-check form-check-inline">
-            <input className="form-check-input" type="checkbox" id="assassinMerlin" onClick={this.checkAssMerlin} />
+            <input className="form-check-input" type="checkbox" id="assassinMerlin" onChange={this.checkAssMerlin} checked={includes[SPECIAL_CHAR_INDEX.ASSMERLIN]}/>
             <label className="form-check-label" htmlFor="assassinMerlin">Assassin &amp; Merlin </label>
           </div>
           <div className="form-check form-check-inline">
-            <input className="form-check-input" type="checkbox" id="percival" onClick={this.checkPercival} />
+            <input className="form-check-input" type="checkbox" id="percival" onChange={this.checkPercival} checked={includes[SPECIAL_CHAR_INDEX.PERCIVAL]}/>
             <label className="form-check-label" htmlFor="percival">Percival</label>
           </div>
           <div className="form-check form-check-inline">
-            <input className="form-check-input" type="checkbox" id="morgana" onClick={this.checkMorgana} />
+            <input className="form-check-input" type="checkbox" id="morgana" onChange={this.checkMorgana} checked={includes[SPECIAL_CHAR_INDEX.MORGANA]}/>
             <label className="form-check-label" htmlFor="morgana">Morgana</label>
           </div>
           <div className="form-check form-check-inline">
-            <input className="form-check-input" type="checkbox" id="Mordred" onClick={this.checkMordred}/>
+            <input className="form-check-input" type="checkbox" id="Mordred" onChange={this.checkMordred} checked={includes[SPECIAL_CHAR_INDEX.MORDRED]}/>
             <label className="form-check-label" htmlFor="Mordred">Mordred</label>
           </div>
         </form>
         <div>
-          <StartButton playerCount={playerCount}/>
+          <StartButton playerCount={playerCount} disableStart={this.disableStart()}/>
           <MenuButton />
         </div>
+        {this.showSpecialTooltip()}
         <p style={{fontSize:".75rem"}}>
-          Merlin - Sees all evil minions
+          Merlin ({TEAM.GOOD}) - Sees all evil minions except Mordred
           <br />
-          Assassin - Kill Merlin, win game
+          Assassin ({TEAM.BAD}) - Kill Merlin, win game
           <br />
-          Percival - Sees Morgana and Merlin
+          Percival ({TEAM.GOOD}) - Sees Morgana and Merlin
           <br />
-          Morgana - Appears as Merlin to Percival
+          Morgana ({TEAM.BAD}) - Appears as Merlin to Percival
           <br />
-          Mordred - Not revealed to Merlin
+          Mordred ({TEAM.BAD}) - Not revealed to Merlin
         </p>
       </div>
     );

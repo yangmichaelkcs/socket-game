@@ -8,7 +8,9 @@ import {
   ROUND_STATUS,
   PLAYER_DISTRIBUTION,
   VOTE_INDEX,
-  ROUND_REQ
+  ROUND_REQ,
+  SPECIAL_CHAR_INDEX,
+  ROLES
 } from "./src/types/types";
 
 const port = 8888;
@@ -79,14 +81,13 @@ const createNewGame = () => {
   return id;
 };
 
-// FIXME Change this stuff for Avalon
 const addPlayerToGame = (gameId, socket) => {
   const game: Game = getGameById(gameId)
   if(game.status != GAME_STATUS.IN_PROGRESS) { 
     const player: Player = {
       socketId: socket.id,
       nickName: `${getRandomName(7)}`,
-      role: "DETECTIVE USELESS",
+      role: ROLES.NONE,
       selected: 0,
       team: null
     };
@@ -142,19 +143,48 @@ const shuffle = (players: Player[]): Player[] => {
 
 const assignRoles = (gameId: string, includes: boolean[]) => {
   const players: Player[] = gamesById[gameId].players;
+  const  badPlayers = [];
+  const goodPlayers = [];
+  let badPlayersRoleIndex = 0;
+  let goodPlayersRoleIndex = 0;
   var numBadPlayer = 0;
   while(numBadPlayer < PLAYER_DISTRIBUTION[players.length].bad) {
     let index = Math.floor(Math.random() * players.length)
     if(players[index].team === null || players[index].team === undefined) {
       players[index].team = TEAM.BAD;
       numBadPlayer++;
+      badPlayers.push(index);
     }
   }
   for(var i = 0; i < players.length; i++) { 
     if(players[i].team === null || players[i].team === undefined) {
       players[i].team = TEAM.GOOD;
+      goodPlayers.push(i);
     }
   }
+
+  if(includes[SPECIAL_CHAR_INDEX.ASSMERLIN]) {
+    players[badPlayers[badPlayersRoleIndex]].role = ROLES.ASSASSIN
+    players[goodPlayers[goodPlayersRoleIndex]].role = ROLES.MERLIN
+    badPlayersRoleIndex++;
+    goodPlayersRoleIndex++;
+  }
+
+  if(includes[SPECIAL_CHAR_INDEX.MORDRED]) {
+    players[badPlayers[badPlayersRoleIndex]].role = ROLES.MORDRED
+    badPlayersRoleIndex++;
+  }
+
+  if(includes[SPECIAL_CHAR_INDEX.MORGANA]) {
+    players[badPlayers[badPlayersRoleIndex]].role = ROLES.MORGANA
+    badPlayersRoleIndex++;
+  }
+
+  if(includes[SPECIAL_CHAR_INDEX.PERCIVAL]) {
+    players[goodPlayers[goodPlayersRoleIndex]].role= ROLES.PERCIVAL
+    goodPlayersRoleIndex++;
+  }
+
 };
 
 const updateIncludes = (socket, index) => {
