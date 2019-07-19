@@ -19,7 +19,7 @@ export enum ROUND_STATUS {
 /* Voting and Team */
 export enum TEAM {
   GOOD = "GOOD",
-  BAD = "BAD"
+  BAD = "EVIL"
 }
 
 export enum VOTE_INDEX {

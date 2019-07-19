@@ -19,7 +19,7 @@ class JoinButton extends React.Component<any, any> {
       this.setState({ value: event.target.value });
     }
   
-    // When join game is clicked will set tooltip(invalidGame) to display, if game exists will go to Lobby, else tooltip will display
+    // Join Game
     public handleClick() {
       joinGame(this.state.value);
     }

@@ -92,13 +92,13 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
   // Special Tooltip
   public showSpecialTooltip() {
     if(this.disableStart()) {
-      return (<span className="Warning">Too many bad special roles</span>);
+      return (<span className="Warning">Not enough players for evil team</span>);
     }
   }
 
   public displayPlayerDistr() {
     const { playerCount } = this.props
-    return <span>There will be Good: {PLAYER_DISTRIBUTION[playerCount].good} Bad: {PLAYER_DISTRIBUTION[playerCount].bad}</span>
+    return <span>Team distribution Good: {PLAYER_DISTRIBUTION[playerCount].good} Evil: {PLAYER_DISTRIBUTION[playerCount].bad}</span>
   }
   
   // Check boxes for special chars
@@ -118,13 +118,20 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
     updateIncludes(SPECIAL_CHAR_INDEX.ASSMERLIN);
   }
 
+  public checkPlayerCount() {
+    const { playerCount } = this.props
+    if(playerCount < 5 || playerCount > 10) {
+      return <h5 className="Warning">You must have 5 - 10 players</h5>
+    }
+  }
+
   public render() {
     const { gameId, playerCount, playerListItems, includes } = this.props;
     return (
       <div className="Lobby">
         <h3 style={{wordBreak:"break-all"}}><u>Game ID:<br/>{gameId}</u></h3>
         <h4>{playerCount} player(s) connected: </h4>
-        <h5 className="Warning">You must have 5 - 10 players</h5>
+        {this.checkPlayerCount()}
         {this.displayPlayerDistr()}
         <br />
         <div className="row" style={{width:"75%", paddingBottom:"1rem"}}>{playerListItems}</div>
