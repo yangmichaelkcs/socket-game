@@ -118,11 +118,11 @@ class Game extends React.Component<GameStateProps, any> {
   // Returns the winner of the game
   public displayWinner() {
     const { score } = this.props;
-    const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Spies" : "Resistance";
+    const winningTeam = score[VOTE_INDEX.NEG] === 3 ? "Knights" : "Minions";
     return (
       <div>
         <h4>{winningTeam} Win!</h4>
-        <p>Resistance: {score[VOTE_INDEX.POS]}  Spies: {score[VOTE_INDEX.NEG]}</p>
+        <p>Knights: {score[VOTE_INDEX.POS]}  Minions: {score[VOTE_INDEX.NEG]}</p>
       </div>
     );
   }
