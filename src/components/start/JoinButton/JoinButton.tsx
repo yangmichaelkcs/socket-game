@@ -1,13 +1,13 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { joinGame } from "socket";
+import { GAME_STATUS } from 'types/types';
 
 class JoinButton extends React.Component<any, any> {
     constructor(props) {
       super(props);
       this.state = { 
         value: "", 
-        invalidGame: false 
       };
   
       this.handleChange = this.handleChange.bind(this);
@@ -22,12 +22,11 @@ class JoinButton extends React.Component<any, any> {
     // When join game is clicked will set tooltip(invalidGame) to display, if game exists will go to Lobby, else tooltip will display
     public handleClick() {
       joinGame(this.state.value);
-      this.setState(() => ({invalidGame: true}))
     }
     
     // Tooltip
     public showNotExists() {
-      if(this.state.invalidGame) {
+      if(this.props.currentPage === GAME_STATUS.NON_EXIST) {
         return (
           <span className="Warning">This Game ID does not exist</span>
         );

@@ -472,6 +472,8 @@ io.on("connection", socket => {
 
       console.log(`${socket.id} joined a game with gameId: ${gameId}`);
     } else {
+      const game = {status: GAME_STATUS.NON_EXIST}
+      socket.emit("NAV_MAIN_MENU", game);
       console.log(`Game Id ${gameId} does not exist.`);
     }
   });

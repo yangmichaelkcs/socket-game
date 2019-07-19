@@ -42,7 +42,7 @@ class StartGame extends React.Component<any, any> {
             <br />
             <h3>OR</h3>
             <br />
-            <JoinButton />
+            <JoinButton currentPage={this.props.currentPage}/>
           </div>
         );
     }
