@@ -107,7 +107,7 @@
   color: #28a745
 }
 
-.SuccessButton:focus, .SelectTeamButton:active, .SelectTeamButton:hover {
+.SuccessButton:focus, .SuccessTeamButton:active, .SuccessTeamButton:hover {
   outline: none !important;
   box-shadow: none;
   background: transparent;

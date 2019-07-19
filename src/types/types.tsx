@@ -13,7 +13,8 @@ export enum ROUND_STATUS {
   VOTING_END = "VOTING_END", // All players view results of the team vote
   MISSION_IN_PROGRESS = "MISSION_IN_PROGRESS", // Team passes or fails mission
   MISSION_END = "MISSION_END", // Everyone views results of mission
-  ASSASSIN_CHOOSE = "ASSASSIN_CHOOSE" // Assassin attemps to pick Merlin
+  ASSASSIN_CHOOSE = "ASSASSIN_CHOOSE", // Assassin attemps to pick Merlin
+  MERLIN_PICKED = "MERLIN_PICKED" // After Merlin has been picked whether evil won or not
 }
 
 /* Voting and Team */
@@ -163,4 +164,8 @@ export enum ROLES {
   MERLIN = "Merlin",
   PERCIVAL = "Percival",
   ASSASSIN = "Assassin"
+}
+
+export enum SCORE_TYPE {
+  ASSASSIN = 4
 }

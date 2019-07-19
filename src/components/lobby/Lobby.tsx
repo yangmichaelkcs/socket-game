@@ -1,4 +1,4 @@
-import { FaRegUser } from 'react-icons/fa'
+import { FaRegUser, FaUser } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
 import { getGameId, getPlayerCount, getPlayers, getPlayerData, getIncludes } from "selectors";
@@ -11,7 +11,6 @@ import { SPECIAL_CHAR_INDEX, PLAYER_DISTRIBUTION } from '../../types/types';
 interface LobbyPropsFromState {
   gameId: string;
   playerCount: number;
-  playerListItems: any;
   playerData: Player;
   playerList: Player[];
   includes: boolean[];
@@ -125,8 +124,25 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
     }
   }
 
+  public playerSelf(socketId) {
+    const { playerData } = this.props
+    if(playerData === undefined) {
+      return <FaRegUser style={{fontSize:"1rem"}}/>
+    }
+    return playerData.socketId === socketId ? <FaUser className="PlayerPicked" style={{fontSize:"1rem"}}/> : <FaRegUser style={{fontSize:"1rem"}}/>
+  }
+
+  public playerList() {
+    const { playerList } = this.props
+    return (playerList.map(player => (
+      <div className="col-6 col-lg-12" key={player.socketId}>
+        {this.playerSelf(player.socketId)}
+        {player.nickName}
+      </div>)));
+  }
+
   public render() {
-    const { gameId, playerCount, playerListItems, includes } = this.props;
+    const { gameId, playerCount, includes } = this.props;
     return (
       <div className="Lobby">
         <h3 style={{wordBreak:"break-all"}}><u>Game ID:<br/>{gameId}</u></h3>
@@ -134,7 +150,7 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
         {this.checkPlayerCount()}
         {this.displayPlayerDistr()}
         <br />
-        <div className="row" style={{width:"75%", paddingBottom:"1rem"}}>{playerListItems}</div>
+        <div className="row" style={{width:"75%", paddingBottom:"1rem"}}>{this.playerList()}</div>
         <div>
           <div className="NickTooltip input-group mb-3">
             <input type="text" value={this.state.value} onChange={this.handleChange}
@@ -186,20 +202,14 @@ class Lobby extends React.Component<LobbyPropsFromState, LobbyState> {
 }
 
 const mapStateToProps = state => {
+
   const playerList: Player[] = getPlayers(state);
-  const playerListItems = playerList.map(player => (
-    <div className="col-6" key={player.socketId}>
-      <FaRegUser style={{fontSize:"1rem"}}/>
-      {player.nickName}
-    </div>
-  ));
   const playerData: Player = getPlayerData(state);
 
   return {
     gameId: getGameId(state),
     playerCount: getPlayerCount(state),
     playerList,
-    playerListItems,
     playerData,
     includes: getIncludes(state)
   };

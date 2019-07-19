@@ -1,4 +1,3 @@
-import { FaRegUser, FaUser, FaThumbsUp, FaThumbsDown } from 'react-icons/fa'
 import * as React from "react";
 import PlayerComponent from "../Player";
 import {
@@ -10,9 +9,9 @@ import {
   getRoundStatus,
   getRounds
 } from "selectors";
-import { Player, ROUND_STATUS, Round } from "types/types";
+import { Player, ROUND_STATUS, Round, ROLES } from "types/types";
 import { connect } from "react-redux";
-import { proposeTeam, updateTeamVote } from "socket";
+import { proposeTeam, updateTeamVote, killMerlin } from "socket";
 
 interface PlayerListState {
   playerNeededTooltip : boolean;
@@ -32,11 +31,26 @@ class PlayerList extends React.Component<any, any> {
     this.state = { 
       playerNeededTooltip: false,
       accept: true,
-      reject: true
+      reject: true,
+      merlinNeededTooltip: false
     };
 
     this.onAccept = this.onAccept.bind(this);
     this.onReject = this.onReject.bind(this);
+  }
+
+  public onKillMerlin = () => {
+    const {  players } = this.props;
+    let numPlayers = 0;
+    players.forEach(p => (p.selected ? numPlayers++ : 0));
+    if(numPlayers !== 1) {
+      this.setState({ merlinNeededTooltip: true });
+    } else {
+      if(this.state.merlinNeededTooltip) {
+        this.setState({ merlinNeededTooltip: false });
+      }
+      killMerlin();
+    }
   }
 
   // Proposes team based on which players are selected. If not correct amount of players display tooltip
@@ -89,8 +103,25 @@ class PlayerList extends React.Component<any, any> {
           </button>}
         </div>
       );
+    } else if (roundStatus === ROUND_STATUS.ASSASSIN_CHOOSE && this.props.amAssassin) {
+      return (
+        <button onClick={this.onKillMerlin} type="button" className="SelectTeamButton btn btn-outline-success">
+          Kill Merlin
+        </button>
+      );
     }
   }
+
+  // Returns tooltip if not a Merlin is not selected
+  public showMerlinNeededToolTip() {
+  if(this.state.merlinNeededTooltip) {
+    return (
+      <span className="Warning">
+        Please select 1 player
+      </span>
+    );
+  }
+}
 
   // Returns tooltip if not correct number of players selected
   public showPlayerNeededToolTip() {
@@ -140,6 +171,7 @@ class PlayerList extends React.Component<any, any> {
         </div>
         {this.showProposeOrVoteButton()}
         {this.showPlayerNeededToolTip()}
+        {this.showMerlinNeededToolTip()}
       </div>
     );
   }
@@ -154,6 +186,7 @@ const mapStateToProps = state => {
   const currentRound: number = getCurrentRound(state);
   const playerData: Player = getPlayerData(state);
   const turnToPick = playerData.socketId === currentPlayerTurn.socketId;
+  const amAssassin = playerData.role === ROLES.ASSASSIN
   const roundStatus = getRoundStatus(state);
 
   return {
@@ -162,7 +195,8 @@ const mapStateToProps = state => {
     roundStatus,
     rounds: getRounds(state),
     currentRound,
-    playerData
+    playerData,
+    amAssassin 
   };
 };
 

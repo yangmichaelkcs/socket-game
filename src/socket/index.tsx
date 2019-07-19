@@ -64,6 +64,10 @@ export const proposeTeam = () => {
   socket.emit("PROPOSE_TEAM");
 };
 
+export const killMerlin = () => {
+  socket.emit("KILL_MERLIN");
+};
+
 export const updateTeamVote = (vote: number, playerId: string) => {
   socket.emit("UPDATE_TEAM_VOTE", vote, playerId);
 };

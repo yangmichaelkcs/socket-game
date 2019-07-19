@@ -9,15 +9,10 @@ class StartButton extends React.Component<any, any> {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  // Checks if player count is between 5-10
+  // Checks if player count is between 5-10 or not enough evil players
   public disableStart() {
-    // UNCOMMENT THIS
-    // const { playerCount } = this.props;
-    // return playerCount < 5 || playerCount > 10;
-    
-    // FIXME TEMP FOR DEV
-    const { disableStart } = this.props
-    return disableStart
+    const { playerCount, disableStart } = this.props;
+    return playerCount < 5 || playerCount > 10 || disableStart
   }
     
   public handleClick() {
