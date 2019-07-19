@@ -172,54 +172,6 @@ class Game extends React.Component<GameStateProps, any> {
     );
   }
 
-  // public showAnnouncment () {
-  //   const { roundStatus, votes, score } = this.props;
-  //   // Start of Round: Proposing Team
-  //   if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
-  //     return this.displayProposingTeam();
-  //   }
-  //   // Proposed team: vote on it
-  //   else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
-  //     return this.displayProposedTeam();
-  //   }
-  //   // Voting on team has ended 
-  //   else if (roundStatus === ROUND_STATUS.VOTING_END) {
-  //     return this.displayProposedTeamResult();
-  //   }
-  //   // Mission in progress
-  //   else if (roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
-  //     // If mission voting has not completed, display players on mission
-  //     if(votes[VOTE_INDEX.POS] + votes[VOTE_INDEX.NEG] === 0) {
-  //       return this.displayPlayersOnMission();
-  //     }
-  //     /* Mission voting has completed, server will update one by one for climatic reveal.
-  //      * This happens by by updating oldVotes every time a new vote comes in from the server
-  //      */
-  //     else {
-  //       if(votes[VOTE_INDEX.POS] === this.state.oldVotes[VOTE_INDEX.POS] && votes[VOTE_INDEX.NEG] === this.state.oldVotes[VOTE_INDEX.NEG]) {
-  //         return this.displayMissionVotingResults();
-  //       }
-  //     }
-  //   } 
-  //   // Mission End
-  //   else if (roundStatus === ROUND_STATUS.MISSION_END) {
-  //     // A team has won the game
-  //     if(score[VOTE_INDEX.POS] === 3 || score[VOTE_INDEX.NEG] === 3) {
-  //       return this.displayWinner();
-  //     }
-  //     // Game still going
-  //     return this.displayMissionResults()
-  //   }
-  //   // Assassination Round
-  //   else if (roundStatus === ROUND_STATUS.ASSASSIN_CHOOSE) {
-  //     return this.displayAssassinChoose();
-  //   }
-  //   // Merlin Picked
-  //   else if (roundStatus === ROUND_STATUS.MERLIN_PICKED) {
-  //     return this.displayMerlinPicked();
-  //   }
-  // }
-
   public showAnnouncment () {
     const { roundStatus, votes, score } = this.props;
     switch(roundStatus) {
