@@ -395,6 +395,11 @@ const updateScore = (socket, point) => {
     game.score[VOTE_INDEX.POS]++;
     game.rounds[game.currentRound - 1].value = TEAM.GOOD;
   }
+
+}
+
+const updateCurrentRound = (socket) => {
+  const game: Game = getGameBySocket(socket);
   game.currentRound++;
 }
 
@@ -427,6 +432,7 @@ const newTeamPropose = socket => {
   if(game.failedVotes === 5)
   {
     updateScore(socket, TEAM.BAD);
+    updateCurrentRound(socket);
     resetFailedVotes(socket);
     return false; 
   }
@@ -702,6 +708,7 @@ io.on("connection", socket => {
       }
 
       // Reset things to next round
+      updateCurrentRound(socket);
       resetVotes(socket);
       resetSelectPlayers(socket);
       resetFailedVotes(socket);
