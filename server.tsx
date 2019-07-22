@@ -598,10 +598,11 @@ io.on("connection", socket => {
       { 
         // Should we propose a new team, has team proposal failed 5 times?
         if(!newTeamPropose(socket)) {
-
           // Evil team got a point, check if they won
           if(checkWinner(socket) === TEAM.BAD) {
+            await wait(3000);
             endGame(socket);
+            io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
             await wait(5000);
             gamesById[gameId].status = GAME_STATUS.END;
             io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
@@ -653,7 +654,7 @@ io.on("connection", socket => {
       await wait(3000);
       
       // Check if a team got 3 points
-      if(checkWinner(socket)) {
+      if(checkWinner(socket) === TEAM.GOOD) {
         io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
 
         // If assassin is included
@@ -664,6 +665,24 @@ io.on("connection", socket => {
           io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
           return;
         }
+        // Assassin not included
+        await wait(5000);
+        gamesById[gameId].status = GAME_STATUS.END;
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
+        
+        // Cleanup game
+        io.of('/').in(gameId).clients(function(error, clients) {
+          if (clients.length > 0) {
+              clients.forEach(function (socket_id) {
+                  io.sockets.sockets[socket_id].leave(gameId);
+              });
+          }
+        });
+        delete gamesById[gameId];
+        return;
+      }
+      else if(checkWinner(socket) === TEAM.BAD) {
+        io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));
         // Assassin not included
         await wait(5000);
         gamesById[gameId].status = GAME_STATUS.END;
