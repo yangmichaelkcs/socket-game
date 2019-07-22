@@ -600,6 +600,7 @@ io.on("connection", socket => {
         if(!newTeamPropose(socket)) {
           // Evil team got a point, check if they won
           if(checkWinner(socket) === TEAM.BAD) {
+            // Evil team wins end the game
             await wait(3000);
             endGame(socket);
             io.to(gameId).emit("UPDATE_GAME_STATE", getGameById(gameId));

@@ -148,7 +148,7 @@ class Game extends React.Component<GameStateProps, any> {
   public displayAssassinChoose() {
     return (
       <div>
-        <h4>One last chance for evil</h4>
+        <h4>One last chance for evil...</h4>
         <p>Assassin select Merlin to kill</p>
       </div>
     );
