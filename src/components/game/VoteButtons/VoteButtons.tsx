@@ -1,12 +1,12 @@
 import * as React from "react";
-import { ROUND_STATUS, Player } from "types/types";
+import { ROUND_STATUS, Player } from "../../../types/types";
 import {
     getPlayers, 
     getRoundStatus,
     getPlayerData 
-} from "selectors";
+} from "../../../selectors";
 import { connect } from "react-redux";
-import { updateMissionVote } from "socket";
+import { updateMissionVote } from "../../../socket";
 
 interface VoteButtonsProps {
     players: Player[];
@@ -41,17 +41,27 @@ class VoteButtons extends React.Component<VoteButtonsProps, any> {
   // Shows vote buttons only for those players who are on the mission and at the correct round
   public showVoteButtons () {
     const { roundStatus, onMission } = this.props;
-    if(roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS && onMission) {
-      return (
-        <div className={"VotingButtons"}>
-          {this.state.success && <button onClick={this.onSuccess} type="button" className="SideBySideButton btn btn-outline-primary">
-              Success
-          </button>}
-          {this.state.fail && <button onClick={this.onFail} type="button" className="SideBySideButton RejectButton btn btn-outline-danger">
-              Fail
-          </button>}
-        </div>
-      );
+    if(roundStatus === ROUND_STATUS.MISSION_IN_PROGRESS) {
+      if(onMission) {
+        return (
+          <div className={"VotingButtons"}>
+            <br />
+            <div>Succeed or Fail the Mission</div>
+            {this.state.success && <button onClick={this.onSuccess} type="button" className="SideBySideButton btn btn-outline-primary">
+                Success
+            </button>}
+            {this.state.fail && <button onClick={this.onFail} type="button" className="SideBySideButton RejectButton btn btn-outline-danger">
+                Fail
+            </button>}
+          </div>
+        );
+      } else {
+        return (
+          <div>
+            Players are on the mission
+          </div>
+        );
+      }
     }
   }
 

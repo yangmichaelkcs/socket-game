@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { mainMenu } from "socket";
+import { mainMenu } from "../../../socket";
 
 class MenuButton extends React.Component<any, any> {
     public render() {

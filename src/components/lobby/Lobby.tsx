@@ -1,12 +1,11 @@
 import { FaRegUser, FaUser } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
-import { getGameId, getPlayerCount, getPlayers, getPlayerData, getIncludes } from "selectors";
+import { getGameId, getPlayerCount, getPlayers, getPlayerData, getIncludes } from "../../selectors";
 import StartButton from "./StartButton";
-import { Player, TEAM } from "types/types";
-import { updateNickName, updateIncludes } from "socket";
+import { updateNickName, updateIncludes } from "../../socket";
 import MenuButton from './MenuButton';
-import { SPECIAL_CHAR_INDEX, PLAYER_DISTRIBUTION } from '../../types/types';
+import { SPECIAL_CHAR_INDEX, PLAYER_DISTRIBUTION,  Player, TEAM } from '../../types/types';
 
 interface LobbyPropsFromState {
   gameId: string;

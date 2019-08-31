@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { joinGame } from "socket";
-import { GAME_STATUS } from 'types/types';
+import { joinGame } from "../../../socket";
+import { GAME_STATUS } from '../../../types/types';
 
 class JoinButton extends React.Component<any, any> {
     constructor(props) {

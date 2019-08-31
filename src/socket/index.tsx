@@ -2,7 +2,8 @@ import * as io from "socket.io-client";
 import { setGameData, navigateTo } from "../actions";
 import { setSocketId } from "../actions";
 
-const socket = io("https://socket-game.herokuapp.com");
+const port = process.env.PORT 
+const socket = io("https://mmmgame.herokuapp.com:");
 export class SocketListener {
   constructor(store) {
     socket.on("JOINED_GAME", game => {

@@ -1,6 +1,6 @@
 import { FaChessKnight, FaSkull, FaRegQuestionCircle } from 'react-icons/fa'
 import * as React from "react";
-import { TEAM } from 'types/types';
+import { TEAM } from '../../../types/types';
 
 class SingleRound extends React.Component<any, any> {
   

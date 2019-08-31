@@ -13,9 +13,28 @@ import {
   ROLES,
   SCORE_TYPE
 } from "./src/types/types";
+declare var require: any
+declare var  __dirname: any
+declare var process: any
 
-const port = process.env.PORT || 8888;
-const io = socketIo.listen(port);
+const express = require('express');
+const path = require('path');
+const port = process.env.PORT || 8080;
+const app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+// the __dirname is the current directory from where the script is running
+app.use(express.static(__dirname));
+
+// send the user to index html page inspite of the url
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname,  'index.html'));
+});
+server.listen(port);
+
+
+
+//const io = app.listen(port);
 
 const gamesById: { string?: Game } = {};
 

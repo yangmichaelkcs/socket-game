@@ -8,10 +8,10 @@ import {
   getPlayerData,
   getRoundStatus,
   getRounds
-} from "selectors";
-import { Player, ROUND_STATUS, Round, ROLES } from "types/types";
+} from "../../../selectors";
+import { Player, ROUND_STATUS, Round, ROLES } from "../../../types/types";
 import { connect } from "react-redux";
-import { proposeTeam, updateTeamVote, killMerlin } from "socket";
+import { proposeTeam, updateTeamVote, killMerlin } from "../../../socket";
 
 interface PlayerListState {
   playerNeededTooltip : boolean;
@@ -23,6 +23,7 @@ interface PlayerListProps {
   roundStatus: ROUND_STATUS;
   rounds: Round[];
   currentRound: number;
+  currentPlayerTurn: Player[];
 }
 
 class PlayerList extends React.Component<any, any> {
@@ -85,16 +86,28 @@ class PlayerList extends React.Component<any, any> {
 
   // Show propose button if correct round and is that player's turn. Show team voting buttons when its time to vote
   public showProposeOrVoteButton() {
-    const { turnToPick, roundStatus } = this.props;
-    if (turnToPick && roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
-      return (
-        <button onClick={this.onProposeClick} type="button" className="SelectTeamButton btn btn-outline-success">
-          Select Team
-        </button>
-      );
+    const { turnToPick, roundStatus, currentPlayerTurn, amAssassin } = this.props;
+    if (roundStatus === ROUND_STATUS.PROPOSING_TEAM) {
+      if(turnToPick) {
+        return (
+          <div>
+            <div>Click on the players to select</div>
+            <button onClick={this.onProposeClick} type="button" className="SelectTeamButton btn btn-outline-success">
+              Select Team
+            </button>
+          </div>
+        );
+      } else {
+        return (
+          <div>
+            {currentPlayerTurn.nickName.toString()} is picking a team
+          </div>
+        );
+      }
     } else if (roundStatus === ROUND_STATUS.VOTING_TEAM) {
       return (
         <div className={"VotingButtons"}>
+          <div>Approve or Reject Team</div>
           {this.state.accept && <button type="button" className="SideBySideButton btn btn-outline-primary" onClick={this.onAccept}>
             Approve
           </button>}
@@ -103,12 +116,24 @@ class PlayerList extends React.Component<any, any> {
           </button>}
         </div>
       );
-    } else if (roundStatus === ROUND_STATUS.ASSASSIN_CHOOSE && this.props.amAssassin) {
-      return (
-        <button onClick={this.onKillMerlin} type="button" className="SelectTeamButton btn btn-outline-success">
-          Kill Merlin
-        </button>
-      );
+    } else if (roundStatus === ROUND_STATUS.ASSASSIN_CHOOSE) {
+      if (amAssassin) {
+        return (
+          <div>
+            <div>Click on a player to select</div>
+            <button onClick={this.onKillMerlin} type="button" className="SelectTeamButton btn btn-outline-success">
+              Kill Merlin
+            </button>
+          </div>
+        );
+      }
+      else {
+        return (
+          <div>
+            Assassin is choosing Merlin
+          </div>
+        );
+      }
     }
   }
 
@@ -148,27 +173,25 @@ class PlayerList extends React.Component<any, any> {
   // Returns 5 players in first row 
   public firstPlayerRow() {
     const firstRow = this.props.players.slice(0, 5);
-    return firstRow.map(player => (<PlayerComponent key={player.socketId} player={player} />));
+    return firstRow.map(player => (<PlayerComponent key={player.socketId.toString()} player={player} />));
   }
   
   // Returns second 5 players in second row
   public secondPlayerRow() {
     const firstRow = this.props.players.slice(5, 10);
-    return firstRow.map(player => (<PlayerComponent key={player.socketId} player={player} />))
+    return firstRow.map(player => (<PlayerComponent key={player.socketId.toString()} player={player} />))
   }
 
   public render() {
     return (
       <div className="PlayerList">
-        <h4 style={{ marginTop: "1rem", marginBottom: "0" }}>
-          Team:
-        </h4>
         <div className="row">
           {this.firstPlayerRow()}
         </div>
         <div className="row">
           {this.secondPlayerRow()}
         </div>
+        <br />
         {this.showProposeOrVoteButton()}
         {this.showPlayerNeededToolTip()}
         {this.showMerlinNeededToolTip()}
@@ -196,7 +219,8 @@ const mapStateToProps = state => {
     rounds: getRounds(state),
     currentRound,
     playerData,
-    amAssassin 
+    amAssassin,
+    currentPlayerTurn 
   };
 };
 

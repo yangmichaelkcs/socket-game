@@ -1,7 +1,7 @@
 import { FaRegUser, FaUser, FaThumbsUp, FaThumbsDown, FaTimes, FaCheck } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
-import { getGameId } from "selectors";
+import { getGameId } from "../../../selectors";
 
 interface LegendStateProps {
   gameId: string

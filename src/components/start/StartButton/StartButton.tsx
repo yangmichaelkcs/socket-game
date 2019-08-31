@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { createNewGame } from "socket";
+import { createNewGame } from "../../../socket";
 
 class StartButton extends React.Component<any, any> {
     public render() {

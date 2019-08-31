@@ -1,9 +1,9 @@
 import { FaRegUser } from 'react-icons/fa'
 import * as React from "react";
 import { connect } from "react-redux";
-import { getGameId, getPlayerCount, getPlayers, getPlayerData } from "selectors";
-import { Player } from "types/types";
-import { rejoinGame } from "socket";
+import { getGameId, getPlayerCount, getPlayers, getPlayerData } from "../../selectors";
+import { Player } from "../../types/types";
+import { rejoinGame } from "../../socket";
 
 interface RejoinPropsFromState {
   gameId: string;

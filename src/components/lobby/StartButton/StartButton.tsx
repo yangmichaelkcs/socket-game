@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { startGameIncludes } from "socket";
-import { getIncludes } from 'selectors';
+import { startGameIncludes } from "../../../socket";
+import { getIncludes } from '../../../selectors';
 
 class StartButton extends React.Component<any, any> {
   constructor(props) {

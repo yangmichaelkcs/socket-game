@@ -19,8 +19,8 @@ import {
   getCurrentPage,
   getScore,
   getIncludes
-} from "selectors";
-import { Player, ROUND_STATUS, Round, GAME_STATUS, VOTE_INDEX, TEAM, SCORE_TYPE } from "types/types";
+} from "../../selectors";
+import { Player, ROUND_STATUS, Round, GAME_STATUS, VOTE_INDEX, TEAM, SCORE_TYPE } from "../../types/types";
 
 interface GameState {
   oldVotes: number[];
@@ -59,7 +59,7 @@ class Game extends React.Component<GameStateProps, any> {
     const playersNeeded = rounds[currentRound - 1].playersNeeded;
     return (
       <div>
-        <h4>Turn to Pick: {curentPlayerTurn.nickName}</h4>
+        <h4>Turn to Pick: {curentPlayerTurn.nickName.toString()}</h4>
         <p><FaRegUser className="Iconsize"/>Players needed: {playersNeeded} 
         <br/><FaTimes className="Iconsize Fail"/>Fails needed: {rounds[currentRound -1].failsNeeded}</p>
       </div>
@@ -72,7 +72,7 @@ class Game extends React.Component<GameStateProps, any> {
     return (
       <div>
         <h4>Vote on the team:</h4>
-        <p>{players.filter(player => player.selected).map(p => p.nickName).join(", ")} </p>
+        <p>{players.filter(player => player.selected).map(p => p.nickName.toString()).join(", ")} </p>
       </div>
     );
   }
@@ -94,7 +94,7 @@ class Game extends React.Component<GameStateProps, any> {
     return (
       <div>
         <h4>Players on the mission:</h4>
-        <p>{players.filter(player => player.selected).map(p => p.nickName).join(", ")}</p>
+        <p>{players.filter(player => player.selected).map(p => p.nickName.toString()).join(", ")}</p>
       </div>
     );
   }
